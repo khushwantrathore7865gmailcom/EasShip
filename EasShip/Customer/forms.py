@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from User.models import User_custom
-
-
+from .models import shipJob, ProdDesc
+from django.forms import formset_factory
 from django.forms import modelformset_factory
 
 job_Type = [
@@ -56,3 +56,61 @@ class SignUpForm(UserCreationForm):
             'password1',
             'password2',
         ]
+
+
+class ShipJob(forms.ModelForm):
+    class Meta:
+        model = shipJob
+        fields = [
+            'job_description',
+            'picking_Address',
+            'droping_Address',
+        ]
+
+
+class Prod_Detail(forms.Form):
+    prod_box = forms.CharField(
+        label='number of box ',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Total number of boxes of product'
+        })
+    )
+    prod_in_box = forms.CharField(
+        label='number of units in box ',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Total number of units in  boxes of product'
+        })
+    )
+    Weight_box = forms.CharField(
+        label='weight of box ',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'weight of boxes of product'
+        })
+    )
+    length = forms.CharField(
+        label='length of box ',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'length of boxes of product'
+        })
+    )
+    width = forms.CharField(
+        label='width of box ',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'width of boxes of product'
+        })
+    )
+    height = forms.CharField(
+        label='height of box ',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'height of boxes of product'
+        })
+    )
+
+
+prod_Detail_Formset = formset_factory(Prod_Detail, extra=1)
