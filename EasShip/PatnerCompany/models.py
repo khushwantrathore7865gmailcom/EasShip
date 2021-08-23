@@ -67,6 +67,7 @@ class comp_Bids(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     Bid_amount = models.CharField(max_length=1024)
+    complete_in = models.IntegerField()
     bid_on = models.DateTimeField(auto_now_add=True)
 
 
