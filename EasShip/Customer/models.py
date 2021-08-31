@@ -64,6 +64,7 @@ class Customer_address(models.Model):
 
 class shipJob(models.Model):
     cust = models.ForeignKey(customer, on_delete=models.CASCADE)
+    ship_title = models.CharField(max_length=1024,null=True)
     job_description = models.CharField(blank=True, max_length=1024)
     picking_Address = models.CharField(max_length=1024)
     droping_Address = models.CharField(max_length=1024)

@@ -112,8 +112,15 @@ def login_candidate(request):
 
 def customer_home(request):
     user = request.user
+    try:
+        e = customer.objects.get(user=user)
+    except customer.DoesNotExist:
+        e = None
+    if e:
+        j=shipJob.objects.filter(cust=e)
     context = {
-        'user': user
+        'user': e,
+        'jobs':j,
     }
     return render(request, 'customer/home.html', context)
 
