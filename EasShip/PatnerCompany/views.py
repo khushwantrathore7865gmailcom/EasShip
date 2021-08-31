@@ -111,9 +111,9 @@ def login_candidate(request):
         return render(request, 'patner_company/login.html', context)
 
 
-def customer_home(request):
+def partner_company_home(request):
     user = request.user
     context = {
         'user': user
     }
-    return render(request, 'patner_company/home.html', context)
+    return render(request, 'partner_company/home.html', context)
