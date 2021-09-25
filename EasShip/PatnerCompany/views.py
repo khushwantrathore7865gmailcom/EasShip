@@ -12,6 +12,7 @@ from django.utils.encoding import force_text
 from .tokens import account_activation_token
 from .models import patnerComp, Comp_profile, Comp_address, comp_Bids, comp_drivers, comp_PastWork, comp_PresentWork, \
     comp_Transport
+from Customer.models import shipJob
 
 
 # Create your views here.
@@ -113,7 +114,9 @@ def login_candidate(request):
 
 def partner_company_home(request):
     user = request.user
+    job = shipJob.objects.all()
     context = {
-        'user': user
+        'user': user,
+        'job':job,
     }
     return render(request, 'partner_company/home.html', context)

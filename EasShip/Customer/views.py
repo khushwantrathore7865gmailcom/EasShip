@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
 from .tokens import account_activation_token
-from .models import customer, Customer_address, Customer_profile, ProdDesc, shipJob
+from .models import customer, Customer_address, Customer_profile, ProdDesc, shipJob, Expired_ShipJob
 
 
 # Create your views here.
@@ -111,18 +111,73 @@ def login_candidate(request):
 
 
 def customer_home(request):
+    jobs = []
+    expired_job = []
     user = request.user
-    try:
-        e = customer.objects.get(user=user)
-    except customer.DoesNotExist:
-        e = None
-    if e:
-        j=shipJob.objects.filter(cust=e)
-    context = {
-        'user': e,
-        'jobs':j,
-    }
-    return render(request, 'customer/home.html', context)
+    if user is not None and user.is_employeer:
+        try:
+            e = customer.objects.get(user=user)
+        except customer.DoesNotExist:
+            e = None
+        # uncomment this after making the profile update correct
+        # if Employer_profile.objects.get(employer=e):
+        if e:
+            try:
+                ep = Customer_profile.objects.get(employer=e)
+            except Customer_profile.DoesNotExist:
+                ep = None
+            job = shipJob.objects.filter(employer_id=e)
+            for j in job:
+                start_date = j.created_on
+                # print(start_date)
+                today = datetime.now()
+                # print(type(today))
+                stat_date = str(start_date)
+                start_date = stat_date[:19]
+                tday = str(today)
+                today = tday[:19]
+                s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                # print(s_date)
+                # print(e_date)
+                diff = abs((e_date - s_date).days)
+                print(diff)
+                try:
+                    e_j = Expired_ShipJob.objects.get(job_id=j)
+                except Expired_ShipJob.DoesNotExist:
+                    e_j = None
+                if diff > 30:
+                    if e_j:
+                        expired_job.append(j)
+
+                    else:
+                        Expired_ShipJob.objects.create(job_id=j).save()
+                        expired_job.append(j)
+                elif e_j:
+                    expired_job.append(j)
+                else:
+                    jobs.append(j)
+            context = {'jobs': jobs, 'expired': expired_job, 'ep': ep}
+            return render(request, 'customer/job-post.html', context)
+        else:
+            return redirect('/')
+    else:
+        return redirect('/')
+    # user = request.user
+    # try:
+    #     e = customer.objects.get(user=user)
+    # except customer.DoesNotExist:
+    #     e = None
+    # if e:
+    #     j = shipJob.objects.filter(cust=e)
+    #
+    #     context = {
+    #         'user': e,
+    #         'jobs': j,
+    #     }
+    #     return render(request, 'customer/home.html', context)
+    # else:
+    #     return redirect('/')
 
 
 def Add_Shipment(request):
@@ -139,6 +194,25 @@ def Add_Shipment(request):
         print(pk)
         return redirect('customer:Add_prod_desc', pk)
     return render(request, 'customer/add_job.html', {'form': form})
+
+
+def unpublish(request, pk):
+    user = request.user
+    job = shipJob.objects.get(pk=pk)
+    # print(c)
+    # print(job)
+    Expired_ShipJob.objects.create(job_id=job).save()
+    return redirect('recruiter:employer_home')
+
+
+def remove_unpublish(request, pk):
+    job = shipJob.objects.get(pk=pk)
+    unpub_job = Expired_ShipJob.objects.get(job_id=job)
+    unpub_job.delete()
+    job.created_on = datetime.now()
+    job.save()
+
+    return redirect('recruiter:employer_home')
 
 
 def Add_prod_desc(request, pk):
@@ -163,3 +237,14 @@ def Add_prod_desc(request, pk):
             return redirect('customer:customer_home')
 
     return render(request, 'customer/add_job_desc.html', {"form2": form})
+def job_detail(request, pk):
+    user = request.user
+    if user is not None and user.is_employeer:
+        e = Employer.objects.get(user=request.user)
+        job = Employer_job.objects.get(pk=pk)
+        company = Employer_profile.objects.get(employer=e)
+        # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
+        # objects = zip(job,candidate_Applied)
+        return render(request, 'employer/job_details.html', {'job': job, 'c': company})
+    else:
+        return redirect('/')

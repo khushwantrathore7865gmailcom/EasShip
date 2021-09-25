@@ -64,17 +64,22 @@ class Customer_address(models.Model):
 
 class shipJob(models.Model):
     cust = models.ForeignKey(customer, on_delete=models.CASCADE)
-    ship_title = models.CharField(max_length=1024,null=True)
+    ship_title = models.CharField(max_length=1024, null=True)
     job_description = models.CharField(blank=True, max_length=1024)
     picking_Address = models.CharField(max_length=1024)
     droping_Address = models.CharField(max_length=1024)
 
 
 class ProdDesc(models.Model):
-    shipment = models.ForeignKey(shipJob,on_delete=models.CASCADE,null=True)
+    shipment = models.ForeignKey(shipJob, on_delete=models.CASCADE, null=True)
     prod_box = models.IntegerField()
     prod_in_box = models.IntegerField()
     Weight_box = models.CharField(max_length=1024)
     length = models.CharField(max_length=1024)
     width = models.CharField(max_length=1024)
     height = models.CharField(max_length=1024)
+
+
+class Expired_ShipJob(models.Model):
+    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True, null=True)
