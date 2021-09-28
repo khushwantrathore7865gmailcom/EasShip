@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
@@ -10,7 +12,10 @@ from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
 from .tokens import account_activation_token
-from .models import customer, Customer_address, Customer_profile, ProdDesc, shipJob, Expired_ShipJob
+from .models import customer, Customer_address, Customer_profile, ProdDesc, shipJob, Expired_ShipJob, \
+    Shipment_Related_Question
+from PatnerCompany.models import shipJob_jobanswer, comp_Bids, Comp_address, Comp_profile, comp_Transport, \
+    comp_PresentWork, comp_PastWork, comp_drivers
 
 
 # Create your views here.
@@ -114,7 +119,7 @@ def customer_home(request):
     jobs = []
     expired_job = []
     user = request.user
-    if user is not None and user.is_employeer:
+    if user is not None and user.is_customer:
         try:
             e = customer.objects.get(user=user)
         except customer.DoesNotExist:
@@ -123,10 +128,10 @@ def customer_home(request):
         # if Employer_profile.objects.get(employer=e):
         if e:
             try:
-                ep = Customer_profile.objects.get(employer=e)
+                ep = Customer_profile.objects.get(cust=e)
             except Customer_profile.DoesNotExist:
                 ep = None
-            job = shipJob.objects.filter(employer_id=e)
+            job = shipJob.objects.filter(cust=e)
             for j in job:
                 start_date = j.created_on
                 # print(start_date)
@@ -182,18 +187,22 @@ def customer_home(request):
 
 def Add_Shipment(request):
     u = request.user
-    users = customer.objects.get(user=u)
-    form = ShipJob()
-    if request.method == 'POST':
-        form = ShipJob(request.POST)
-        f = form.save(commit=False)
-        f.cust = users
+    if u is not None and u.is_customer:
+        users = customer.objects.get(user=u)
+        form = ShipJob()
+        if request.method == 'POST':
+            form = ShipJob(request.POST)
+            f = form.save(commit=False)
+            f.cust = users
 
-        f.save()
-        pk = f.pk
-        print(pk)
-        return redirect('customer:Add_prod_desc', pk)
-    return render(request, 'customer/add_job.html', {'form': form})
+            f.save()
+            pk = f.pk
+            print(pk)
+            return redirect('customer:Add_prod_desc', pk)
+        return render(request, 'customer/add_job.html', {'form': form})
+    else:
+        return redirect('/')
+
 
 
 def unpublish(request, pk):
@@ -237,14 +246,201 @@ def Add_prod_desc(request, pk):
             return redirect('customer:customer_home')
 
     return render(request, 'customer/add_job_desc.html', {"form2": form})
+
+
 def job_detail(request, pk):
     user = request.user
-    if user is not None and user.is_employeer:
-        e = Employer.objects.get(user=request.user)
-        job = Employer_job.objects.get(pk=pk)
-        company = Employer_profile.objects.get(employer=e)
+    if user is not None and user.is_customer:
+        e = customer.objects.get(user=request.user)
+        job = shipJob.objects.get(pk=pk)
+        company = Customer_profile.objects.get(employer=e)
         # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
         # objects = zip(job,candidate_Applied)
-        return render(request, 'employer/job_details.html', {'job': job, 'c': company})
+        return render(request, 'customer/job_details.html', {'job': job, 'c': company})
     else:
         return redirect('/')
+
+
+@login_required(login_url='/')
+def view_applied_candidate(request, pk):
+    user = request.user
+    if user is not None and user.is_customer:
+        candidate_user = []
+        candidate_profile = []
+        address_profile = []
+        professional_profile = []
+
+        candidate_answer = []
+        # Question=[]
+        e = customer.objects.get(user=request.user)
+
+        cp = Customer_profile.objects.get(employer=e)
+        job = shipJob.objects.get(pk=pk)
+
+        question = Shipment_Related_Question.objects.filter(job_id=job)
+        candidate_Applied = comp_Bids.objects.filter(job_id=job)
+        for can in candidate_Applied:
+            c = can.comp
+            c_p = Comp_profile.objects.get(comp=c)
+            c_e = Comp_address.objects.get(comp=c)
+            p_p = comp_PastWork.objects.filter(comp=c)
+            candidate_profile.append(c_p)
+            print("working filter")
+            print(candidate_profile)
+            candidate_user.append(c.user)
+            address_profile.append(c_e)
+            professional_profile.append(p_p)
+
+
+            for q in question:
+                candidate_answer.append(
+                    shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
+
+
+
+
+        quest = zip(question, candidate_answer)
+        # print(candidate_answer)
+        objects = zip(candidate_profile, address_profile, professional_profile,
+                      candidate_user, candidate_Applied)
+
+        return render(request, 'employer/job_candidate.html',
+                      {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
+        # return render(request, 'employer/job_candidate.html',
+        #               {'candidate': objects, 'job': job, 'quest': quest})
+    else:
+        return redirect('/')
+
+
+@login_required(login_url='/')
+def shortlistview_applied_candidate(request, pk):
+    user = request.user
+    if user is not None and user.is_customer:
+        e = customer.objects.get(user=user)
+        cp = Customer_profile.objects.get(employer=e)
+        candidate_user = []
+        candidate_profile = []
+        address_profile = []
+        professional_profile = []
+
+        candidate_answer = []
+
+        job = ShipJob.objects.get(pk=pk)
+        question = Shipment_Related_Question.objects.filter(job_id=job)
+        candidate_Applied = comp_Bids.objects.filter(job_id=job)
+        for can in candidate_Applied:
+            c = can.candidate_id
+            candidate_profile.append(Comp_profile.objects.get(comp=c))
+            candidate_user.append(c.user)
+            address_profile.append(Comp_address.objects.filter(comp=c))
+            professional_profile.append(comp_PastWork.objects.filter(comp=c))
+
+            for q in question:
+                candidate_answer.append(shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
+
+        objects = zip(candidate_profile, address_profile, professional_profile,
+                      candidate_user, candidate_Applied)
+        # question = zip(question, candidate_answer)
+        return render(request, 'employer/shortlisted_view.html',
+                      {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
+    else:
+        return redirect('/')
+
+
+@login_required(login_url='/')
+def disqualifyview_applied_candidate(request, pk):
+    user = request.user
+    if user is not None and user.is_customer:
+        e = customer.objects.get(user=user)
+        cp = Customer_profile.objects.get(employer=e)
+        candidate_user = []
+        candidate_profile = []
+        address_profile = []
+        professional_profile = []
+
+        candidate_answer = []
+
+        job = ShipJob.objects.get(pk=pk)
+        question = Shipment_Related_Question.objects.filter(job_id=job)
+        candidate_Applied = comp_Bids.objects.filter(job_id=job)
+        for can in candidate_Applied:
+            c = can.candidate_id
+            candidate_profile.append(Comp_profile.objects.get(comp=c))
+            candidate_user.append(c.user)
+            address_profile.append(Comp_address.objects.filter(comp=c))
+            professional_profile.append(comp_PastWork.objects.filter(comp=c))
+
+            for q in question:
+                candidate_answer.append(shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
+
+        objects = zip(candidate_profile, address_profile, professional_profile,
+                      candidate_user, candidate_Applied)
+
+        # question = zip(question, candidate_answer)
+        return render(request, 'employer/disqualified.html',
+                      {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
+    else:
+        return redirect('/')
+
+
+@login_required(login_url='/')
+def shortlist(request, pk):
+    e = comp_Bids.objects.get(pk=pk)
+    e.is_shortlisted = True
+    e.is_disqualified = False
+    e.save()
+    print(e.job_id.pk)
+    return redirect('recruiter:view_applied_candidate', e.job_id.pk)
+
+
+@login_required(login_url='/')
+def disqualify(request, pk):
+    e = comp_Bids.objects.get(pk=pk)
+    e.is_shortlisted = False
+    e.is_disqualified = True
+    e.save()
+    print(e.job_id.pk)
+    return redirect('recruiter:view_applied_candidate', e.job_id.pk)
+
+
+@login_required(login_url='/')
+def delete_job(request, pk):
+    ShipJob.objects.get(pk=pk).delete()
+
+    return redirect('recruiter:employer_home')
+
+
+@login_required(login_url='/')
+def publish_job(request, pk):
+    e = ShipJob.objects.get(pk=pk)
+    e.is_save_later = False
+    e.save()
+    return redirect('recruiter:job_detail', pk)
+
+
+@login_required(login_url='/')
+def ProfileView(request):
+    u = request.user
+    e = customer.objects.get(user=u)
+    profile =Customer_profile.objects.get(employer=e)
+
+    return render(request, 'employer/skills.html', {
+        "user": u,
+        "profile": profile,
+
+    })
+
+
+
+
+
+@login_required(login_url='/')
+def job_Response(request, pk):
+    user = request.user
+    if user is not None and user.is_customer:
+        job = ShipJob.objects.get(pk=pk)
+        response = comp_Bids.objects.filter(job_id=job)
+        return render(request, 'dashboard/jobresponse.html', {'response': response})
+    else:
+        return redirect('/')
+

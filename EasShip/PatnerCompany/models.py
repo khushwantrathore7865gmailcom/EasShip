@@ -1,8 +1,7 @@
 from django.db import models
 from User.models import User_custom
 from django.core.validators import RegexValidator
-from Customer.models import shipJob
-
+from Customer.models import shipJob,Shipment_Related_Question
 
 # Create your models here.
 class patnerComp(models.Model):
@@ -63,12 +62,6 @@ class Comp_address(models.Model):
         verbose_name_plural = "Shipping Company Addresses"
 
 
-class comp_Bids(models.Model):
-    comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
-    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
-    Bid_amount = models.CharField(max_length=1024)
-    complete_in = models.IntegerField()
-    bid_on = models.DateTimeField(auto_now_add=True)
 
 
 #
@@ -84,6 +77,23 @@ class comp_drivers(models.Model):
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Please enter valid phone number. Correct format is 91XXXXXXXX")
     phone = models.CharField(validators=[phone_regex], max_length=20, blank=True)
+
+
+class shipJob_jobanswer(models.Model):
+    candidate_id = models.ForeignKey(patnerComp, models.CASCADE)
+    # employer_id = models.ForeignKey(Employer, on_delete=models.CASCADE)
+    question_id = models.ForeignKey(Shipment_Related_Question, on_delete=models.CASCADE)
+    answer = models.CharField(max_length=1250)
+
+class comp_Bids(models.Model):
+    comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
+    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
+    Bid_amount = models.CharField(max_length=1024)
+    complete_in = models.IntegerField()
+    bid_on = models.DateTimeField(auto_now_add=True)
+    is_shortlisted = models.BooleanField(default=False)
+    is_disqualified = models.BooleanField(default=False)
+    is_selected = models.BooleanField(default=False)
 
 
 class comp_PresentWork(models.Model):

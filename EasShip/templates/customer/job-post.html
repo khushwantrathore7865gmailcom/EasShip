@@ -82,7 +82,7 @@
 				<div class="col-md-12 col-12">
 					<div class="top-navbar">
 						<nav class="navbar navbar-expand-lg ">
-  <a class="navbar-brand" href="{% url 'recruiter:employer_home' %}">LOGO</a>
+  <a class="navbar-brand" href="{% url 'customer:customer_home' %}">LOGO</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -103,7 +103,7 @@
 
 	<ul class="navbar-nav ml-auto">
 <li class="nav-item ">
-    <a class="nav-link" href="{% url 'recruiter:job_post' %}"><i class="fas fa-briefcase"></i></a>
+    <a class="nav-link" href="{% url 'customer:add_ship' %}"><i class="fas fa-briefcase"></i></a>
     <span class="menu-text">Add job </span>
   </li>
 <!--	  <li class="nav-item">-->
@@ -119,7 +119,7 @@
     <span class="menu-text">About Us </span>
   </li>
 <li class="nav-item ">
-    <a class="nav-link" href="{% url 'recruiter:employer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
+    <a class="nav-link" href="{% url 'customer:customer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
     <span class="menu-text">Home</span>
   </li>
 <li class="nav-item bell-icon ">
@@ -133,7 +133,7 @@
   <div class="dropdown-content">
       <a href="#">My Profile</a>
     <a href="#">Edit Profile</a>
-    <a href="{% url 'recruiter:logout' %}">Log Out</a>
+    <a href="{% url 'customer:logout' %}">Log Out</a>
   </div>
 </div>  </li>
 
@@ -158,7 +158,7 @@
 					<h2>Project & Job <span>Posted</span></h2>
 
 				</div>
-					<a class="button1 btn btn-success" href="{% url 'recruiter:job_post' %} ">Add Job</a>
+					<a class="button1 btn btn-success" href="{% url 'customer:add_ship' %} ">Add Job</a>
 
 			</div>
 
@@ -194,16 +194,16 @@
 			{% else %}
 			<tbody>
 				<tr>
-					<td><input type="checkbox"><label></label><a href="{% url 'recruiter:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a></td>
+					<td><input type="checkbox"><label></label><a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a></td>
 <!--					<td></td>-->
 					<td>{{ job.created_on.date }}</td>
-					<td style="text-align: center"><a href="{% url 'recruiter:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
+					<td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
 					<td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
 								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-									<a class="dropdown-item" href="{% url 'recruiter:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:edit_job' job.pk %}"><img src="{% static 'images/btn-icon/edit.png' %}"> Edit Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:job_detail' job.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png"/>View Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:remove_unpublish' job.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Publish Job</a>
+									<a class="dropdown-item" href="{% url 'customer:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
+<!--									<a class="dropdown-item" href=""><img src="{% static 'images/btn-icon/edit.png' %}"> Edit Job</a>-->
+									<a class="dropdown-item" href="{% url 'customer:job_detail' job.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png"/>View Job</a>
+									<a class="dropdown-item" href="{% url 'customer:remove_unpublish' job.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Publish Job</a>
 								  </div>
 					</td>
 				</tr>
@@ -232,16 +232,16 @@
 			{% else %}
 			<tbody>
 				<tr>
-					<td><input type="checkbox"><label></label><a href="{% url 'recruiter:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a></td>
+					<td><input type="checkbox"><label></label><a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a></td>
 <!--					<td></td>-->
 					<td>{{ job.created_on.date }}</td>
-					<td style="text-align: center"><a href="{% url 'recruiter:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
+					<td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
 					<td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
 								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-									<a class="dropdown-item" href="{% url 'recruiter:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:edit_job' job.pk %}"><img src="{% static 'images/btn-icon/edit.png' %}"> Edit Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:job_detail' job.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png"/>View Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:unpublish' job.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Unpublish Job</a>
+									<a class="dropdown-item" href="{% url 'customer:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
+<!--									<a class="dropdown-item" href=""><img src="{% static 'images/btn-icon/edit.png' %}"> Edit Job</a>-->
+									<a class="dropdown-item" href="{% url 'customer:job_detail' job.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png"/>View Job</a>
+									<a class="dropdown-item" href="{% url 'customer:unpublish' job.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Unpublish Job</a>
 								  </div>
 					</td>
 
@@ -271,15 +271,15 @@
 
 			<tbody>
 				<tr>
-					<td><input type="checkbox"><label></label><a href="{% url 'recruiter:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a></td>
+					<td><input type="checkbox"><label></label><a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a></td>
 <!--					<td></td>-->
 					<td>{{ job.created_on.date }}</td>
-					<td style="text-align: center"><a href="{% url 'recruiter:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
+					<td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
 					<td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
 								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-									<a class="dropdown-item" href="{% url 'recruiter:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:edit_job' job.pk %}"><img src="{% static 'images/btn-icon/edit.png' %}"> Edit Job</a>
-									<a class="dropdown-item" href="{% url 'recruiter:job_detail' job.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png"/>View Job</a>
+									<a class="dropdown-item" href="{% url 'customer:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
+<!--									<a class="dropdown-item" href=""><img src="{% static 'images/btn-icon/edit.png' %}"> Edit Job</a>-->
+									<a class="dropdown-item" href="{% url 'customer:job_detail' job.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png"/>View Job</a>
 									<a class="dropdown-item" href="#"><img src="{% static 'images/btn-icon/1.png' %}"> Unpublish Job</a>
 								  </div>
 					</td>

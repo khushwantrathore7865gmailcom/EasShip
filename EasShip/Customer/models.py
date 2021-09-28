@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from User.models import User_custom
 from django.core.validators import RegexValidator
@@ -68,6 +70,8 @@ class shipJob(models.Model):
     job_description = models.CharField(blank=True, max_length=1024)
     picking_Address = models.CharField(max_length=1024)
     droping_Address = models.CharField(max_length=1024)
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+    is_completed = models.BooleanField(default=False)
 
 
 class ProdDesc(models.Model):
@@ -83,3 +87,11 @@ class ProdDesc(models.Model):
 class Expired_ShipJob(models.Model):
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True, null=True)
+
+
+class Shipment_Related_Question(models.Model):
+    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
+    question = models.CharField(max_length=100)
+    answer_size = models.IntegerField(default=10)
+
+
