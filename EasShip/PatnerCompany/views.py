@@ -1,4 +1,7 @@
 from datetime import datetime
+
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
@@ -11,8 +14,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
 from .tokens import account_activation_token
 from .models import patnerComp, Comp_profile, Comp_address, comp_Bids, comp_drivers, comp_PastWork, comp_PresentWork, \
-    comp_Transport
-from Customer.models import shipJob
+    comp_Transport, shipJob_Saved, shipJob_jobanswer
+from Customer.models import shipJob, Expired_ShipJob, Shipment_Related_Question, Customer_profile
 
 
 # Create your views here.
@@ -20,7 +23,7 @@ from Customer.models import shipJob
 class SignUpView(View):
     form_class = SignUpForm
 
-    template_name = 'patner_company/signup.html'
+    template_name = 'customer/signup.html'
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
@@ -40,7 +43,7 @@ class SignUpView(View):
                 user.username = user.email
                 user.user_name = user.email
                 user.is_active = True  # change this to False after testing
-                user.is_company = True
+                user.is_C = True
                 user.save()
                 new_candidate = patnerComp(user=user, is_email_verified=False)  # change is email to False after testing
                 new_candidate.save()
@@ -109,24 +112,16 @@ def login_candidate(request):
                 messages.info(request, 'Username OR password is incorrect')
 
         context = {}
-        return render(request, 'patner_company/login.html', context)
+        return render(request, 'customer/login.html', context)
 
 
 def partner_company_home(request):
-    user = request.user
-    job = shipJob.objects.all()
-    context = {
-        'user': user,
-        'job':job,
-    }
-    return render(request, 'partner_company/home.html', context)
-def jobseeker_Home(request):
     if request.method == 'GET':
         val = request.GET.get('search_box', None)
         print("val")
         print(val)
         if val:
-            job = Employer_job.objects.filter(
+            job = shipJob.objects.filter(
                 Q(job_title__icontains=val) |
                 Q(skill__icontains=val) |
                 Q(job_description__icontains=val) |
@@ -141,199 +136,104 @@ def jobseeker_Home(request):
             companyprofile = []
             job_skills = []
             u = request.user
-            if u is not None and u.is_candidate:
-                c = Candidate.objects.get(user=u)
+            if u is not None and u.is_company:
+                c = patnerComp.objects.get(user=u)
                 try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
+                    cp = Comp_profile.objects.get(user_id=c)
+                except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = Candidate_expdetail.objects.get(user_id=c)
-                except Candidate_expdetail.DoesNotExist:
+                    cep = comp_PastWork.objects.get(user_id=c)
+                except comp_PastWork.DoesNotExist:
                     cep = None
-                try:
-                    cr = Candidate_resume.objects.get(user_id=c)
-                except Candidate_resume.DoesNotExist:
-                    cr = None
+
                 if u.first_login:
+                    print("len job")
+                    print(len(job))
+                    for j in job:
+                        start_date = j.created_on
+                        # print(start_date)
+                        today = datetime.now()
+                        # print(type(today))
+                        stat_date = str(start_date)
+                        start_date = stat_date[:19]
+                        tday = str(today)
+                        today = tday[:19]
+                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                        # print(s_date)
+                        # print(e_date)
+                        diff = abs((e_date - s_date).days)
+                        # print(diff)
+                        if diff > 30:
+                            # expired_job.append(j)
+                            Expired_ShipJob.objects.create(job_id=j).save()
 
-                    skills = Candidate_skills.objects.filter(user_id=c)
-                    print("skills")
-                    print(skills)
-                    if len(skills) != 0:
+                        else:
+                            jobs.append(j)
+                        print("len")
+                        print(len(jobs))
+                    for jo in jobs:
 
-                        my_sk = []
-                        j = 0
-                        for i in skills:
-                            my_sk.insert(j, i.skill.lower())
-                            j = j + 1
-
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-
-                        for job in jobs:
-                            skills = []
-                            sk = str(job.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skills = list(set(my_sk) & set(skills))
-                            if len(common_skills) != 0:
-                                e = job.employer_id
-                                companyprofile.append(Employer_profile.objects.get(employer=e))
-                                try:
-                                    userS = Employer_job_Saved.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userS.job_id)
-                                except Employer_job_Saved.DoesNotExist:
-                                    userS = None
-                                try:
-                                    userA = Employer_job_Applied.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userA.job_id)
-                                except Employer_job_Applied.DoesNotExist:
-                                    userA = None
-
-                                if userA:
-                                    # print(userA)
-                                    continue
-                                if userS:
-                                    # print(userS)
-                                    continue
-                                relevant_jobs.append(job)
-                                common.append(len(common_skills))
-                                job_skills.append(len(skills))
-                                job_ques.append(Employer_jobquestion.objects.filter(job_id=job))
-
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                        e = jo.cust
+                        companyprofile.append(Customer_profile.objects.get(comp=e))
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
-
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
-                    else:
-
-                        print("len job")
-                        print(len(job))
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            # print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-                            print("len")
-                            print(len(jobs))
-                        for jo in jobs:
-                            skills = []
-                            sk = str(jo.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skill = []
-                            e = jo.employer_id
-                            companyprofile.append(Employer_profile.objects.get(employer=e))
-                            try:
-                                userS = Employer_job_Saved.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userS.job_id)
-                            except Employer_job_Saved.DoesNotExist:
-                                userS = None
-                            try:
-                                userA = Employer_job_Applied.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userA.job_id)
-                            except Employer_job_Applied.DoesNotExist:
-                                userA = None
-
-                            if userA:
-                                # print(userA)
-                                continue
-                            if userS:
-                                # print(userS)
-                                continue
-                            relevant_jobs.append(jo)
-                            print("job:")
-                            print(jo)
-
-                            common.append(len(common_skill))
-                            job_skills.append(len(skills))
-                            job_ques.append(Employer_jobquestion.objects.filter(job_id=jo))
-                        print("job_quest:")
-                        print(job_ques)
-                        print("relevant_jobs")
-                        print(len(relevant_jobs))
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
+                            # print(userS.job_id)
+                        except shipJob_Saved.DoesNotExist:
+                            userS = None
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
+                            # print(userA.job_id)
+                        except comp_Bids.DoesNotExist:
+                            userA = None
 
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
+                        if userA:
+                            # print(userA)
+                            continue
+                        if userS:
+                            # print(userS)
+                            continue
+                        relevant_jobs.append(jo)
+                        print("job:")
+                        print(jo)
+
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
+                    print("job_quest:")
+                    print(job_ques)
+                    print("relevant_jobs")
+                    print(len(relevant_jobs))
+                    pj = Paginator(relevant_jobs, 5)
+                    pjt = Paginator(relevant_jobs, 5)
+                    pc = Paginator(common, 5)
+                    pjs = Paginator(job_skills, 5)
+                    pjq = Paginator(job_ques, 5)
+                    pcp = Paginator(companyprofile, 5)
+                    page_num = request.GET.get('page', 1)
+                    try:
+                        pj_objects = pj.page(page_num)
+                        pjt_objects = pjt.page(page_num)
+                        pc_objects = pc.page(page_num)
+                        pjs_objects = pjs.page(page_num)
+                        pjq_objects = pjq.page(page_num)
+                        pcp_objects = pcp.page(page_num)
+                    except EmptyPage:
+                        pj_objects = pj.page(1)
+                        pjt_objects = pjt.page(1)
+                        pc_objects = pc.page(1)
+                        pjs_objects = pjs.page(1)
+                        pjq_objects = pjq.page(1)
+                        pcp_objects = pcp.page(1)
+                    objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+
+                    return render(request, 'jobseeker/home.html',
+                                  {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
+                else:
+                    u.first_login = True
+                    u.save()
+                    return redirect('jobseeker:create_profile')
+            else:
+                return redirect('/')
 
         else:
             jobs = []
@@ -343,197 +243,89 @@ def jobseeker_Home(request):
             companyprofile = []
             job_skills = []
             u = request.user
-            if u is not None and u.is_candidate:
-                c = Candidate.objects.get(user=u)
+            if u is not None and u.is_company:
+                c = patnerComp.objects.get(user=u)
                 try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
+                    cp = Comp_profile.objects.get(user_id=c)
+                except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = Candidate_expdetail.objects.get(user_id=c)
-                except Candidate_expdetail.DoesNotExist:
+                    cep = comp_PastWork.objects.get(user_id=c)
+                except comp_PastWork.DoesNotExist:
                     cep = None
-                try:
-                    cr = Candidate_resume.objects.get(user_id=c)
-                except Candidate_resume.DoesNotExist:
-                    cr = None
                 if u.first_login:
 
-                    skills = Candidate_skills.objects.filter(user_id=c)
-                    print(skills)
-                    if len(skills) != 0:
+                    job = shipJob.objects.all()
+                    for j in job:
+                        start_date = j.created_on
+                        # print(start_date)
+                        today = datetime.now()
+                        # print(type(today))
+                        stat_date = str(start_date)
+                        start_date = stat_date[:19]
+                        tday = str(today)
+                        today = tday[:19]
+                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                        # print(s_date)
+                        # print(e_date)
+                        diff = abs((e_date - s_date).days)
+                        print(diff)
+                        if diff > 30:
+                            # expired_job.append(j)
+                            Expired_ShipJob.objects.create(job_id=j).save()
 
-                        my_sk = []
-                        j = 0
-                        for i in skills:
-                            my_sk.insert(j, i.skill.lower())
-                            j = j + 1
-                        job = Employer_job.objects.all()
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
+                        else:
+                            jobs.append(j)
 
-                            else:
-                                jobs.append(j)
+                    for job in jobs:
 
-                        for job in jobs:
-                            skills = []
-                            sk = str(job.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skills = list(set(my_sk) & set(skills))
-                            if len(common_skills) != 0:
-                                e = job.employer_id
-                                companyprofile.append(Employer_profile.objects.get(employer=e))
-                                try:
-                                    userS = Employer_job_Saved.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userS.job_id)
-                                except Employer_job_Saved.DoesNotExist:
-                                    userS = None
-                                try:
-                                    userA = Employer_job_Applied.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userA.job_id)
-                                except Employer_job_Applied.DoesNotExist:
-                                    userA = None
-
-                                if userA:
-                                    # print(userA)
-                                    continue
-                                if userS:
-                                    # print(userS)
-                                    continue
-                                relevant_jobs.append(job)
-                                common.append(len(common_skills))
-                                job_skills.append(len(skills))
-                                job_ques.append(Employer_jobquestion.objects.filter(job_id=job))
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                        e = job.cust
+                        companyprofile.append(Customer_profile.objects.get(employer=e))
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
-
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
-                    else:
-                        job = Employer_job.objects.all()
-                        print("len job")
-                        print(len(job))
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            # print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-                            print("len")
-                            print(len(jobs))
-                        for jo in jobs:
-                            skills = []
-                            sk = str(jo.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skill = []
-                            e = jo.employer_id
-                            companyprofile.append(Employer_profile.objects.get(employer=e))
-                            try:
-                                userS = Employer_job_Saved.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userS.job_id)
-                            except Employer_job_Saved.DoesNotExist:
-                                userS = None
-                            try:
-                                userA = Employer_job_Applied.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userA.job_id)
-                            except Employer_job_Applied.DoesNotExist:
-                                userA = None
-
-                            if userA:
-                                # print(userA)
-                                continue
-                            if userS:
-                                # print(userS)
-                                continue
-                            relevant_jobs.append(jo)
-                            print("job:")
-                            print(jo)
-
-                            common.append(len(common_skill))
-                            job_skills.append(len(skills))
-                            job_ques.append(Employer_jobquestion.objects.filter(job_id=jo))
-                        print("job_quest:")
-                        print(job_ques)
-                        print("relevant_jobs")
-                        print(len(relevant_jobs))
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                            userS = shipJob_Saved.objects.get(job_id=job.pk, candidate_id=c)
+                            # print(userS.job_id)
+                        except shipJob_Saved.DoesNotExist:
+                            userS = None
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+                            userA = comp_Bids.objects.get(job_id=job.pk, candidate_id=c)
+                            # print(userA.job_id)
+                        except comp_Bids.DoesNotExist:
+                            userA = None
 
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
+                        if userA:
+                            # print(userA)
+                            continue
+                        if userS:
+                            # print(userS)
+                            continue
+                        relevant_jobs.append(job)
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
+                    pj = Paginator(relevant_jobs, 5)
+                    pjt = Paginator(relevant_jobs, 5)
+                    pc = Paginator(common, 5)
+                    pjs = Paginator(job_skills, 5)
+                    pjq = Paginator(job_ques, 5)
+                    pcp = Paginator(companyprofile, 5)
+                    page_num = request.GET.get('page', 1)
+                    try:
+                        pj_objects = pj.page(page_num)
+                        pjt_objects = pjt.page(page_num)
+                        pc_objects = pc.page(page_num)
+                        pjs_objects = pjs.page(page_num)
+                        pjq_objects = pjq.page(page_num)
+                        pcp_objects = pcp.page(page_num)
+                    except EmptyPage:
+                        pj_objects = pj.page(1)
+                        pjt_objects = pjt.page(1)
+                        pc_objects = pc.page(1)
+                        pjs_objects = pjs.page(1)
+                        pjq_objects = pjq.page(1)
+                        pcp_objects = pcp.page(1)
+                    objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+
+                    return render(request, 'jobseeker/home.html',
+                                  {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
 
                 else:
                     u.first_login = True
@@ -546,53 +338,37 @@ def jobseeker_Home(request):
         print(request.POST)
         pk = request.POST.get('pk')
         print(pk)
-        c = Candidate.objects.get(user=request.user)
-        job = Employer_job.objects.get(pk=pk)
-        questions = Employer_jobquestion.objects.filter(job_id=job)
+        c = patnerComp.objects.get(user=request.user)
+        job = shipJob.objects.get(pk=pk)
+        questions = Shipment_Related_Question.objects.filter(job_id=job)
         for q in questions:
             print(request.POST.get(q.question))
 
             get_text = request.POST.get(q.question)
             print(get_text)
-            Employer_candidate_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
-        Employer_job_Applied.objects.create(candidate_id=c, job_id=job).save()
+            shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
+        comp_Bids.objects.create(comp=c, job_id=job).save()
 
 
-@login_required(login_url='/')
 def save_later(request, pk):
-    c = Candidate.objects.get(user=request.user)
+    c = patnerComp.objects.get(user=request.user)
     if c is not None:
-        job = Employer_job.objects.get(pk=pk)
+        job = shipJob.objects.get(pk=pk)
         # print(c)
         # print(job)
-        Employer_job_Saved.objects.create(job_id=job, candidate_id=c).save()
+        shipJob_Saved.objects.create(job_id=job, candidate_id=c).save()
         return redirect('jobseeker:jobseeker_home')
     else:
         return redirect('/')
 
 
-# class ProfileRegister(View):
-#     form_class = ProfileRegisterForm
-#
-#     template_name = 'account/signup.html'
-#
-#     def post(self, request, *args, **kwargs):
-#         c = Candidate.objects.get(user=request.user)
-#         form = self.form_class(request.POST)
-#         if form.is_valid():
-#             f = form.save(commit=False)
-#             f.user_id = c
-#             f.save()
-#
-#         return redirect('dashboard_home')
-@login_required(login_url='/')
 def ProfileView(request):
     if request.method == 'GET':
         val = request.GET.get('search_box', None)
         print("val")
         print(val)
         if val:
-            job = Employer_job.objects.filter(
+            job = shipJob.objects.filter(
                 Q(job_title__icontains=val) |
                 Q(skill__icontains=val) |
                 Q(job_description__icontains=val) |
@@ -607,191 +383,143 @@ def ProfileView(request):
             companyprofile = []
             job_skills = []
             u = request.user
-            if u is not None and u.is_candidate:
-                c = Candidate.objects.get(user=u)
+            if u is not None and u.is_company:
+                c = patnerComp.objects.get(user=u)
                 try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
+                    cp = Comp_profile.objects.get(user_id=c)
+                except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = Candidate_expdetail.objects.get(user_id=c)
-                except Candidate_expdetail.DoesNotExist:
+                    cep = comp_PastWork.objects.get(user_id=c)
+                except comp_PastWork.DoesNotExist:
                     cep = None
-                try:
-                    cr = Candidate_resume.objects.get(user_id=c)
-                except Candidate_resume.DoesNotExist:
-                    cr = None
+
                 if u.first_login:
+                    print("len job")
+                    print(len(job))
+                    for j in job:
+                        start_date = j.created_on
+                        # print(start_date)
+                        today = datetime.now()
+                        # print(type(today))
+                        stat_date = str(start_date)
+                        start_date = stat_date[:19]
+                        tday = str(today)
+                        today = tday[:19]
+                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                        # print(s_date)
+                        # print(e_date)
+                        diff = abs((e_date - s_date).days)
+                        # print(diff)
+                        if diff > 30:
+                            # expired_job.append(j)
+                            Expired_ShipJob.objects.create(job_id=j).save()
 
-                    skills = Candidate_skills.objects.filter(user_id=c)
-                    print("skills")
-                    print(skills)
-                    if len(skills) != 0:
+                        else:
+                            jobs.append(j)
+                        print("len")
+                        print(len(jobs))
+                    for jo in jobs:
 
-                        my_sk = []
-                        j = 0
-                        for i in skills:
-                            my_sk.insert(j, i.skill.lower())
-                            j = j + 1
+                        e = jo.cust
+                        companyprofile.append(Customer_profile.objects.get(comp=e))
+                        try:
+                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
+                            # print(userS.job_id)
+                        except shipJob_Saved.DoesNotExist:
+                            userS = None
+                        try:
+                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
+                            # print(userA.job_id)
+                        except comp_Bids.DoesNotExist:
+                            userA = None
 
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
+                        if userA:
+                            # print(userA)
+                            continue
+                        if userS:
+                            # print(userS)
+                            continue
+                        relevant_jobs.append(jo)
+                        print("job:")
+                        print(jo)
 
-                            else:
-                                jobs.append(j)
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
+                    print("job_quest:")
+                    print(job_ques)
+                    print("relevant_jobs")
+                    print(len(relevant_jobs))
+                    pj = Paginator(relevant_jobs, 5)
+                    pjt = Paginator(relevant_jobs, 5)
+                    pc = Paginator(common, 5)
+                    pjs = Paginator(job_skills, 5)
+                    pjq = Paginator(job_ques, 5)
+                    pcp = Paginator(companyprofile, 5)
+                    page_num = request.GET.get('page', 1)
+                    try:
+                        pj_objects = pj.page(page_num)
+                        pjt_objects = pjt.page(page_num)
+                        pc_objects = pc.page(page_num)
+                        pjs_objects = pjs.page(page_num)
+                        pjq_objects = pjq.page(page_num)
+                        pcp_objects = pcp.page(page_num)
+                    except EmptyPage:
+                        pj_objects = pj.page(1)
+                        pjt_objects = pjt.page(1)
+                        pc_objects = pc.page(1)
+                        pjs_objects = pjs.page(1)
+                        pjq_objects = pjq.page(1)
+                        pcp_objects = pcp.page(1)
+                    objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                        for job in jobs:
-                            skills = []
-                            sk = str(job.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skills = list(set(my_sk) & set(skills))
-                            if len(common_skills) != 0:
-                                e = job.employer_id
-                                companyprofile.append(Employer_profile.objects.get(employer=e))
-                                try:
-                                    userS = Employer_job_Saved.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userS.job_id)
-                                except Employer_job_Saved.DoesNotExist:
-                                    userS = None
-                                try:
-                                    userA = Employer_job_Applied.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userA.job_id)
-                                except Employer_job_Applied.DoesNotExist:
-                                    userA = None
-
-                                if userA:
-                                    # print(userA)
-                                    continue
-                                if userS:
-                                    # print(userS)
-                                    continue
-                                relevant_jobs.append(job)
-                                common.append(len(common_skills))
-                                job_skills.append(len(skills))
-                                job_ques.append(Employer_jobquestion.objects.filter(job_id=job))
-
-                        objects = zip(relevant_jobs, common, job_skills, job_ques, companyprofile)
-
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr})
-                    else:
-
-                        print("len job")
-                        print(len(job))
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            # print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-                            print("len")
-                            print(len(jobs))
-                        for jo in jobs:
-                            skills = []
-                            sk = str(jo.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skill = []
-                            e = jo.employer_id
-                            companyprofile.append(Employer_profile.objects.get(employer=e))
-                            try:
-                                userS = Employer_job_Saved.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userS.job_id)
-                            except Employer_job_Saved.DoesNotExist:
-                                userS = None
-                            try:
-                                userA = Employer_job_Applied.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userA.job_id)
-                            except Employer_job_Applied.DoesNotExist:
-                                userA = None
-
-                            if userA:
-                                # print(userA)
-                                continue
-                            if userS:
-                                # print(userS)
-                                continue
-                            relevant_jobs.append(jo)
-                            print("job:")
-                            print(jo)
-
-                            common.append(len(common_skill))
-                            job_skills.append(len(skills))
-                            job_ques.append(Employer_jobquestion.objects.filter(job_id=jo))
-                        print("job_quest:")
-                        print(job_ques)
-                        print("relevant_jobs")
-                        print(len(relevant_jobs))
-                        objects = zip(relevant_jobs, common, job_skills, job_ques, companyprofile)
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr})
+                    return render(request, 'jobseeker/home.html',
+                                  {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
+                else:
+                    u.first_login = True
+                    u.save()
+                    return redirect('jobseeker:create_profile')
+            else:
+                return redirect('/')
         else:
             u = request.user
-            c = Candidate.objects.get(user=u)
+            c = patnerComp.objects.get(user=u)
             try:
-                profile = Candidate_profile.objects.get(user_id=c)
-            except Candidate_profile.DoesNotExist:
+                profile = Comp_profile.objects.get(comp=c)
+            except Comp_profile.DoesNotExist:
                 profile = None
             try:
-                edu = Candidate_edu.objects.filter(user_id=c)
-            except Candidate_edu.DoesNotExist:
-                edu = None
+                address = Comp_address.objects.get(comp=c)
+            except Comp_address.DoesNotExist:
+                address = None
             try:
-                professional = Candidate_profdetail.objects.filter(user_id=c)
-            except Candidate_profdetail.DoesNotExist:
-                professional = None
+                truck = comp_Transport.objects.filter(comp=c)
+            except comp_Transport.DoesNotExist:
+                truck = None
             try:
-                resume = Candidate_resume.objects.get(user_id=c)
-            except Candidate_resume.DoesNotExist:
-                resume = None
+                driver = comp_drivers.objects.filter(comp=c)
+            except comp_drivers.DoesNotExist:
+                driver = None
 
             try:
-                skills = Candidate_skills.objects.filter(user_id=c)
-            except Candidate_skills.DoesNotExist:
-                skills = None
+                present_work = comp_PresentWork.objects.filter(comp=c)
+            except comp_PresentWork.DoesNotExist:
+                present_work = None
+            try:
+                past_work = comp_PastWork.objects.filter(comp=c)
+            except comp_PastWork.DoesNotExist:
+                past_work = None
             return render(request, 'jobseeker/skills.html', {
                 "user": u,
                 "profile": profile,
-                "edu": edu,
-                "professional": professional,
-                "resume": resume,
-                "skills": skills,
+                "address": address,
+                "present_work": present_work,
+                "past_work": past_work,
+                "truck": truck,
+                "driver": driver
             })
 
 
-@login_required(login_url='/')
 def ProfileEdit(request):
     try:
         profile = Candidate.objects.get(user=request.user)
@@ -902,7 +630,6 @@ def ProfileEdit(request):
         return redirect('/')
 
 
-@login_required(login_url='/')
 def create_profile(request):
     profile = Candidate.objects.get(user=request.user)
     if request.method == 'POST':
@@ -958,14 +685,13 @@ def create_profile(request):
                   {"form1": form1, 'form2': form2, "form3": form3, 'form4': form4, "form5": form5, 'form6': form6})
 
 
-@login_required(login_url='/')
 def SavedJobs(request):
     if request.method == 'GET':
         val = request.GET.get('search_box', None)
         print("val")
         print(val)
         if val:
-            job = Employer_job.objects.filter(
+            job = shipJob.objects.filter(
                 Q(job_title__icontains=val) |
                 Q(skill__icontains=val) |
                 Q(job_description__icontains=val) |
@@ -980,261 +706,79 @@ def SavedJobs(request):
             companyprofile = []
             job_skills = []
             u = request.user
-            if u is not None and u.is_candidate:
-                c = Candidate.objects.get(user=u)
+            if u is not None and u.is_company:
+                c = patnerComp.objects.get(user=u)
                 try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
+                    cp = Comp_profile.objects.get(user_id=c)
+                except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = Candidate_expdetail.objects.get(user_id=c)
-                except Candidate_expdetail.DoesNotExist:
+                    cep = comp_PastWork.objects.get(user_id=c)
+                except comp_PastWork.DoesNotExist:
                     cep = None
-                try:
-                    cr = Candidate_resume.objects.get(user_id=c)
-                except Candidate_resume.DoesNotExist:
-                    cr = None
+
                 if u.first_login:
+                    print("len job")
+                    print(len(job))
+                    for j in job:
+                        start_date = j.created_on
+                        # print(start_date)
+                        today = datetime.now()
+                        # print(type(today))
+                        stat_date = str(start_date)
+                        start_date = stat_date[:19]
+                        tday = str(today)
+                        today = tday[:19]
+                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                        # print(s_date)
+                        # print(e_date)
+                        diff = abs((e_date - s_date).days)
+                        # print(diff)
+                        if diff > 30:
+                            # expired_job.append(j)
+                            Expired_ShipJob.objects.create(job_id=j).save()
 
-                    skills = Candidate_skills.objects.filter(user_id=c)
-                    print("skills")
-                    print(skills)
-                    if len(skills) != 0:
+                        else:
+                            jobs.append(j)
+                        print("len")
+                        print(len(jobs))
+                    for jo in jobs:
 
-                        my_sk = []
-                        j = 0
-                        for i in skills:
-                            my_sk.insert(j, i.skill.lower())
-                            j = j + 1
-
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-
-                        for job in jobs:
-                            skills = []
-                            sk = str(job.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skills = list(set(my_sk) & set(skills))
-                            if len(common_skills) != 0:
-                                e = job.employer_id
-                                companyprofile.append(Employer_profile.objects.get(employer=e))
-                                try:
-                                    userS = Employer_job_Saved.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userS.job_id)
-                                except Employer_job_Saved.DoesNotExist:
-                                    userS = None
-                                try:
-                                    userA = Employer_job_Applied.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userA.job_id)
-                                except Employer_job_Applied.DoesNotExist:
-                                    userA = None
-
-                                if userA:
-                                    # print(userA)
-                                    continue
-                                if userS:
-                                    # print(userS)
-                                    continue
-                                relevant_jobs.append(job)
-                                common.append(len(common_skills))
-                                job_skills.append(len(skills))
-                                job_ques.append(Employer_jobquestion.objects.filter(job_id=job))
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                        e = jo.cust
+                        companyprofile.append(Customer_profile.objects.get(comp=e))
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
-
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
-                        # objects = zip(relevant_jobs, common, job_skills, job_ques, companyprofile)
-                        #
-                        # return render(request, 'jobseeker/home.html',
-                        #               {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr})
-                    else:
-
-                        print("len job")
-                        print(len(job))
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            # print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-                            print("len")
-                            print(len(jobs))
-                        for jo in jobs:
-                            skills = []
-                            sk = str(jo.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skill = []
-                            e = jo.employer_id
-                            companyprofile.append(Employer_profile.objects.get(employer=e))
-                            try:
-                                userS = Employer_job_Saved.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userS.job_id)
-                            except Employer_job_Saved.DoesNotExist:
-                                userS = None
-                            try:
-                                userA = Employer_job_Applied.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userA.job_id)
-                            except Employer_job_Applied.DoesNotExist:
-                                userA = None
-
-                            if userA:
-                                # print(userA)
-                                continue
-                            if userS:
-                                # print(userS)
-                                continue
-                            relevant_jobs.append(jo)
-
-                            common.append(len(common_skill))
-                            job_skills.append(len(skills))
-                            job_ques.append(Employer_jobquestion.objects.filter(job_id=jo))
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
+                            # print(userS.job_id)
+                        except shipJob_Saved.DoesNotExist:
+                            userS = None
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
+                            # print(userA.job_id)
+                        except comp_Bids.DoesNotExist:
+                            userA = None
 
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
+                        if userA:
+                            # print(userA)
+                            continue
+                        if userS:
+                            # print(userS)
+                            continue
+                        relevant_jobs.append(jo)
+                        print("job:")
+                        print(jo)
 
-        else:
-            job_ques = []
-            companyprofile = []
-            relevant_jobs = []
-            common = []
-            job_skills = []
-            my_sk = []
-            post_date = []
-            saved_date = []
-            user = request.user
-            if user is not None and user.is_candidate:
-                c = Candidate.objects.get(user=request.user)
-                try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
-                    cp = None
-                if cp:
-                    skills = Candidate_skills.objects.filter(user_id=c)
-
-                    j = 0
-                    for i in skills:
-                        my_sk.insert(j, i.skill.lower())
-                        j = j + 1
-                    jobs = Employer_job.objects.all()
-
-                    for job in jobs:
-                        skills = []
-                        sk = str(job.skill).split(",")
-                        for i in sk:
-                            skills.append(i.strip().lower())
-                        common_skills = list(set(my_sk) & set(skills))
-                        if len(common_skills) != 0:
-                            try:
-                                userS = Employer_job_Saved.objects.get(job_id=job.pk, candidate_id=c)
-                                # print(userS.job_id)
-                            except Employer_job_Saved.DoesNotExist:
-                                userS = None
-                            # try:
-                            #     userA = Employer_job_Applied.objects.get(job_id=job.pk, candidate_id=c)
-                            #     # print(userA.job_id)
-                            # except Employer_job_Applied.DoesNotExist:
-                            #     userA = None
-
-                            # if userA:
-                            #     # print(userA)
-                            #     continue
-                            if userS:
-                                e = job.employer_id
-                                post_date.append(job.created_on)
-                                saved_date.append(userS.saved_on)
-                                companyprofile.append(Employer_profile.objects.get(employer=e))
-                                # print(userS)
-                                # continue
-                                relevant_jobs.append(job)
-                                common.append(len(common_skills))
-                                job_skills.append(len(skills))
-                                job_ques.append(Employer_jobquestion.objects.filter(job_id=job))
-
-                    pj = Paginator(relevant_jobs, 1)
-                    pjt = Paginator(relevant_jobs, 1)
-                    pc = Paginator(common, 1)
-                    pjs = Paginator(job_skills, 1)
-                    pjq = Paginator(job_ques, 1)
-                    pcp = Paginator(companyprofile, 1)
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
+                    print("job_quest:")
+                    print(job_ques)
+                    print("relevant_jobs")
+                    print(len(relevant_jobs))
+                    pj = Paginator(relevant_jobs, 5)
+                    pjt = Paginator(relevant_jobs, 5)
+                    pc = Paginator(common, 5)
+                    pjs = Paginator(job_skills, 5)
+                    pjq = Paginator(job_ques, 5)
+                    pcp = Paginator(companyprofile, 5)
                     page_num = request.GET.get('page', 1)
                     try:
                         pj_objects = pj.page(page_num)
@@ -1252,38 +796,220 @@ def SavedJobs(request):
                         pcp_objects = pcp.page(1)
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/savedjobs.html',
-                                  {'jobs': objects, 'c': c, 'cp': cp, 'pjs': pjt_objects})
+                    return render(request, 'jobseeker/home.html',
+                                  {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
+                else:
+                    u.first_login = True
+                    u.save()
+                    return redirect('jobseeker:create_profile')
+            else:
+                return redirect('/')
+
+
+        else:
+
+            jobs = []
+
+            job_ques = []
+
+            relevant_jobs = []
+
+            common = []
+
+            companyprofile = []
+
+            job_skills = []
+
+            u = request.user
+
+            if u is not None and u.is_company:
+
+                c = patnerComp.objects.get(user=u)
+
+                try:
+
+                    cp = Comp_profile.objects.get(user_id=c)
+
+                except Comp_profile.DoesNotExist:
+
+                    cp = None
+
+                try:
+
+                    cep = comp_PastWork.objects.get(user_id=c)
+
+                except comp_PastWork.DoesNotExist:
+
+                    cep = None
+
+                if u.first_login:
+
+                    job = shipJob.objects.all()
+
+                    for j in job:
+
+                        start_date = j.created_on
+
+                        # print(start_date)
+
+                        today = datetime.now()
+
+                        # print(type(today))
+
+                        stat_date = str(start_date)
+
+                        start_date = stat_date[:19]
+
+                        tday = str(today)
+
+                        today = tday[:19]
+
+                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+
+                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+
+                        # print(s_date)
+
+                        # print(e_date)
+
+                        diff = abs((e_date - s_date).days)
+
+                        print(diff)
+
+                        if diff > 30:
+
+                            # expired_job.append(j)
+
+                            Expired_ShipJob.objects.create(job_id=j).save()
+
+
+                        else:
+
+                            jobs.append(j)
+
+                    for job in jobs:
+
+                        e = job.cust
+
+                        companyprofile.append(Customer_profile.objects.get(employer=e))
+
+                        try:
+
+                            userS = shipJob_Saved.objects.get(job_id=job.pk, candidate_id=c)
+
+                            # print(userS.job_id)
+
+                        except shipJob_Saved.DoesNotExist:
+
+                            userS = None
+
+                        try:
+
+                            userA = comp_Bids.objects.get(job_id=job.pk, candidate_id=c)
+
+                            # print(userA.job_id)
+
+                        except comp_Bids.DoesNotExist:
+
+                            userA = None
+
+                        if userA:
+                            # print(userA)
+
+                            continue
+
+                        if userS:
+                            # print(userS)
+
+                            continue
+
+                        relevant_jobs.append(job)
+
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
+
+                    pj = Paginator(relevant_jobs, 5)
+
+                    pjt = Paginator(relevant_jobs, 5)
+
+                    pc = Paginator(common, 5)
+
+                    pjs = Paginator(job_skills, 5)
+
+                    pjq = Paginator(job_ques, 5)
+
+                    pcp = Paginator(companyprofile, 5)
+
+                    page_num = request.GET.get('page', 1)
+
+                    try:
+
+                        pj_objects = pj.page(page_num)
+
+                        pjt_objects = pjt.page(page_num)
+
+                        pc_objects = pc.page(page_num)
+
+                        pjs_objects = pjs.page(page_num)
+
+                        pjq_objects = pjq.page(page_num)
+
+                        pcp_objects = pcp.page(page_num)
+
+                    except EmptyPage:
+
+                        pj_objects = pj.page(1)
+
+                        pjt_objects = pjt.page(1)
+
+                        pc_objects = pc.page(1)
+
+                        pjs_objects = pjs.page(1)
+
+                        pjq_objects = pjq.page(1)
+
+                        pcp_objects = pcp.page(1)
+
+                    objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+
+                    return render(request, 'jobseeker/home.html',
+
+                                  {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
+
 
                 else:
-                    return render(request, 'jobseeker/savedjobs.html', {'cp': cp})
+
+                    u.first_login = True
+
+                    u.save()
+
+                    return redirect('jobseeker:create_profile')
+
             else:
+
                 return redirect('/')
     if request.method == 'POST':
         print(request.POST)
         pk = request.POST.get('pk')
         print(pk)
-        c = Candidate.objects.get(user=request.user)
-
-        job = Employer_job.objects.get(pk=pk)
-        questions = Employer_jobquestion.objects.filter(job_id=job)
+        c = patnerComp.objects.get(user=request.user)
+        job = shipJob.objects.get(pk=pk)
+        questions = Shipment_Related_Question.objects.filter(job_id=job)
         for q in questions:
             print(request.POST.get(q.question))
 
             get_text = request.POST.get(q.question)
             print(get_text)
-            Employer_candidate_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
-        Employer_job_Applied.objects.create(candidate_id=c, job_id=job).save()
+            shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
+        comp_Bids.objects.create(comp=c, job_id=job).save()
 
 
-@login_required(login_url='/')
 def AppliedJobs(request):
     if request.method == 'GET':
         val = request.GET.get('search_box', None)
         print("val")
         print(val)
         if val:
-            job = Employer_job.objects.filter(
+            job = shipJob.objects.filter(
                 Q(job_title__icontains=val) |
                 Q(skill__icontains=val) |
                 Q(job_description__icontains=val) |
@@ -1298,208 +1024,117 @@ def AppliedJobs(request):
             companyprofile = []
             job_skills = []
             u = request.user
-            if u is not None and u.is_candidate:
-                c = Candidate.objects.get(user=u)
+            if u is not None and u.is_company:
+                c = patnerComp.objects.get(user=u)
                 try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
+                    cp = Comp_profile.objects.get(user_id=c)
+                except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = Candidate_expdetail.objects.get(user_id=c)
-                except Candidate_expdetail.DoesNotExist:
+                    cep = comp_PastWork.objects.get(user_id=c)
+                except comp_PastWork.DoesNotExist:
                     cep = None
-                try:
-                    cr = Candidate_resume.objects.get(user_id=c)
-                except Candidate_resume.DoesNotExist:
-                    cr = None
+
                 if u.first_login:
+                    print("len job")
+                    print(len(job))
+                    for j in job:
+                        start_date = j.created_on
+                        # print(start_date)
+                        today = datetime.now()
+                        # print(type(today))
+                        stat_date = str(start_date)
+                        start_date = stat_date[:19]
+                        tday = str(today)
+                        today = tday[:19]
+                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                        # print(s_date)
+                        # print(e_date)
+                        diff = abs((e_date - s_date).days)
+                        # print(diff)
+                        if diff > 30:
+                            # expired_job.append(j)
+                            Expired_ShipJob.objects.create(job_id=j).save()
 
-                    skills = Candidate_skills.objects.filter(user_id=c)
-                    print("skills")
-                    print(skills)
-                    if len(skills) != 0:
+                        else:
+                            jobs.append(j)
+                        print("len")
+                        print(len(jobs))
+                    for jo in jobs:
 
-                        my_sk = []
-                        j = 0
-                        for i in skills:
-                            my_sk.insert(j, i.skill.lower())
-                            j = j + 1
-
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-
-                        for job in jobs:
-                            skills = []
-                            sk = str(job.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skills = list(set(my_sk) & set(skills))
-                            if len(common_skills) != 0:
-                                e = job.employer_id
-                                companyprofile.append(Employer_profile.objects.get(employer=e))
-                                try:
-                                    userS = Employer_job_Saved.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userS.job_id)
-                                except Employer_job_Saved.DoesNotExist:
-                                    userS = None
-                                try:
-                                    userA = Employer_job_Applied.objects.get(job_id=job.pk, candidate_id=c)
-                                    # print(userA.job_id)
-                                except Employer_job_Applied.DoesNotExist:
-                                    userA = None
-
-                                if userA:
-                                    # print(userA)
-                                    continue
-                                if userS:
-                                    # print(userS)
-                                    continue
-                                relevant_jobs.append(job)
-                                common.append(len(common_skills))
-                                job_skills.append(len(skills))
-                                job_ques.append(Employer_jobquestion.objects.filter(job_id=job))
-
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                        e = jo.cust
+                        companyprofile.append(Customer_profile.objects.get(comp=e))
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
-
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
-                    else:
-
-                        print("len job")
-                        print(len(job))
-                        for j in job:
-                            start_date = j.created_on
-                            # print(start_date)
-                            today = datetime.now()
-                            # print(type(today))
-                            stat_date = str(start_date)
-                            start_date = stat_date[:19]
-                            tday = str(today)
-                            today = tday[:19]
-                            s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                            e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                            # print(s_date)
-                            # print(e_date)
-                            diff = abs((e_date - s_date).days)
-                            # print(diff)
-                            if diff > 30:
-                                # expired_job.append(j)
-                                Employer_expired_job.objects.create(job_id=j).save()
-
-                            else:
-                                jobs.append(j)
-                            print("len")
-                            print(len(jobs))
-                        for jo in jobs:
-                            skills = []
-                            sk = str(jo.skill).split(",")
-                            for i in sk:
-                                skills.append(i.strip().lower())
-                            common_skill = []
-                            e = jo.employer_id
-                            companyprofile.append(Employer_profile.objects.get(employer=e))
-                            try:
-                                userS = Employer_job_Saved.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userS.job_id)
-                            except Employer_job_Saved.DoesNotExist:
-                                userS = None
-                            try:
-                                userA = Employer_job_Applied.objects.get(job_id=jo.pk, candidate_id=c)
-                                # print(userA.job_id)
-                            except Employer_job_Applied.DoesNotExist:
-                                userA = None
-
-                            if userA:
-                                # print(userA)
-                                continue
-                            if userS:
-                                # print(userS)
-                                continue
-                            relevant_jobs.append(jo)
-                            print("job:")
-                            print(jo)
-
-                            common.append(len(common_skill))
-                            job_skills.append(len(skills))
-                            job_ques.append(Employer_jobquestion.objects.filter(job_id=jo))
-                        pj = Paginator(relevant_jobs, 5)
-                        pjt = Paginator(relevant_jobs, 5)
-                        pc = Paginator(common, 5)
-                        pjs = Paginator(job_skills, 5)
-                        pjq = Paginator(job_ques, 5)
-                        pcp = Paginator(companyprofile, 5)
-                        page_num = request.GET.get('page', 1)
+                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
+                            # print(userS.job_id)
+                        except shipJob_Saved.DoesNotExist:
+                            userS = None
                         try:
-                            pj_objects = pj.page(page_num)
-                            pjt_objects = pjt.page(page_num)
-                            pc_objects = pc.page(page_num)
-                            pjs_objects = pjs.page(page_num)
-                            pjq_objects = pjq.page(page_num)
-                            pcp_objects = pcp.page(page_num)
-                        except EmptyPage:
-                            pj_objects = pj.page(1)
-                            pjt_objects = pjt.page(1)
-                            pc_objects = pc.page(1)
-                            pjs_objects = pjs.page(1)
-                            pjq_objects = pjq.page(1)
-                            pcp_objects = pcp.page(1)
-                        objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
+                            # print(userA.job_id)
+                        except comp_Bids.DoesNotExist:
+                            userA = None
 
-                        return render(request, 'jobseeker/home.html',
-                                      {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'cr': cr, 'pjs': pjt_objects})
+                        if userA:
+                            # print(userA)
+                            continue
+                        if userS:
+                            # print(userS)
+                            continue
+                        relevant_jobs.append(jo)
+                        print("job:")
+                        print(jo)
+
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
+                    print("job_quest:")
+                    print(job_ques)
+                    print("relevant_jobs")
+                    print(len(relevant_jobs))
+                    pj = Paginator(relevant_jobs, 5)
+                    pjt = Paginator(relevant_jobs, 5)
+                    pc = Paginator(common, 5)
+                    pjs = Paginator(job_skills, 5)
+                    pjq = Paginator(job_ques, 5)
+                    pcp = Paginator(companyprofile, 5)
+                    page_num = request.GET.get('page', 1)
+                    try:
+                        pj_objects = pj.page(page_num)
+                        pjt_objects = pjt.page(page_num)
+                        pc_objects = pc.page(page_num)
+                        pjs_objects = pjs.page(page_num)
+                        pjq_objects = pjq.page(page_num)
+                        pcp_objects = pcp.page(page_num)
+                    except EmptyPage:
+                        pj_objects = pj.page(1)
+                        pjt_objects = pjt.page(1)
+                        pc_objects = pc.page(1)
+                        pjs_objects = pjs.page(1)
+                        pjq_objects = pjq.page(1)
+                        pcp_objects = pcp.page(1)
+                    objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
+
+                    return render(request, 'jobseeker/home.html',
+                                  {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
+                else:
+                    u.first_login = True
+                    u.save()
+                    return redirect('jobseeker:create_profile')
+            else:
+                return redirect('/')
         else:
             companyprofile = []
             user = request.user
-            if user is not None and user.is_candidate:
-                c = Candidate.objects.get(user=request.user)
+            if user is not None and user.is_company:
+                c = patnerComp.objects.get(user=request.user)
                 try:
-                    cp = Candidate_profile.objects.get(user_id=c)
-                except Candidate_profile.DoesNotExist:
+                    cp = Comp_profile.objects.get(comp=c)
+                except Comp_profile.DoesNotExist:
                     cp = None
-                applied = Employer_job_Applied.objects.filter(candidate_id=c)
+                applied = comp_Bids.objects.filter(comp=c)
                 for a in applied:
                     e = a.job_id.employer_id
-                    companyprofile.append(Employer_profile.objects.get(employer=e))
+                    companyprofile.append(Customer_profile.objects.get(employer=e))
 
                 pj = Paginator(applied, 5)
                 pjt = Paginator(applied, 5)
@@ -1532,18 +1167,16 @@ def AppliedJobs(request):
                 return redirect('/')
 
 
-@login_required(login_url='/')
 def remove_applied(request, pk):
-    Employer_job_Applied.objects.get(pk=pk).delete()
+    comp_Bids.objects.get(pk=pk).delete()
 
     return redirect('jobseeker:AppliedJobs')
 
 
-@login_required(login_url='/')
 def remove_saved(request, pk):
-    c = Candidate.objects.get(user=request.user)
-    job = Employer_job.objects.get(pk=pk)
-    savej = Employer_job_Saved.objects.filter(job_id=job)
+    c = patnerComp.objects.get(user=request.user)
+    job = shipJob.objects.get(pk=pk)
+    savej = shipJob_Saved.objects.filter(job_id=job)
     for s in savej:
         if s.candidate_id == c:
             s.delete()
@@ -1551,173 +1184,4 @@ def remove_saved(request, pk):
     return redirect('jobseeker:SavedJobs')
 
 
-def ResumeCreation(request):
-    if request.method == 'GET':
-        form1 = Resumeforming_Entery(request.GET or None)
-        form2 = Resumeforming_Mid(request.GET or None)
-        form3 = Resumeforming_senior(request.GET or None)
-        form4 = Resumeforming_Executive(request.GET or None)
 
-    elif request.method == 'POST':
-        print(request.POST)
-        form1 = Resumeforming_Entery(request.POST)
-        form2 = Resumeforming_Mid(request.POST)
-        form3 = Resumeforming_senior(request.POST)
-        form4 = Resumeforming_Executive(request.POST)
-
-        if form1.is_valid():
-
-            # f = form1.save(commit=False)
-            selected = form1.cleaned_data.get("delivery_type")
-            print(selected)
-            if selected:
-                Experience = "a"
-                if selected == "Regular 8 working days":
-                    add = 0
-                elif selected == "Express 4 working days(1250/-)":
-                    add = 1250
-                elif selected == "Super Express 2 working days(2300)":
-                    add = 2300
-
-                return redirect('jobseeker:resume_payment', Experience, add)
-                #
-                # f.candidate = c
-                # if f.resume_type == 'A':
-                #     f.amount = 250
-                # elif f.resume_type == 'B':
-                #     f.amount = 250
-                # elif f.resume_type == 'C':
-                #     f.amount = 250
-                #
-                # f.save()
-                # pk = f.pk
-
-                # return redirect('jobseeker:resume_payment', pk)
-        elif form2.is_valid():
-
-            # f = form2.save(commit=False)
-            selected = form2.cleaned_data.get("delivery_type_Mid")
-            print(selected)
-            if selected:
-                Experience = "b"
-                if selected == "Regular 8 working days":
-                    add = 0
-                elif selected == "Express 4 working days(1250/-)":
-                    add = 1250
-                elif selected == "Super Express 2 working days(2300)":
-                    add = 2300
-
-                return redirect('jobseeker:resume_payment', Experience, add)
-                # f.candidate = c
-                # if f.resume_type == 'A':
-                #     f.amount = 250
-                # elif f.resume_type == 'B':
-                #     f.amount = 250
-                # elif f.resume_type == 'C':
-                #     f.amount = 250
-                #
-                # f.save()
-                # pk = f.pk
-                #
-                # return redirect('jobseeker:resume_payment', pk)
-        elif form3.is_valid():
-
-            # f = form3.save(commit=False)
-            selected = form3.cleaned_data.get("delivery_type_senior")
-            print(selected)
-            if selected:
-                Experience = "c"
-                if selected == "Regular 8 working days":
-                    add = 0
-                elif selected == "Express 4 working days(1250/-)":
-                    add = 1250
-                elif selected == "Super Express 2 working days(2300)":
-                    add = 2300
-
-                return redirect('jobseeker:resume_payment', Experience, add)
-                # f.candidate = c
-                #
-                # if f.resume_type == 'A':
-                #     f.amount = 250
-                # elif f.resume_type == 'B':
-                #     f.amount = 250
-                # elif f.resume_type == 'C':
-                #     f.amount = 250
-                #
-                # f.save()
-                # pk = f.pk
-                #
-                # return redirect('jobseeker:resume_payment', pk)
-        elif form4.is_valid():
-
-            # f = form4.save(commit=False)
-            selected = form4.cleaned_data.get("delivery_type_Executive")
-            print(selected)
-            if selected:
-                # print("form4:")
-                # print(form4)
-                # f.candidate = c
-                # if f.resume_type == 'A':
-                #     f.amount = 250
-                # elif f.resume_type == 'B':
-                #     f.amount = 250
-                # elif f.resume_type == 'C':
-                #     f.amount = 250
-                #
-                # f.save()
-                # pk = f.pk
-                #
-                Experience = "d"
-                if selected == "Regular 8 working days":
-                    add = 0
-                elif selected == "Express 4 working days(1250/-)":
-                    add = 1250
-                elif selected == "Super Express 2 working days(2300)":
-                    add = 2300
-
-                return redirect('jobseeker:resume_payment', Experience, add)
-
-    return render(request, 'jobseeker/resume.html', {'form1': form1, 'form2': form2, 'form3': form3, 'form4': form4})
-
-
-@login_required(login_url='/')
-def payment(request, Experience, add):
-    c = Candidate.objects.get(user=request.user)
-    print("paymentgateway:")
-    print(Experience)
-    print(add)
-    if add == 0:
-        delivery_type = "Regular 8 working days"
-    if add == 1250:
-        delivery_type = "Express 4 working days(1250/-)"
-    if add == 2300:
-        delivery_type = "Super Express 2 working days(2300)"
-
-    if Experience == "a":
-        exp = "0-3"
-        Payment = 2500 + add
-    if Experience == "b":
-        exp = "3-8"
-        Payment = 1500 + add
-    if Experience == "c":
-        exp = "8-15"
-        Payment = 3500 + add
-    if Experience == "d":
-        exp = "15+"
-        Payment = 4500 + add
-    r = Resume_order.objects.create(candidate=c, year_experience=exp, delivery_type=delivery_type, amount=Payment)
-    # r = Resume_order.objects.get(pk=pk)
-    a = Payment * 100
-    print(a)
-    name = r.candidate.user
-    print(r)
-    if request.method == 'POST':
-        order_amount = a
-        order_currency = 'INR'
-
-        payment = client.order.create(amount=order_amount, currency=order_currency)
-        r.is_payment_Done = True
-        r.save()
-        print(r)
-        return redirect('jobseeker:jobseeker_home')
-    return render(request, 'jobseeker/payment.html', {'amount': a, 'user': name})

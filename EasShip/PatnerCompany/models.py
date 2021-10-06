@@ -94,6 +94,9 @@ class comp_Bids(models.Model):
     is_shortlisted = models.BooleanField(default=False)
     is_disqualified = models.BooleanField(default=False)
     is_selected = models.BooleanField(default=False)
+class shipJob_Saved(models.Model):
+    comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
+    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
 
 
 class comp_PresentWork(models.Model):
