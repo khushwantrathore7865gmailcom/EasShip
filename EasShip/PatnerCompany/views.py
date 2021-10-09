@@ -115,7 +115,7 @@ def login_candidate(request):
         return render(request, 'customer/login.html', context)
 
 
-def partner_company_home(request):
+def partner_company_Home(request):
     if request.method == 'GET':
         val = request.GET.get('search_box', None)
         print("val")
@@ -226,12 +226,12 @@ def partner_company_home(request):
                         pcp_objects = pcp.page(1)
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/home.html',
+                    return render(request, 'partner_company/home.html',
                                   {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
                 else:
                     u.first_login = True
                     u.save()
-                    return redirect('jobseeker:create_profile')
+                    return redirect('partner_company:create_profile')
             else:
                 return redirect('/')
 
@@ -324,13 +324,13 @@ def partner_company_home(request):
                         pcp_objects = pcp.page(1)
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/home.html',
+                    return render(request, 'partner_company/home.html',
                                   {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
 
                 else:
                     u.first_login = True
                     u.save()
-                    return redirect('jobseeker:create_profile')
+                    return redirect('partner_company:create_profile')
             else:
                 return redirect('/')
 
@@ -357,7 +357,7 @@ def save_later(request, pk):
         # print(c)
         # print(job)
         shipJob_Saved.objects.create(job_id=job, candidate_id=c).save()
-        return redirect('jobseeker:jobseeker_home')
+        return redirect('partner_company:partner_company_home')
     else:
         return redirect('/')
 
@@ -473,12 +473,12 @@ def ProfileView(request):
                         pcp_objects = pcp.page(1)
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/home.html',
+                    return render(request, 'partner_company/home.html',
                                   {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
                 else:
                     u.first_login = True
                     u.save()
-                    return redirect('jobseeker:create_profile')
+                    return redirect('partner_company:create_profile')
             else:
                 return redirect('/')
         else:
@@ -509,7 +509,7 @@ def ProfileView(request):
                 past_work = comp_PastWork.objects.filter(comp=c)
             except comp_PastWork.DoesNotExist:
                 past_work = None
-            return render(request, 'jobseeker/skills.html', {
+            return render(request, 'partner_company/skills.html', {
                 "user": u,
                 "profile": profile,
                 "address": address,
@@ -595,7 +595,7 @@ def ProfileEdit(request):
                     f6 = form6.save(commit=False)
                     f6.user_id = profile
                     f6.save()
-            return redirect('jobseeker:ProfileEdit')
+            return redirect('partner_company:ProfileEdit')
         print(request.method)
         try:
             c = Candidate_profile.objects.get(user_id=profile)
@@ -622,7 +622,7 @@ def ProfileEdit(request):
         print(skills)
         edu = Candidate_edu.objects.filter(user_id=profile)
         professional = Candidate_profdetail.objects.filter(user_id=profile)
-        return render(request, 'jobseeker/Profile.html',
+        return render(request, 'partner_company/Profile.html',
                       {"form1": form1, 'form2': form2, "form3": form3, 'form4': form4, "form5": form5, 'form6': form6,
                        'skills': skills, 'edu': edu, 'professional': professional, 'c': c})
 
@@ -672,7 +672,7 @@ def create_profile(request):
             f6 = form6.save(commit=False)
             f6.user_id = profile
             f6.save()
-            return redirect('jobseeker:jobseeker_home')
+            return redirect('partner_company:partner_company_home')
 
     form1 = ProfileRegisterForm()
     form2 = ProfileRegisterForm_edu()
@@ -681,7 +681,7 @@ def create_profile(request):
     form5 = ProfileRegistration_skills()
     form6 = ProfileRegistration_expdetail()
 
-    return render(request, 'jobseeker/createprofile.html',
+    return render(request, 'partner_company/createprofile.html',
                   {"form1": form1, 'form2': form2, "form3": form3, 'form4': form4, "form5": form5, 'form6': form6})
 
 
@@ -796,12 +796,12 @@ def SavedJobs(request):
                         pcp_objects = pcp.page(1)
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/home.html',
+                    return render(request, 'partner_company/home.html',
                                   {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
                 else:
                     u.first_login = True
                     u.save()
-                    return redirect('jobseeker:create_profile')
+                    return redirect('partner_company:create_profile')
             else:
                 return redirect('/')
 
@@ -971,7 +971,7 @@ def SavedJobs(request):
 
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/home.html',
+                    return render(request, 'partner_company/home.html',
 
                                   {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
 
@@ -982,7 +982,7 @@ def SavedJobs(request):
 
                     u.save()
 
-                    return redirect('jobseeker:create_profile')
+                    return redirect('partner_company:create_profile')
 
             else:
 
@@ -1114,12 +1114,12 @@ def AppliedJobs(request):
                         pcp_objects = pcp.page(1)
                     objects = zip(pj_objects, pc_objects, pjs_objects, pjq_objects, pcp_objects)
 
-                    return render(request, 'jobseeker/home.html',
+                    return render(request, 'partner_company/home.html',
                                   {'jobs': objects, 'c': c, 'cp': cp, 'cep': cep, 'pjs': pjt_objects})
                 else:
                     u.first_login = True
                     u.save()
-                    return redirect('jobseeker:create_profile')
+                    return redirect('partner_company:create_profile')
             else:
                 return redirect('/')
         else:
@@ -1159,10 +1159,10 @@ def AppliedJobs(request):
                     # pcp_objects = pcp.page(1)
                 objects = zip(pj_objects, pc_objects)
 
-                return render(request, 'jobseeker/applied.html',
+                return render(request, 'partner_company/applied.html',
                               {'jobs': objects, 'c': c, 'cp': cp, 'pjs': pjt_objects})
                 # objects = zip(applied, companyprofile)
-                # return render(request, 'jobseeker/applied.html', {'jobs': objects, 'cp': cp})
+                # return render(request, 'partner_company/applied.html', {'jobs': objects, 'cp': cp})
             else:
                 return redirect('/')
 
@@ -1170,7 +1170,7 @@ def AppliedJobs(request):
 def remove_applied(request, pk):
     comp_Bids.objects.get(pk=pk).delete()
 
-    return redirect('jobseeker:AppliedJobs')
+    return redirect('partner_company:AppliedJobs')
 
 
 def remove_saved(request, pk):
@@ -1181,7 +1181,7 @@ def remove_saved(request, pk):
         if s.candidate_id == c:
             s.delete()
 
-    return redirect('jobseeker:SavedJobs')
+    return redirect('partner_company:SavedJobs')
 
 
 
