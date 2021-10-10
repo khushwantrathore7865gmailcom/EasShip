@@ -142,10 +142,10 @@ input:focus::placeholder {
         <a class="nav-link" href="#"> Build Resume</a>
       {% comment %} </li> {% endcomment %}
 	  {% comment %} <li class="nav-item button">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#recruitermodal">Recruiter Login</a>
+        <a class="nav-link" href="#" data-toggle="modal" data-target="#customermodal">customer Login</a>
       </li> {% endcomment %}
 	  <li class="nav-item button">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#jobseekermodal">Jobseeker Login</a>
+        <a class="nav-link" href="#" data-toggle="modal" data-target="#partner_companymodal">partner_company Login</a>
       </li>
 	 </ul> 
     
@@ -165,7 +165,7 @@ input:focus::placeholder {
 				<form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="post">
 					{% csrf_token %}
 					<span class="login100-form-title">
-						Recruiter Registration
+						customer Registration
 					</span>
 					 {% if messages %}
                 <div class="alert alert-danger">
@@ -213,7 +213,7 @@ input:focus::placeholder {
 					<div class="flex-col-c p-t-80 p-b-40">
 						<span class="txt1 p-b-9">
 							Already have an account?
-							<a href="{% url 'recruiter:employer/login' %}" class="txt3">
+							<a href="{% url 'customer:customer/login' %}" class="txt3">
 							Login now
 							</a>
 						</span>
@@ -227,13 +227,13 @@ input:focus::placeholder {
 	
 </section>
 
-<!--  Jobseeker modal -->
+<!--  partner_company modal -->
 
 <div class="container">
 
 
   <!-- Modal -->
-  <div class="modal fade" id="jobseekermodal" role="dialog">
+  <div class="modal fade" id="partner_companymodal" role="dialog">
     <div class="modal-dialog">
 
       <!-- Modal content-->
@@ -243,10 +243,10 @@ input:focus::placeholder {
               <div class="limiter">
 		<div class="">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form p-l-55 p-r-55 p-t-180 p-b-120" method="POST" action="{% url 'jobseeker:jobseeker/login' %}">
+				<form class="login100-form validate-form p-l-55 p-r-55 p-t-180 p-b-120" method="POST" action="{% url 'partner_company:partner_company/login' %}">
 					{% csrf_token %}
 					<span class="login100-form-title">
-						Jobseeker Login
+						partner_company Login
 					</span>
 
 
@@ -275,7 +275,7 @@ input:focus::placeholder {
 						
 						<span class="txt1 p-b-9">
 							Don’t have an account?
-							<a href="{% url 'jobseeker:jobseeker/register' %}" class="txt3">
+							<a href="{% url 'partner_company:partner_company/register' %}" class="txt3">
 							Register
 						</a>
 						</span>
@@ -297,17 +297,17 @@ input:focus::placeholder {
 
         </div>
       </div>
-<!--  end jobseeker-->
+<!--  end partner_company-->
 
 
 
-<!--  recruiter modal -->
+<!--  customer modal -->
 
 <div class="container">
 
 
   <!-- Modal -->
-  <div class="modal fade" id="recruitermodal" role="dialog">
+  <div class="modal fade" id="customermodal" role="dialog">
     <div class="modal-dialog" >
 
       <!-- Modal content-->
@@ -317,10 +317,10 @@ input:focus::placeholder {
               <div class="limiter">
 		<div class="">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="POST" action="{% url 'recruiter:employer/login' %}">
+				<form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="POST" action="{% url 'customer:customer/login' %}">
 					{% csrf_token %}
 					<span class="login100-form-title">
-						Recruiter Login
+						customer Login
 					</span>
 
 
@@ -350,7 +350,7 @@ input:focus::placeholder {
 						<span class="txt1 p-b-9">
 							Don’t have an account?
 							
-						<a href="{% url 'recruiter:employer/register' %}" class="txt3">
+						<a href="{% url 'customer:customer/register' %}" class="txt3">
 							Register
 						</a>
 						</span>
@@ -372,7 +372,7 @@ input:focus::placeholder {
 
         </div>
       </div>
-<!--  end recruiter-->
+<!--  end customer-->
 {% comment %} <footer>
 <p>Footer section</p>
 </footer> {% endcomment %}

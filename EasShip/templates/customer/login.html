@@ -35,7 +35,7 @@
 				<form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="POST" action="">
 					{% csrf_token %}
 					<span class="login100-form-title">
-						Employer Sign In
+						customer Sign In
 					</span>
 					{% for message in messages %}
 					<p id="messages">{{message}}</p>
@@ -73,7 +73,7 @@
 							Don’t have an account?
 						</span>
 
-						<a href="{% url 'recruiter:employer/register' %}" class="txt3">
+						<a href="{% url 'customer:customer/register' %}" class="txt3">
 							Sign up now
 						</a>
 					</div>

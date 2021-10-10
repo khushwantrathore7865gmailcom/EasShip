@@ -30,7 +30,7 @@ urlpatterns = [
     path('create_profile/', ProfileEdit, name='create_profile'),
     # path('create_profile/',create_profile, name='create_profile'),
     path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
-    path('send_verification_mail',sendVerificationMail,name='sendVerificationMail'),
-    path('resume/', ResumeCreation, name='resume'),
-    path('resume_payment/<Experience>/<int:add>/', payment, name='resume_payment'),
+    # path('send_verification_mail',sendVerificationMail,name='sendVerificationMail'),
+    # path('resume/', ResumeCreation, name='resume'),
+    # path('resume_payment/<Experience>/<int:add>/', payment, name='resume_payment'),
 ]

@@ -252,9 +252,7 @@
 
 
                             <ul class="navbar-nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'partner_company:resume' %}"> Build Resume</a>
-                                </li>
+
                                 <li class="nav-item button" style="border-start-start-radius:  20px 20px; border-end-end-radius: 20px;">
                                     <a class="nav-link" href="#" data-toggle="modal" data-target="#customermodal">customer Login</a>
                                 </li>
@@ -675,7 +673,7 @@
                                         <div class="limiter">
                                             <div class="">
                                                 <div class="wrap-login100 ">
-                                                    <form class="login100-form validate-form p-l-55 p-r-55 p-t-180 p-b-120" method="POST" action="{% url 'customer:employer/login' %}">
+                                                    <form class="login100-form validate-form p-l-55 p-r-55 p-t-180 p-b-120" method="POST" action="{% url 'customer:customer/login' %}">
                                                         {% csrf_token %}
                                                         <span class="login100-form-title">
 						customer Login
@@ -708,7 +706,7 @@
 
                                                             <span class="txt1 ">
 							Don’t have an account?
-							<a href="{% url 'customer:employer/register' %}" class="txt3">
+							<a href="{% url 'customer:customer/register' %}" class="txt3">
 							Register
 						</a>
 						</span>

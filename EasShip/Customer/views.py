@@ -199,7 +199,7 @@ def Add_Shipment(request):
             pk = f.pk
             print(pk)
             return redirect('customer:Add_prod_desc', pk)
-        return render(request, 'customer/add_job.html', {'form': form})
+        return render(request, 'customer/addjob.html', {'form': form})
     else:
         return redirect('/')
 
