@@ -104,6 +104,7 @@ class comp_PresentWork(models.Model):
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='drivers')
     co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codrivers')
+    transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transports')
     current_status = models.CharField(max_length=1024)
 
 
@@ -113,4 +114,5 @@ class comp_PastWork(models.Model):
     Rating = models.CharField(max_length=1024)
     driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='driver')
     co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codriver')
+    transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transport')
     delivered_on = models.DateTimeField(auto_now_add=True)

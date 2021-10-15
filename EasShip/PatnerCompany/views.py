@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.views.generic import View
 from User.models import User_custom, Referral
-from .forms import SignUpForm
+from .forms import SignUpForm, adddriverForm, addTransportForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -1002,3 +1002,22 @@ def remove_saved(request, pk):
             s.delete()
 
     return redirect('partner_company:SavedJobs')
+
+
+def addTransport(request):
+    if request.method == 'POST':
+        form = addTransportForm(data=request.POST or None)
+        if form.is_valid():
+            form.save()
+    form = addTransportForm()
+    return render(request, 'partner_company/addTransport.html',
+                  {'form': form})
+
+def addDriver(request):
+    if request.method == 'POST':
+        form = adddriverForm(data=request.POST or None)
+        if form.is_valid():
+            form.save()
+    form = adddriverForm()
+    return render(request, 'partner_company/adddriver.html',
+                  {'form': form})
