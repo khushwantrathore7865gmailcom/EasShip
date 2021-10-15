@@ -1,7 +1,7 @@
 from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, login_candidate, customer_home, Add_Shipment, Add_prod_desc, unpublish, \
     remove_unpublish, job_detail, view_applied_candidate, shortlistview_applied_candidate, \
-    disqualifyview_applied_candidate, shortlist, delete_job, disqualify, publish_job, ProfileView, job_Response
+    disqualifyview_applied_candidate, shortlist, delete_job, disqualify, publish_job, ProfileView, job_Response,SignUpVieww
 from django.contrib.auth import views as auth_views  # import this
 
 app_name = 'customer'
@@ -9,6 +9,7 @@ urlpatterns = [
     path('login', login_candidate, name='customer/login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/customer/login'), name='logout'),
     path('signup', SignUpView.as_view(), name='customer/register'),
+    path('signup/ref=<uid>', SignUpVieww.as_view(), name='ref'),
     path('reset_password/', auth_views.PasswordResetView.as_view(
         template_name='account/password_reset.html', email_template_name='account/password_reset_emailre.html',
         success_url=reverse_lazy('customer:password_reset_done')),

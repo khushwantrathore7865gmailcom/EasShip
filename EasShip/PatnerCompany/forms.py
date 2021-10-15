@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from User.models import User_custom
-
+from .models import comp_Transport, comp_drivers
 from django.forms import formset_factory
 from django.forms import modelformset_factory
 
@@ -57,3 +57,20 @@ class SignUpForm(UserCreationForm):
             'password2',
         ]
 
+
+class adddriverForm(forms.ModelForm):
+    class Meta:
+        model = comp_drivers
+        fields = [
+            'name',
+            'phone',
+        ]
+
+
+class addTransportForm(forms.ModelForm):
+    class Meta:
+        model = comp_Transport
+        fields = [
+            'type_of_transport',
+            'transport_no_plate',
+        ]

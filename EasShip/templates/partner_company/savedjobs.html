@@ -87,9 +87,7 @@
         <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
       </li>
 
-	  <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:resume' %}">Resume</a>
-      </li>
+
 
 	  <li class="nav-item bell-icon">
         <a class="nav-link" href="#"><img src="{% static 'images/bell.png' %}"></a>
@@ -198,12 +196,7 @@
 
 
         </div>
-           {% if pjs.has_previous %}
-    <a href="{% url 'partner_company:SavedJobs' %}?page={{pjs.previous_page_number}}">Previous page</a>
-    {% endif %}
-    {% if pjs.has_next %}
-    <a href="{% url 'partner_company:SavedJobs' %}?page={{pjs.next_page_number}}">Next page</a>
-    {% endif %}
+
     </div>
 
     </section>

@@ -52,3 +52,12 @@ class User_custom(AbstractUser, PermissionsMixin):
 
     def __str__(self):
         return self.user_name
+
+
+class Referral(models.Model):
+    referred_by = models.ForeignKey(User_custom, on_delete=models.CASCADE, related_name='+')
+    user = models.ForeignKey(User_custom, on_delete=models.CASCADE, related_name='+')
+    status = models.CharField(max_length=15, null=True, blank=True)
+    commissions = models.CharField(max_length=20)
+    commission_status = models.CharField(max_length=20)
+    created_on = models.DateTimeField(auto_now_add=True)

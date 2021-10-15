@@ -1,6 +1,6 @@
 from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, partner_company_Home, ProfileView, save_later, SavedJobs, AppliedJobs, \
-    remove_applied, remove_saved, ProfileEdit,create_profile
+    remove_applied, remove_saved,ProfileEdit,SignUpVieww
 from . import views
 from django.contrib.auth import views as auth_views  # import this
 
@@ -15,7 +15,7 @@ urlpatterns = [
     path('login', views.login_candidate, name='partner_company/login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('signup', SignUpView.as_view(), name='partner_company/register'),
-
+    path('signup/ref=<uid>', SignUpVieww.as_view(), name='ref'),
     path('reset_password/', auth_views.PasswordResetView.as_view(
         template_name='account/password_reset.html', email_template_name='account/password_reset_email.html',success_url = reverse_lazy('partner_company:password_reset_done')),
          name='reset_password'),
@@ -28,7 +28,6 @@ urlpatterns = [
     path('viewprofile/', ProfileView, name='profile'),
     path('profile_edit/', ProfileEdit, name='ProfileEdit'),
     path('create_profile/', ProfileEdit, name='create_profile'),
-    # path('create_profile/',create_profile, name='create_profile'),
     path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
     # path('send_verification_mail',sendVerificationMail,name='sendVerificationMail'),
     # path('resume/', ResumeCreation, name='resume'),

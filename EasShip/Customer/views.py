@@ -4,13 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from django.views.generic import View
-from User.models import User_custom
+from User.models import User_custom, Referral
 from .forms import SignUpForm, ShipJob, prod_Detail_Formset
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_text, force_bytes
 from .tokens import account_activation_token
 from .models import customer, Customer_address, Customer_profile, ProdDesc, shipJob, Expired_ShipJob, \
     Shipment_Related_Question
@@ -60,6 +61,59 @@ class SignUpView(View):
                     request, ('Please check your mail for complete registration.'))
                 return redirect('customer:customer/login')
                 # return render(request, self.template_name, {'form': form})
+        else:
+            return render(request, self.template_name, {'form': form})
+
+
+class SignUpVieww(View):
+    form_class = SignUpForm
+
+    template_name = 'account/signup.html'
+
+    @classmethod
+    def ref(self, request, uid, *args, **kwargs):
+        form = self.form_class()
+        # link = request.GET.get('ref=', None)
+        return render(request, self.template_name, {'form': form, 'uid': uid})
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        print(User_custom.objects.all())
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, uid, *args, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            emaill = form.cleaned_data['email']
+            if User_custom.objects.filter(email=emaill).exists():
+
+                return HttpResponse('User with same email already exists, Please try again with different Username!!')
+            else:
+                user = form.save(commit=False)
+                user.username = user.email
+                user.user_name = user.email
+                user.is_active = True  # change this to False after testing
+                user.is_customer = True  # Deactivate account till it is confirmed
+                user.save()
+
+                reff = Referral(referred_by_id=uid, user_id=user.pk)
+                reff.save()
+                new_candidate = customer(user=user, is_email_verified=False)  # change is email to False after testing
+                new_candidate.save()
+                current_site = get_current_site(request)
+                subject = 'Activate Your FinTop Account'
+                message = render_to_string('emails/account_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                user.email_user(subject, message)
+                messages.success(
+                    request, ('Please check your mail for complete registration.'))
+                # return redirect('login')
+                return render(request, self.template_name, {'form': form})
         else:
             return render(request, self.template_name, {'form': form})
 
@@ -204,7 +258,6 @@ def Add_Shipment(request):
         return redirect('/')
 
 
-
 def unpublish(request, pk):
     user = request.user
     job = shipJob.objects.get(pk=pk)
@@ -291,13 +344,9 @@ def view_applied_candidate(request, pk):
             address_profile.append(c_e)
             professional_profile.append(p_p)
 
-
             for q in question:
                 candidate_answer.append(
                     shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
-
-
-
 
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
@@ -422,16 +471,13 @@ def publish_job(request, pk):
 def ProfileView(request):
     u = request.user
     e = customer.objects.get(user=u)
-    profile =Customer_profile.objects.get(employer=e)
+    profile = Customer_profile.objects.get(employer=e)
 
     return render(request, 'employer/skills.html', {
         "user": u,
         "profile": profile,
 
     })
-
-
-
 
 
 @login_required(login_url='/')
@@ -443,4 +489,3 @@ def job_Response(request, pk):
         return render(request, 'dashboard/jobresponse.html', {'response': response})
     else:
         return redirect('/')
-
