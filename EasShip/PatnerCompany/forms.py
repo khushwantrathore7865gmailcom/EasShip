@@ -81,5 +81,14 @@ class PresentWorkSetForm(forms.ModelForm):
             'driver',
             'co_driver',
             'transport',
+
+        ]
+class PresentWorkUpdateForm(forms.ModelForm):
+    class Meta:
+        model = comp_PresentWork
+        fields = [
+            'driver',
+            'co_driver',
+            'transport',
             'current_status',
         ]

@@ -4,11 +4,11 @@ from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import View
 from User.models import User_custom, Referral
-from .forms import SignUpForm, adddriverForm, addTransportForm
+from .forms import SignUpForm, adddriverForm, addTransportForm, PresentWorkSetForm, PresentWorkUpdateForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -1005,19 +1005,76 @@ def remove_saved(request, pk):
 
 
 def addTransport(request):
-    if request.method == 'POST':
-        form = addTransportForm(data=request.POST or None)
-        if form.is_valid():
-            form.save()
-    form = addTransportForm()
-    return render(request, 'partner_company/addTransport.html',
-                  {'form': form})
+    user = request.user
+    if user.is_company:
+        pr = patnerComp.objects.get(user=user)
+        if request.method == 'POST':
+            form = addTransportForm(data=request.POST or None)
+            if form.is_valid():
+                f = form.save(commit=False)
+                f.comp = pr
+                f.save()
+        form = addTransportForm()
+        return render(request, 'partner_company/addTransport.html',
+                      {'form': form})
+    else:
+        return redirect('/')
+
 
 def addDriver(request):
-    if request.method == 'POST':
-        form = adddriverForm(data=request.POST or None)
-        if form.is_valid():
-            form.save()
-    form = adddriverForm()
-    return render(request, 'partner_company/adddriver.html',
-                  {'form': form})
+    user = request.user
+    if user.is_company:
+        pr = patnerComp.objects.get(user=user)
+        if request.method == 'POST':
+            form = adddriverForm(data=request.POST or None)
+            if form.is_valid():
+                f = form.save(commit=False)
+                f.comp = pr
+                f.save()
+        form = adddriverForm()
+        return render(request, 'partner_company/adddriver.html',
+                      {'form': form})
+    else:
+        return redirect('/')
+
+
+def SetUp_PresentShip(request, pk):
+    user = request.user
+    if user.is_company:
+        pr = patnerComp.objects.get(user=user)
+        job = shipJob.objects.get(pk=pk)
+        if request.method == 'POST':
+            form = PresentWorkSetForm(data=request.POST or None)
+            if form.is_valid():
+                f = form.save(commit=False)
+                f.comp = pr
+                f.job_id = job
+                f.current_status = "Driver and Truck assigned"
+                f.save()
+            return redirect('partner_company:partner_company_home')
+        form = PresentWorkSetForm()
+        return render(request, 'partner_company/setup_presentShip.html',
+                      {'form': form})
+    else:
+        return redirect('/')
+
+
+def Update_PresentShip(request, pk):
+    user = request.user
+    if user.is_company:
+        pr = patnerComp.objects.get(user=user)
+        job = get_object_or_404(shipJob,pk=pk)
+        if request.method == 'POST':
+            form = PresentWorkUpdateForm(request.POST, instance=job)
+            if form.is_valid():
+                f = form.save(commit=False)
+                f.comp = pr
+                f.job_id = job
+                f.current_status = "Driver and Truck assigned"
+                f.save()
+            return redirect('partner_company:partner_company_home')
+        form = PresentWorkUpdateForm(instance=job)
+        return render(request, 'partner_company/setup_presentShip.html',
+                      {'form': form})
+    else:
+        return redirect('/')
