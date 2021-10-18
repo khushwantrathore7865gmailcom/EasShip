@@ -205,7 +205,7 @@
                                         <tbody>
                                             <tr>
                                                 <td><input type="checkbox"><label></label>
-                                                    <a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a>
+                                                    <a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.ship_title }}</span></a>
                                                 </td>
                                                 <!--					<td></td>-->
                                                 <td>{{ job.created_on.date }}</td>
@@ -241,7 +241,7 @@
                                         <tbody>
                                             <tr>
                                                 <td><input type="checkbox"><label></label>
-                                                    <a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.job_title }}</span></a>
+                                                    <a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.ship_title }}</span></a>
                                                 </td>
                                                 <!--					<td></td>-->
                                                 <td>{{ job.created_on.date }}</td>

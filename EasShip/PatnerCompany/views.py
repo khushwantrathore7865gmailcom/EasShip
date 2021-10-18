@@ -509,7 +509,7 @@ def ProfileView(request):
 
 
 def ProfileEdit(request):
-    return redirect('partner_company:partner_company_Home')
+    return redirect('partner_company:partner_company_home')
     # try:
     #     profile = Candidate.objects.get(user=request.user)
     # except Candidate.DoesNotExist:
@@ -753,11 +753,11 @@ def SavedJobs(request):
 
                 if u.first_login:
 
-                    job = shipJob.objects.all()
+                    job = shipJob_Saved.objects.all()
 
                     for j in job:
 
-                        start_date = j.created_on
+                        start_date = j.job_id.created_on
 
                         # print(start_date)
 
@@ -789,7 +789,9 @@ def SavedJobs(request):
 
                             # expired_job.append(j)
 
-                            Expired_ShipJob.objects.create(job_id=j).save()
+                            Expired_ShipJob.objects.create(job_id=j.job_id).save()
+                            j.delete()
+
 
 
                         else:
@@ -798,19 +800,9 @@ def SavedJobs(request):
 
                     for job in jobs:
 
-                        e = job.cust
+                        e = job.job_id.cust
 
                         companyprofile.append(Customer_profile.objects.get(cust=e))
-
-                        try:
-
-                            userS = shipJob_Saved.objects.get(job_id=job.pk, comp=c)
-
-                            # print(userS.job_id)
-
-                        except shipJob_Saved.DoesNotExist:
-
-                            userS = None
 
                         try:
 
@@ -827,14 +819,9 @@ def SavedJobs(request):
 
                             continue
 
-                        if userS:
-                            # print(userS)
-
-                            continue
-
                         relevant_jobs.append(job)
 
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
+                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=job.job_id))
 
                     object2 = zip(relevant_jobs, job_ques, companyprofile)
 
@@ -1063,7 +1050,7 @@ def Update_PresentShip(request, pk):
     user = request.user
     if user.is_company:
         pr = patnerComp.objects.get(user=user)
-        job = get_object_or_404(shipJob,pk=pk)
+        job = get_object_or_404(shipJob, pk=pk)
         if request.method == 'POST':
             form = PresentWorkUpdateForm(request.POST, instance=job)
             if form.is_valid():
@@ -1074,7 +1061,7 @@ def Update_PresentShip(request, pk):
                 f.save()
             return redirect('partner_company:partner_company_home')
         form = PresentWorkUpdateForm(instance=job)
-        return render(request, 'partner_company/setup_presentShip.html',
+        return render(request, 'partner_company/setup_presentship.html',
                       {'form': form})
     else:
         return redirect('/')

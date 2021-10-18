@@ -58,7 +58,7 @@
 				<div class="col-md-12 col-12">
 					<div class="top-navbar">
 						<nav class="navbar navbar-expand-lg ">
-  <a class="" href="{% url 'recruiter:employer_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+  <a class="" href="{% url 'customer:customer_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -77,40 +77,45 @@
 </nav>
 
 
-	<ul class="navbar-nav ml-auto">
-<!--      <li class="nav-item">-->
-<!--       <a class="nav-link" href="{% url 'recruiter:employer_home' %}">Home</a>-->
-<!--      </li>-->
-        <li class="nav-item">
-        <a class="nav-link" href="{% url 'recruiter:employer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-        <span class="menu-text">Home</span>
-      </li>
-	  <li class="nav-item">
-        <a class="nav-link" href="{% url 'recruiter:job_post' %}"><i class="fas fa-briefcase"></i></a>
-        <span class="menu-text">Add job </span>
-      </li>
-<!--	  <li class="nav-item">-->
-<!--        <a class="nav-link" href="#">Resume</a>-->
-<!--      </li>-->
-	  <li class="nav-item">
-        <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
-        <span class="menu-text">Contact Us </span>
-      </li>
-	  <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
-        <span class="menu-text">About Us </span>
-      </li>
-    
-	  <li class="nav-item bell-icon">
-        <a class="nav-link" href="#"><img src="{% static 'images/bell.png' %}"></a>
-        <span class="menu-text">Notification</span>
-      </li>
+<ul class="navbar-nav ml-auto">
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="{% url 'customer:customer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
+                                        <span class="menu-text">Home</span>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><i class="fas fa-briefcase"></i></a>
+                                        <span class="menu-text">Add job </span>
+                                    </li>
+                                    <!--	  <li class="nav-item">-->
+                                    <!--        <a class="nav-link" href="#">Resume</a>-->
+                                    <!--      </li>-->
+                                    <li class="nav-item ">
+                                        <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
+                                        <span class="menu-text">Contact Us </span>
+                                    </li>
 
-	  <li class="nav-item">
-        <a class="nav-link" href="#"><img src={{ep.company_logo.url}}></a>
-      </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
+                                        <span class="menu-text">About Us </span>
+                                    </li>
 
-	 </ul>
+                                    <li class="nav-item bell-icon ">
+                                        <a class="nav-link" href="#"><i class="fa fa-bell" aria-hidden="true"></i> </a>
+                                        <span class="menu-text">Notification</span>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <div class="dropdown">
+                                            <button class="dropbtn"><img src={{ep.company_logo.url}}></button>
+                                            <div class="dropdown-content">
+                                                <a href="#">My Profile</a>
+                                                <a href="#">Edit Profile</a>
+                                                <a href="{% url 'customer:logout' %}">Log Out</a>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                </ul>
 
   </div>
 </nav>
@@ -150,65 +155,36 @@
 				<div class="">
 <form class="form-horizontal" method="POST" action="">
 {% csrf_token %}
-
-    <label style="font-size: 20px;">{{form1.job_title.label}}</label>
-
-
-        <div class="input-group ">
-            {{form1.job_title}}
-        </div>
-  <label style="font-size: 20px;">{{form1.job_description.label}}</label>
+  <label style="font-size: 20px;">{{form.ship_title.label}}</label>
 
 
         <div class="input-group">
-            {{form1.job_description}}
+            {{form.ship_title}}
         </div>
 
-      <label style="font-size: 20px;">{{form1.employment_type.label}}</label>
+  <label style="font-size: 20px;">{{form.job_description.label}}</label>
 
 
         <div class="input-group">
-            {{form1.employment_type}}
+            {{form.job_description}}
         </div>
 
-      <label style="font-size: 20px;">{{form1.job_location.label}}</label>
+      <label style="font-size: 20px;">{{form.picking_Address.label}}</label>
+
+
+        <div class="input-group">
+            {{form.picking_Address}}
+        </div>
+
+      <label style="font-size: 20px;">{{form.droping_Address.label}}</label>
 
 
         <div class="input-group" style="width: 100%;">
-            {{form1.job_location}}
-        </div>
-  <label style="font-size: 20px;">{{form1.job_experience.label}}</label>
-
-
-        <div class="input-group">
-            {{form1.job_experience}}
-        </div>
-  <label style="font-size: 20px;">{{form1.skill.label}}</label>
-
-
-        <div class="input-group">
-            {{form1.skill}}
+            {{form.droping_Address}}
         </div>
 
 
 
-{{ form2.management_form }}
-{% for form in form2 %}
-<div class="row form-row spacer">
-    <div class="col-8">
-        <label style="font-size: 20px;">{{form.question.label}}</label>
-
-
-        <div class="input-group">
-            {{form.question}}
-            <div class="input-group-append">
-                <button class="btn btn-success add-form-row">+</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-{% endfor %}
 <br>
 <div class="row spacer">
     <div class="col-4 offset-2">

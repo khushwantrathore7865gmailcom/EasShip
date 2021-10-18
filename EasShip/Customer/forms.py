@@ -62,6 +62,7 @@ class ShipJob(forms.ModelForm):
     class Meta:
         model = shipJob
         fields = [
+            'ship_title',
             'job_description',
             'picking_Address',
             'droping_Address',

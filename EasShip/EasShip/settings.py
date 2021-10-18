@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'User',
     'PatnerCompany',
     'Customer',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [

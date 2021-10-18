@@ -306,7 +306,7 @@ def job_detail(request, pk):
     if user is not None and user.is_customer:
         e = customer.objects.get(user=request.user)
         job = shipJob.objects.get(pk=pk)
-        company = Customer_profile.objects.get(employer=e)
+        company = Customer_profile.objects.get(cust=e)
         # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
         # objects = zip(job,candidate_Applied)
         return render(request, 'customer/job_details.html', {'job': job, 'c': company})
@@ -327,7 +327,7 @@ def view_applied_candidate(request, pk):
         # Question=[]
         e = customer.objects.get(user=request.user)
 
-        cp = Customer_profile.objects.get(employer=e)
+        cp = Customer_profile.objects.get(cust=e)
         job = shipJob.objects.get(pk=pk)
 
         question = Shipment_Related_Question.objects.filter(job_id=job)
