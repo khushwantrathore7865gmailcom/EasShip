@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.views.generic import View
-from User.models import User_custom, Referral
+from User.models import User_custom, Referral, Commission_request
 from .forms import SignUpForm, ShipJob, prod_Detail_Formset
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
@@ -487,5 +487,27 @@ def job_Response(request, pk):
         job = ShipJob.objects.get(pk=pk)
         response = comp_Bids.objects.filter(job_id=job)
         return render(request, 'dashboard/jobresponse.html', {'response': response})
+    else:
+        return redirect('/')
+
+
+# TODO:and request page for money
+def Request_commision(request):
+    user = request.user
+    if user is not None and user.is_customer:
+        Commission_request.objects.create(user=user).save()
+        return redirect('customer:Commission')
+    else:
+        return redirect('/')
+
+
+def Commission_View(request):
+    user = request.user
+    if user is not None and user.is_customer:
+        total = 0
+        re = Referral.objects.filter(referred_by=user)
+        for r in re:
+            total = total + r.commissions
+        return render(request, 'customer/Commission_view.html', {'com': total, 'referred': re})
     else:
         return redirect('/')

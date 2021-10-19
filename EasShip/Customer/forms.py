@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from User.models import User_custom
+from User.models import User_custom,Commission_request
 from .models import shipJob, ProdDesc
 from django.forms import formset_factory
 from django.forms import modelformset_factory
@@ -115,3 +115,13 @@ class Prod_Detail(forms.Form):
 
 
 prod_Detail_Formset = formset_factory(Prod_Detail, extra=1)
+
+# class Commission_RequestForm(forms.ModelForm):
+#     class Meta:
+#         model = Commission_request
+#         fields = [
+#             'ship_title',
+#             'job_description',
+#             'picking_Address',
+#             'droping_Address',
+#         ]

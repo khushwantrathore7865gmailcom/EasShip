@@ -70,7 +70,8 @@ class shipJob(models.Model):
     job_description = models.CharField(blank=True, max_length=1024)
     picking_Address = models.CharField(max_length=1024)
     droping_Address = models.CharField(max_length=1024)
-    created_on = models.DateTimeField(auto_now_add=True,null=True)
+    created_on = models.DateTimeField(auto_now_add=True, null=True)
+    bid_selected = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
 
 
@@ -93,5 +94,3 @@ class Shipment_Related_Question(models.Model):
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     question = models.CharField(max_length=100)
     answer_size = models.IntegerField(default=10)
-
-

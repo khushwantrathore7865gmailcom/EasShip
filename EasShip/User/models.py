@@ -61,3 +61,10 @@ class Referral(models.Model):
     commissions = models.CharField(max_length=20)
     commission_status = models.CharField(max_length=20)
     created_on = models.DateTimeField(auto_now_add=True)
+
+
+class Commission_request(models.Model):
+    user = models.ForeignKey(User_custom, on_delete=models.CASCADE, related_name='+')
+    created_on = models.DateTimeField(auto_now_add=True)
+    Error = models.CharField(max_length=1025)
+    requested_completed = models.BooleanField(default=False)

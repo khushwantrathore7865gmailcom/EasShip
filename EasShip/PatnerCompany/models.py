@@ -1,7 +1,8 @@
 from django.db import models
 from User.models import User_custom
 from django.core.validators import RegexValidator
-from Customer.models import shipJob,Shipment_Related_Question
+from Customer.models import shipJob, Shipment_Related_Question
+
 
 # Create your models here.
 class patnerComp(models.Model):
@@ -62,8 +63,6 @@ class Comp_address(models.Model):
         verbose_name_plural = "Shipping Company Addresses"
 
 
-
-
 #
 class comp_Transport(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
@@ -85,6 +84,7 @@ class shipJob_jobanswer(models.Model):
     question_id = models.ForeignKey(Shipment_Related_Question, on_delete=models.CASCADE)
     answer = models.CharField(max_length=1250)
 
+
 class comp_Bids(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
@@ -94,6 +94,8 @@ class comp_Bids(models.Model):
     is_shortlisted = models.BooleanField(default=False)
     is_disqualified = models.BooleanField(default=False)
     is_selected = models.BooleanField(default=False)
+
+
 class shipJob_Saved(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
@@ -106,6 +108,9 @@ class comp_PresentWork(models.Model):
     co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codrivers')
     transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transports')
     current_status = models.CharField(max_length=1024)
+    Total_payment = models.ForeignKey(comp_Bids, on_delete=models.CASCADE)
+    payment_Done = models.CharField(max_length=1024)
+    Payment_complete = models.BooleanField(default=False)
 
 
 class comp_PastWork(models.Model):
