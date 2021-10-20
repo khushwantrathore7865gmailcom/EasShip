@@ -322,7 +322,7 @@ def view_applied_candidate(request, pk):
         candidate_profile = []
         address_profile = []
         professional_profile = []
-
+        c_bid = []
         candidate_answer = []
         # Question=[]
         e = customer.objects.get(user=request.user)
@@ -333,10 +333,20 @@ def view_applied_candidate(request, pk):
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
+            c_bid.append(can)
             c = can.comp
-            c_p = Comp_profile.objects.get(comp=c)
-            c_e = Comp_address.objects.get(comp=c)
-            p_p = comp_PastWork.objects.filter(comp=c)
+            try:
+                c_p = Comp_profile.objects.get(comp=c)
+            except Comp_profile.DoesNotExist:
+                c_p = None
+            try:
+                c_e = Comp_address.objects.get(comp=c)
+            except Comp_address.DoesNotExist:
+                c_e = None
+            try:
+                p_p = comp_PastWork.objects.filter(comp=c)
+            except comp_PastWork.DoesNotExist:
+                p_p = None
             candidate_profile.append(c_p)
             print("working filter")
             print(candidate_profile)
@@ -351,9 +361,9 @@ def view_applied_candidate(request, pk):
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
         objects = zip(candidate_profile, address_profile, professional_profile,
-                      candidate_user, candidate_Applied)
+                      candidate_user, candidate_Applied,c_bid)
 
-        return render(request, 'employer/job_candidate.html',
+        return render(request, 'customer/job_candidate.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
         # return render(request, 'employer/job_candidate.html',
         #               {'candidate': objects, 'job': job, 'quest': quest})
@@ -366,19 +376,20 @@ def shortlistview_applied_candidate(request, pk):
     user = request.user
     if user is not None and user.is_customer:
         e = customer.objects.get(user=user)
-        cp = Customer_profile.objects.get(employer=e)
+        cp = Customer_profile.objects.get(cust=e)
         candidate_user = []
         candidate_profile = []
         address_profile = []
         professional_profile = []
-
+        c_bid = []
         candidate_answer = []
 
-        job = ShipJob.objects.get(pk=pk)
+        job = shipJob.objects.get(pk=pk)
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
             c = can.candidate_id
+            c_bid.append(c)
             candidate_profile.append(Comp_profile.objects.get(comp=c))
             candidate_user.append(c.user)
             address_profile.append(Comp_address.objects.filter(comp=c))
@@ -388,9 +399,9 @@ def shortlistview_applied_candidate(request, pk):
                 candidate_answer.append(shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
 
         objects = zip(candidate_profile, address_profile, professional_profile,
-                      candidate_user, candidate_Applied)
+                      candidate_user, candidate_Applied, c_bid)
         # question = zip(question, candidate_answer)
-        return render(request, 'employer/shortlisted_view.html',
+        return render(request, 'customer/shortlisted_view.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
     else:
         return redirect('/')
@@ -401,7 +412,7 @@ def disqualifyview_applied_candidate(request, pk):
     user = request.user
     if user is not None and user.is_customer:
         e = customer.objects.get(user=user)
-        cp = Customer_profile.objects.get(employer=e)
+        cp = Customer_profile.objects.get(cust=e)
         candidate_user = []
         candidate_profile = []
         address_profile = []
@@ -409,7 +420,7 @@ def disqualifyview_applied_candidate(request, pk):
 
         candidate_answer = []
 
-        job = ShipJob.objects.get(pk=pk)
+        job = shipJob.objects.get(pk=pk)
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
@@ -426,7 +437,7 @@ def disqualifyview_applied_candidate(request, pk):
                       candidate_user, candidate_Applied)
 
         # question = zip(question, candidate_answer)
-        return render(request, 'employer/disqualified.html',
+        return render(request, 'customer/disqualified.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
     else:
         return redirect('/')
@@ -439,7 +450,7 @@ def shortlist(request, pk):
     e.is_disqualified = False
     e.save()
     print(e.job_id.pk)
-    return redirect('recruiter:view_applied_candidate', e.job_id.pk)
+    return redirect('customer:view_applied_candidate', e.job_id.pk)
 
 
 @login_required(login_url='/')
@@ -449,7 +460,7 @@ def disqualify(request, pk):
     e.is_disqualified = True
     e.save()
     print(e.job_id.pk)
-    return redirect('recruiter:view_applied_candidate', e.job_id.pk)
+    return redirect('customer:view_applied_candidate', e.job_id.pk)
 
 
 @login_required(login_url='/')

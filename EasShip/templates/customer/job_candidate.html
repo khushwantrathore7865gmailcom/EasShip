@@ -64,7 +64,7 @@
 				<div class="col-md-12 col-12">
 					<div class="top-navbar">
 						<nav class="navbar navbar-expand-lg ">
-  <a class="" href="{% url 'recruiter:employer_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+  <a class="" href="{% url 'customer:customer_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -82,48 +82,45 @@
   </form>
 </nav>
 
+<ul class="navbar-nav ml-auto">
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="{% url 'customer:customer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
+                                        <span class="menu-text">Home</span>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><i class="fas fa-briefcase"></i></a>
+                                        <span class="menu-text">Add job </span>
+                                    </li>
+                                    <!--	  <li class="nav-item">-->
+                                    <!--        <a class="nav-link" href="#">Resume</a>-->
+                                    <!--      </li>-->
+                                    <li class="nav-item ">
+                                        <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
+                                        <span class="menu-text">Contact Us </span>
+                                    </li>
 
-	<ul class="navbar-nav ml-auto">
-<!--      <li class="nav-item">-->
-<!--       <a class="nav-link" href="{% url 'recruiter:employer_home' %}">Home</a>-->
-<!--      </li>-->
-<li class="nav-item ">
-    <a class="nav-link" href="{% url 'recruiter:employer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-    <span class="menu-text">Home</span>
-  </li>
-<li class="nav-item ">
-    <a class="nav-link" href="{% url 'recruiter:job_post' %}"><i class="fas fa-briefcase"></i></a>
-    <span class="menu-text">Add job </span>
-  </li>
-<!--	  <li class="nav-item">-->
-<!--        <a class="nav-link" href="#">Resume</a>-->
-<!--      </li>-->
-<li class="nav-item ">
-    <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
-    <span class="menu-text">Contact Us </span>
-  </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
+                                        <span class="menu-text">About Us </span>
+                                    </li>
 
-<li class="nav-item">
-    <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
-    <span class="menu-text">About Us </span>
-  </li>
+                                    <li class="nav-item bell-icon ">
+                                        <a class="nav-link" href="#"><i class="fa fa-bell" aria-hidden="true"></i> </a>
+                                        <span class="menu-text">Notification</span>
+                                    </li>
 
-<li class="nav-item bell-icon ">
-    <a class="nav-link" href="#"><i class="fa fa-bell" aria-hidden="true"></i> </a>
-    <span class="menu-text">Notification</span>
-  </li>
+                                    <li class="nav-item">
+                                        <div class="dropdown">
+                                            <button class="dropbtn"><img src={{ep.company_logo.url}}></button>
+                                            <div class="dropdown-content">
+                                                <a href="#">My Profile</a>
+                                                <a href="#">Edit Profile</a>
+                                                <a href="{% url 'customer:logout' %}">Log Out</a>
+                                            </div>
+                                        </div>
+                                    </li>
 
-<li class="nav-item">
-<div class="dropdown">
-  <button class="dropbtn"><img src={{cp.company_logo.url}}></button>
-  <div class="dropdown-content">
-      <a href="#">My Profile</a>
-    <a href="#">Edit Profile</a>
-    <a href="{% url 'recruiter:logout' %}">Log Out</a>
-  </div>
-</div>  </li>
-
-	 </ul>
+                                </ul>
 
   </div>
 </nav>
@@ -146,66 +143,13 @@
 				<div class="heading-action">
 					<ul class="list-inline">
 						<li>Action <span>Taken</span></li>
-                        <li><a href="{% url 'recruiter:shortlist_view_applied_candidate' job.pk %}"><span><img src="images/ribban.png"></span> Shortlisted candidate</a></li>
-						<li><a href="{% url 'recruiter:disqualify_view_applied_candidate' job.pk %}"><span><i class="fa fa-check-circle" aria-hidden="true"></i></span> Disqualified candidates</a>  </li>
+                        <li><a href="{% url 'customer:shortlist_view_applied_candidate' job.pk %}"><span><img src="images/ribban.png"></span> Shortlisted candidate</a></li>
+						<li><a href="{% url 'customer:disqualify_view_applied_candidate' job.pk %}"><span><i class="fa fa-check-circle" aria-hidden="true"></i></span> Disqualified candidates</a>  </li>
 
 					</ul>
 				</div>
 			</div>
 
-
-			<div class="col-md-3 col-12">
-				<div class="all-job-left">
-                      <form class="form-inline" type="get">
-						<h3>Quick Search</h3>
-						<div class="keywords">
-							<input type="text" id="keyword_box" name="keyword_box" Placeholder="keywords">
-							<i class="fa fa-plus" aria-hidden="true"></i>
-						</div>
-						<div class="keywords">
-							<input type="text" id="company_box" name="company_box"Placeholder="Company">
-							<i class="fa fa-plus" aria-hidden="true"></i>
-						</div>
-						<div class="keywords">
-							<input type="text" id="location_box" name="location_box"Placeholder="Destination">
-							<i class="fa fa-plus" aria-hidden="true"></i>
-						</div>
-
-						<div class="keywords-exp">
-							<h4>Experience (in years) </h4>
-
-							<input type="text" id="min_box" name="min_box" placeholder="Min"> to</span>
-							<input type="text" id="max_box" name="max_box"  placeholder="Max">
-						</div>
-						<div class="keywords-ctc">
-							<h4>CTC  </h4>
-							<div class="ctc-inner">
-							 <span class="from">From</span>
-							<input type="text" id="min_salary_box" name="min_salary_box" placeholder="Minimum"> to</span>
-							<input type="text" id="max_salary_box" name="max_salary_box"  placeholder="Max">
-
-						</div>
-
-						</div>
-<!--						<div class="keywords-ctc-active">-->
-<!--							<h4>Active in</h4>-->
-
-<!--							 <select>-->
-<!--								<option>Active in</option>-->
-<!--								<option>Active in</option>-->
-<!--								<option>Active in</option>-->
-<!--								<option>Active in</option>-->
-<!--							 </select>-->
-<!--						</div>-->
-
-						<div class="keywords-srch">
-							<button type="submit"><i class="fa fa-search" aria-hidden="true"></i> Refine Search</button>
-							<button class="clear" type="reset">Clear</button>
-
-						</div>
-                      </form>
-				</div>
-			</div>
 
 
 
@@ -225,26 +169,16 @@
              							<div class="text-jobs">
 
               <h5>Skills</h5>  </div>
-              <p class="text-black">{% for s in c.3 %}
-                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Human Resource Management</a>
-                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Shortlist</a>
-                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Shortlist</a>
-                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Shortlist</a>
-                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Shortlist</a>
-                
-                              {% comment %} {{s.skill}}({{s.rating}}),  {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),  {% endcomment %}
-                                  
-                                  {% endfor %}
+              <p class="text-black">
                               </p>
                               <div class = "post_body text-white">
                                 {{ post.body|safe|truncatewords:"50"|linebreaks }}
                                 <a href="{{ url_for_full_content }}">view  more</a>
                                 <br>
                                 <div class= "btm">
-                                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Shortlist</a>
-                                <a class="btn btn-success " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Reject</a>
+
+                                <a class="btn btn-success  " href="{% url 'customer:disqualify' c.5.pk %}" role="button">Shortlist</a>
+                                <a class="btn btn-success " href="{% url 'customer:disqualify' c.5.pk %}" role="button">Reject</a>
                                 </div>
                     </div>
                   </div>
