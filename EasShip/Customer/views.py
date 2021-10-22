@@ -361,7 +361,7 @@ def view_applied_candidate(request, pk):
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
         objects = zip(candidate_profile, address_profile, professional_profile,
-                      candidate_user, candidate_Applied,c_bid)
+                      candidate_user, candidate_Applied, c_bid)
 
         return render(request, 'customer/job_candidate.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
@@ -447,9 +447,40 @@ def disqualifyview_applied_candidate(request, pk):
 def shortlist(request, pk):
     e = comp_Bids.objects.get(pk=pk)
     e.is_shortlisted = True
+    e.is_selected = False
     e.is_disqualified = False
     e.save()
     print(e.job_id.pk)
+    return redirect('customer:view_applied_candidate', e.job_id.pk)
+
+
+@login_required(login_url='/')
+def select(request, pk):
+    user = request.user
+    e = comp_Bids.objects.get(pk=pk)
+    e.is_shortlisted = True
+    e.is_disqualified = False
+    e.is_selected = True
+    e.save()
+    pks = e.job_id.pk
+    s = shipJob.objects.get(pk=pks)
+    s.bid_selected = True
+    s.save()
+    cb = comp_Bids.objects.filter(job_id=s)
+    for c in cb:
+        if c.is_selected:
+            try:
+                r = Referral.objects.get(user=user)
+            except Referral.DoesNotExist:
+                r = None
+            if r:
+                r.commissions = e.Bid_amount * 0.05
+                r.save()
+        else:
+            c.is_shortlisted = False
+            c.is_disqualified = True
+            c.save()
+
     return redirect('customer:view_applied_candidate', e.job_id.pk)
 
 
@@ -458,6 +489,7 @@ def disqualify(request, pk):
     e = comp_Bids.objects.get(pk=pk)
     e.is_shortlisted = False
     e.is_disqualified = True
+    e.is_selected = False
     e.save()
     print(e.job_id.pk)
     return redirect('customer:view_applied_candidate', e.job_id.pk)
@@ -518,7 +550,30 @@ def Commission_View(request):
         total = 0
         re = Referral.objects.filter(referred_by=user)
         for r in re:
-            total = total + r.commissions
-        return render(request, 'customer/Commission_view.html', {'com': total, 'referred': re})
+            if r.commission_status == "not done":
+                total = total + r.commissions
+                r.commission_status = "request sent"
+                r.save()
+            if r.commission_status == "request sent":
+                total = total + r.commissions
+                messages = "request is sent payment will be done in 5-7 working days "
+
+        return render(request, 'customer/Commission_view.html', {'com': total, 'referred': re, 'message': messages})
+    else:
+        return redirect('/')
+
+
+def Ship_ongoing(request):
+    user = request.user
+    sj = []
+    cb=[]
+    if user is not None and user.is_customer:
+        sjob=shipJob.objects.filter(cust=user, bid_selected=True)
+        for s in sjob:
+            sj.append(s)
+            cbid = comp_Bids.objects.filter(job_id =s)
+            cb.append(cbid)
+        object = zip(sj,cb)
+        return render(request, 'customer/ship_ongoing.html', {'obj':object})
     else:
         return redirect('/')
