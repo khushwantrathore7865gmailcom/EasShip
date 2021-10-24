@@ -172,7 +172,9 @@ def login_candidate(request):
 def customer_home(request):
     jobs = []
     expired_job = []
+    count = []
     user = request.user
+
     if user is not None and user.is_customer:
         try:
             e = customer.objects.get(user=user)
@@ -216,7 +218,14 @@ def customer_home(request):
                     expired_job.append(j)
                 else:
                     jobs.append(j)
-            context = {'jobs': jobs, 'expired': expired_job, 'ep': ep}
+                    e = comp_Bids.objects.filter(job_id=j)
+
+                    if e is None:
+                        count.append(0)
+                    else:
+                        count.append(e.count())
+                o = zip(jobs, count)
+            context = {'jobs': o, 'expired': expired_job, 'ep': ep}
             return render(request, 'customer/job-post.html', context)
         else:
             return redirect('/')
@@ -566,14 +575,14 @@ def Commission_View(request):
 def Ship_ongoing(request):
     user = request.user
     sj = []
-    cb=[]
+    cb = []
     if user is not None and user.is_customer:
-        sjob=shipJob.objects.filter(cust=user, bid_selected=True)
+        sjob = shipJob.objects.filter(cust=user, bid_selected=True)
         for s in sjob:
             sj.append(s)
-            cbid = comp_Bids.objects.filter(job_id =s)
+            cbid = comp_Bids.objects.filter(job_id=s)
             cb.append(cbid)
-        object = zip(sj,cb)
-        return render(request, 'customer/ship_ongoing.html', {'obj':object})
+        object = zip(sj, cb)
+        return render(request, 'customer/ship_ongoing.html', {'obj': object})
     else:
         return redirect('/')
