@@ -65,7 +65,7 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <nav class="navbar mr-auto">
  <form class="form-inline" type="get">
-    <div class="input-group">
+    <div class="input-group" style="width: 456px;">
       <div class="input-group-prepend">
         <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
       </div>
@@ -87,19 +87,14 @@
         <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
       </li>
 
-	  <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:resume' %}">Resume</a>
-      </li>
-
 	  <li class="nav-item bell-icon">
         <a class="nav-link" href="#"><img src="{% static 'images/bell.png' %}"></a>
       </li>
          <li class="nav-item">
 <div class="dropdown">
-  <button class="dropbtn"><img src={{cp.profile_pic.url}}></button>
+  <button class="dropbtn"><img src={{cp.company_logo.url}}></button>
   <div class="dropdown-content">
    <a href="{% url 'partner_company:profile' %}">My Profile</a>
-    <a href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a>
     <a href="{% url 'partner_company:logout' %}">Log Out</a>
   </div>
 </div>
@@ -128,6 +123,7 @@
 			</div>
 
 <div class="col-md-10 col-12 mx-auto">
+
        {% for o in jobs %}
 				<div class="job-right">
 					<div class="job-right-jobs">
@@ -136,32 +132,31 @@
 
             <div class="jobs-main">
             <div class="text-jobs">
-      <h5>{{o.0.job_id.job_title}}</h5>
+      <h5>{{o.0.job_id.ship_title}}</h5>
                    <p style="font-size:21px">{{o.1.company_name}}</p>
             </div>
             </div>
                         </div>
     <p class="job-para">
-        Employment type: {{o.0.job_id.employment_type}}<br>
-        Location:  {{o.0.job_id.job_location}}<br>
-        Experience:  {{o.0.job_id.job_experience}}<br>
-        Salary :  {{o.0.job_id.job_salary}}<br>
+        pickup: {{o.0.job_id.picking_Address}}<br>
+        drop:  {{o.0.job_id.droping_Address}}<br>
+
+
         Job description:<br>
         {{o.0.job_id.job_description}}
-        About Company:<br>
-        company type:<br>
-        {{o.1.about_company}}<br>
-    </p>
+       </p>
   <div class="share">
-     <ul class="list-inline">
-         <li><img src="{% static 'images/heart.png' %}"></li>
-
-<li><img src="{% static 'images/share.png' %}">
-    </li> </ul>
-      <p><a class="btn btn-primary" href="{% url 'partner_company:remove' o.0.pk %}" role="button">remove</a></p>
-      <p>
-
-      </p>
+     <p>
+         {% if o.0.is_selected %}
+         Status : Is Selected
+         {% elif o.0.is_shortlisted %}
+         Status :Is Shortlisted
+         {% elif o.0.is_disqualified %}
+         Status :Is Disqualified
+         {% else %}
+         Status :Applied successfully
+         {% endif %}
+     </p>
   </div>
                     </div>
 
@@ -176,12 +171,7 @@
 </div>
 
         </div>
-        {% if pjs.has_previous %}
-    <a href="{% url 'partner_company:SavedJobs' %}?page={{pjs.previous_page_number}}">Previous page</a>
-    {% endif %}
-    {% if pjs.has_next %}
-    <a href="{% url 'partner_company:SavedJobs' %}?page={{pjs.next_page_number}}">Next page</a>
-    {% endif %}
+
     </div>
 
     </section>

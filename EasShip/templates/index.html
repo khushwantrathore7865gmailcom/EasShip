@@ -43,6 +43,47 @@
 
 </head>
 <style>
+     .tech-slideshow {
+        height: 200px;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        background-color: #ccc;
+        overflow: hidden;
+        transform: translate3d(0, 0, 0);
+    }
+
+    .tech-slideshow>div {
+        height: 200px;
+        width: 1800px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translate3d(0, 0, 0);
+    }
+
+    .tech-slideshow .mover-1 {
+        animation: moveSlideshow 30s linear infinite;
+    }
+
+    .tech-slideshow .mover-2 {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+        background-position: 0 -200px;
+        animation: moveSlideshow 15s linear infinite;
+    }
+
+    .tech-slideshow:hover .mover-2 {
+        opacity: 1;
+    }
+
+    @keyframes moveSlideshow {
+        100% {
+            transform: translateX(-66.6666%);
+        }
+    }
+
     .mobile-main-section h3 {
         font-family: Lato;
         font-size: 20px;
@@ -53,12 +94,12 @@
         text-align: left;
         padding: 0px;
     }
-    
+
     .mobile-main-images img {
         margin-bottom: 40px;
         margin-left: 28px;
     }
-    
+
     .wrap-login100 {
         width: 600px;
         background: #fff;
@@ -70,21 +111,21 @@
         -o-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
         -ms-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
     }
-    
+
     .p-t-80 {
         padding-top: 30px;
     }
-    
+
     input:focus::placeholder {
         color: transparent;
     }
-    
+
     .txt0 {
         font-size: 13px;
         color: #57b846;
         line-height: 1.4;
     }
-    
+
     .modal-content {
         position: relative;
         display: -webkit-box;
@@ -102,7 +143,7 @@
         border-radius: .3rem;
         outline: 0;
     }
-    
+
     .p-t-178 {
         padding-top: 110px;
     }
@@ -222,6 +263,25 @@
     .slick-arrow.slick-hidden {
         display: none;
     }
+
+     ::-webkit-scrollbar {
+        width: 20px;
+    }
+    /* Track */
+
+     ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 2px grey;
+    }
+    /* Handle */
+
+     ::-webkit-scrollbar-thumb {
+        background: lightgrey;
+    }
+    /* Handle on hover */
+
+     ::-webkit-scrollbar-thumb:hover {
+        background: grey;
+    }
 </style>
 
 
@@ -254,10 +314,10 @@
                             <ul class="navbar-nav">
 
                                 <li class="nav-item button" style="border-start-start-radius:  20px 20px; border-end-end-radius: 20px;">
-                                    <a class="nav-link" href="#" data-toggle="modal" data-target="#customermodal">customer Login</a>
+                                    <a class="nav-link" href="#" data-toggle="modal" data-target="#customermodal">Customer Login</a>
                                 </li>
                                 <li class="nav-item button" style="border-start-start-radius:  20px 20px; border-end-end-radius: 20px;">
-                                    <a class="nav-link" href="#" data-toggle="modal" data-target="#partner_companymodal">partner_company Login</a>
+                                    <a class="nav-link" href="#" data-toggle="modal" data-target="#partner_companymodal">Partner Company Login</a>
                                 </li>
                             </ul>
 
@@ -277,8 +337,8 @@
                 <div class="col-md-1 mob-none"></div>
                 <div class="col-md-9 col-12">
                     <div class="hero-section">
-                        <p>100+ Jobs Available</p>
-                        <h1>Find Your Next Best <span>Job!</span></h1>
+                        <p>100+ Shippers Available</p>
+                        <h1>Find Your Next Best Deal For Your <span>Shipment!</span></h1>
                         {% for message in messages %}
                         <p id="messages">{{message}}</p>
                         {% endfor %}
@@ -299,28 +359,21 @@
                     <div class="col-12 col-md-12">
                         <div class="mobile-main-section">
                             <div class="mobile-main-images">
-                                <img src="{% static 'images/home/app.jpg' %} " style="border-radius: 75px;" width="150" height="150">
-                                <h3>Mobile Application Developer</h3>
+                                <img src="# " style="border-radius: 75px;" width="150" height="150">
+                                <h3>OnRoad Transport</h3>
                             </div>
 
-                            <div class="mobile-main-images">
-                                <img src="{% static 'images/home/frontend.jpg' %}" width="150" style="border-radius: 75px;" height="150">
-                                <h3>Frontend Developer</h3>
-                            </div>
+
 
                             <div class="mobile-main-images">
-                                <img src="{% static 'images/home/backend.jpg' %}" width="150" style="border-radius: 75px;" height="150">
-                                <h3>Backend Developer</h3>
+                                <img src="#" width="150" style="border-radius: 75px;" height="150">
+                                <h3>OverAir Transport</h3>
                             </div>
 
-                            <div class="mobile-main-images">
-                                <img src="{% static 'images/home/devops.jpg' %}" width="150" style="border-radius: 75px;" height="150">
-                                <h3>DevOps Engineer</h3>
-                            </div>
 
                             <div class="mobile-main-images">
-                                <img src="{% static 'images/home/emerging.jpg' %}" width="150" style="border-radius: 75px;" height="150">
-                                <h3>Emerging Technologies And Roles</h3>
+                                <img src="#" width="150" style="border-radius: 75px;" height="150">
+                                <h3>OverSea Transport</h3>
                             </div>
 
                         </div>

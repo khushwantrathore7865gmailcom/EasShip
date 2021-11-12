@@ -119,79 +119,66 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
+
 				<div class="heading">
-					<h3>Saved <span>Jobs</span></h3>
-					<h4>All Your Saved Jobs At One Place</h4>
-                </div></div>
-<div class="col-md-10 col-12 mx-auto">
+					<h3>Shipment <span>Page</span></h3>
+					<h4>100+ Handpicked Shipping Jobs Just For You</h4>
+				</div>
+			</div>
+
+
+
+
+   <div class="col-md-9 col-12">
+
        {% for o in jobs %}
-				<div class="job-right">
+       <div class="job-right">
 					<div class="job-right-jobs">
+
 						<div class="job-right-jobs-image">
-                            <img src={{o.4.company_logo.url}}>
+                        {% if o.2.company_logo %}
+                            <img src={{o.2.company_logo.url}}>
+                            {% endif %}
             <div class="jobs-main">
             <div class="text-jobs">
-      <h5>{{o.0.job_title}}</h5>
-              <p style="font-size:21px">{{o.4.company_name}}</p>
+      <h5>{{o.0.ship_title}}</h5>
+                <p style="font-size:21px">{{o.2.company_name}}</p>
             </div>
             </div>
                         </div>
-    <p class="job-para">
-        Employment type: {{o.0.employment_type}}<br>
-        Location:  {{o.0.job_location}}<br>
-        Experience:  {{o.0.job_experience}}<br>
-        Salary :  {{o.0.job_salary}}<br>
-        common skills :{{o.1}} out of {{o.2}}<br>
+      <p class="job-para">
+        pickup: {{o.0.picking_Address}}<br>
+        drop:  {{o.0.droping_Address}}<br>
+
+
         Job description:<br>
         {{o.0.job_description}}
         About Company:<br>
         company type:<br>
-        {{o.4.about_company}}<br></p>
-  <div class="share">
+        {{o.4.about_company}}<br>
+<!--        Job description:<br>-->
+<!--        {{o.4.company_name}}<br>-->
+<!--        Job description:<br>-->
+<!--        {{o.4.company_name}}<br>-->
+    </p>
+                        <div class="share">
      <ul class="list-inline">
-         <li><img src="{% static 'images/heart.png' %}"></li>
+</ul>
 
-<li><img src="{% static 'images/share.png' %}">
-    </li> </ul>
-      <p><a class="btn btn-primary" href="{% url 'partner_company:remove_saved' o.0.pk %}" role="button">remove</a></p>
-      <p>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-  Apply for the job
+<a href="{% url 'partner_company:save_job' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
+							Save
+</a>
+
+<button type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
+							Apply
 </button>
-      </p>
-  </div>
+
+                        </div>
                     </div>
+       </div>
 
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-   <form action = "" method = "POST">
-    {% csrf_token %}
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">{{o.0.job_title}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          {% for q in o.3 %}
-       {{q.question}}
-          <input type = "hidden" name = "pk" value="{{o.0.pk}}" />
-          <input type="text" name="{{q.question}}" >
-          {% endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <input class="btn btn-primary" type="submit" value="Apply">
-      </div>
-   </form>
-    </div>
-  </div>
-</div>
+ {% endfor %}
 
-</div>
-
-
-
-{% endfor %}
 </div>
 
 
@@ -200,6 +187,39 @@
     </div>
 
     </section>
+    <div class="container">
+{% for o in jobs %}
+
+      <div class="modal fade" id="{{o.0.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Questions to be answered by you </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action = "" method = "POST">
+    {% csrf_token %}
+
+
+          {% for q in o.3 %}
+       {{q.question}}
+          <input type = "hidden" name = "pk" value="{{o.0.pk}}" />
+          <input type="text" name="{{q.question}}" >
+          {% endfor %}
+
+
+        <input class="btn btn-success" type="submit" value="Apply">
+
+   </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+    {% endfor %}
+    </div>
+
  <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

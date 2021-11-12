@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="bootstrap.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="{% static 'css/stylemod.css' %}">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
@@ -92,8 +93,8 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <nav class="navbar mr-auto">
-  <form class="form-inline" type="get">
-    <div class="input-group">
+ <form class="form-inline" type="get">
+    <div class="input-group" style="width: 456px;">
       <div class="input-group-prepend">
         <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
       </div>
@@ -121,7 +122,7 @@
       </li>
          <li class="nav-item">
 <div class="dropdown">
-  <button class="dropbtn"><img src={{cp.profile_pic.url}}></button>
+  <button class="dropbtn"><img src="{{cp.company_logo.url}}"></button>
   <div class="dropdown-content">
     <a href="{% url 'partner_company:profile' %}">My Profile</a>
 
@@ -148,28 +149,31 @@
 			<div class="col-md-12">
 
 				<div class="heading">
-					<h3>Jobs <span>Page</span></h3>
-					<h4>100+ Handpicked Jobs Just For You</h4>
+					<h3>Shipment <span>Page</span></h3>
+					<h4>100+ Handpicked Shipping Jobs Just For You</h4>
 				</div>
 			</div>
 
             <div class="col-md-3 col-12">
 				<div class="job-left job-left-images-new">
-						<img src="{{cp.profile_pic.url}}">
+						<img src="{{cp.company_logo.url}}">
 						<div class="job-left-desc">
-							<h2>{{c.user.first_name}} {{c.user.last_name}}</h2>
+							<h2>{{cp.company_name }}</h2>
 
 								<h5>Email:
 
                             <span>{{c.user}}</span>
 
                                     </h5>
-                                <h5>Resume Headline:
-								<span>{{cep.Profile_Summary}}</span></h5>
+                            <h5>Number of past workdone:
+
+                            <span>{{n}}</span>
+
+                                    </h5>
+
 								<h5>Location:
-								<span>{{cp.city}},{{cp.state}}</span></h5>
-                            <h5>Designation:
-								<span>{{cep.role}}</span></h5>
+								<span>{{cadd.city}},{{cadd.state}}</span></h5>
+
 
 
 						</div>
@@ -211,18 +215,20 @@
     </p>
                         <div class="share">
      <ul class="list-inline">
-         <li><img src="{% static 'images/heart.png' %}"></li>
-         <li><a  href="{% url 'partner_company:save_job' o.0.pk %}" ><img src="{% static 'images/ribban.png' %}"></a></li>
-<li><img src="{% static 'images/share.png' %}">
-    </li> </ul>
+</ul>
 
-<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
+<a href="{% url 'partner_company:save_job' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
+							Save
+</a>
+
+<button type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
 							Apply
 </button>
 
                         </div>
                     </div>
        </div>
+
  {% endfor %}
 
 </div>
@@ -233,6 +239,8 @@
     </div>
 
     </section>
+    <div class="container">
+{% for o in jobs %}
 
       <div class="modal fade" id="{{o.0.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -257,13 +265,12 @@
 
    </form>
       </div>
-<!--      <div class="modal-footer">-->
-<!--        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
-<!--        <button type="button" class="btn btn-primary">Understood</button>-->
-<!--      </div>-->
+
     </div>
   </div>
 </div>
+    {% endfor %}
+    </div>
 
  <!-- Optional JavaScript; choose one of the two! -->
 

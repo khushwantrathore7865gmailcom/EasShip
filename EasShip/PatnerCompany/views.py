@@ -193,13 +193,19 @@ def partner_company_Home(request):
             if u is not None and u.is_company:
                 c = patnerComp.objects.get(user=u)
                 try:
-                    cp = Comp_profile.objects.get(user_id=c)
+                    cp = Comp_profile.objects.get(comp=c)
                 except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = comp_PastWork.objects.get(user_id=c)
+                    cadd = Comp_address.objects.get(comp=c)
+                except Comp_address.DoesNotExist:
+                    cadd = None
+                try:
+                    cep = comp_PastWork.objects.filter(comp=c)
                 except comp_PastWork.DoesNotExist:
                     cep = None
+                ncep = len(cep)
+                print("ncep",ncep)
 
                 if u.first_login:
                     print("len job")
@@ -254,9 +260,9 @@ def partner_company_Home(request):
 
                         job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
                     object2 = zip(relevant_jobs, job_ques, companyprofile)
-
+                    print(ncep)
                     return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
+                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
                 else:
                     u.first_login = True
                     u.save()
@@ -279,9 +285,15 @@ def partner_company_Home(request):
                 except Comp_profile.DoesNotExist:
                     cp = None
                 try:
-                    cep = comp_PastWork.objects.get(comp=c)
+                    cadd = Comp_address.objects.get(comp=c)
+                except Comp_address.DoesNotExist:
+                    cadd = None
+                try:
+                    cep = comp_PastWork.objects.filter(comp=c)
                 except comp_PastWork.DoesNotExist:
                     cep = None
+                ncep = len(cep)
+                print("ncep", ncep)
                 if u.first_login:
 
                     job = shipJob.objects.all()
@@ -316,6 +328,7 @@ def partner_company_Home(request):
                         except Customer_profile.DoesNotExist:
                             c_p = None
                         companyprofile.append(c_p)
+
                         try:
                             userS = shipJob_Saved.objects.get(job_id=job.pk, comp_id=c)
                             # print(userS.job_id)
@@ -338,7 +351,7 @@ def partner_company_Home(request):
                     object2 = zip(relevant_jobs, job_ques, companyprofile)
 
                     return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
+                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
 
                 else:
                     u.first_login = True
@@ -753,7 +766,8 @@ def SavedJobs(request):
 
                 if u.first_login:
 
-                    job = shipJob_Saved.objects.all()
+                    job = shipJob_Saved.objects.filter(comp=c)
+                    print(job)
 
                     for j in job:
 
@@ -961,9 +975,9 @@ def AppliedJobs(request):
                     cp = None
                 applied = comp_Bids.objects.filter(comp=c)
                 for a in applied:
-                    e = a.job_id.employer_id
-                    companyprofile.append(Customer_profile.objects.get(employer=e))
-
+                    e = a.job_id.cust
+                    companyprofile.append(Customer_profile.objects.get(cust=e))
+                print(companyprofile[0].company_name)
                 objects = zip(applied, companyprofile)
 
                 return render(request, 'partner_company/applied.html',
