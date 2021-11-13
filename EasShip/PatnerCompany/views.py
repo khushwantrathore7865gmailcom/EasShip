@@ -729,130 +729,74 @@ def SavedJobs(request):
 
 
         else:
-
             jobs = []
-
             job_ques = []
-
             relevant_jobs = []
-
             common = []
-
             companyprofile = []
-
             job_skills = []
-
             u = request.user
-
             if u is not None and u.is_company:
-
                 c = patnerComp.objects.get(user=u)
-
                 try:
-
                     cp = Comp_profile.objects.get(comp=c)
-
                 except Comp_profile.DoesNotExist:
-
                     cp = None
-
                 try:
-
-                    cep = comp_PastWork.objects.get(comp=c)
-
+                    cep = comp_PastWork.objects.filter(comp=c)
                 except comp_PastWork.DoesNotExist:
-
                     cep = None
-
                 if u.first_login:
-
                     job = shipJob_Saved.objects.filter(comp=c)
                     print(job)
-
                     for j in job:
-
                         start_date = j.job_id.created_on
-
                         # print(start_date)
-
                         today = datetime.now()
-
                         # print(type(today))
-
                         stat_date = str(start_date)
-
                         start_date = stat_date[:19]
-
                         tday = str(today)
-
                         today = tday[:19]
-
                         s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-
                         e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-
                         # print(s_date)
-
                         # print(e_date)
-
                         diff = abs((e_date - s_date).days)
-
                         print(diff)
-
                         if diff > 30:
-
                             # expired_job.append(j)
-
                             Expired_ShipJob.objects.create(job_id=j.job_id).save()
                             j.delete()
-
-
-
                         else:
-
                             jobs.append(j)
-
+                            print(jobs)
                     for job in jobs:
-
                         e = job.job_id.cust
-
                         companyprofile.append(Customer_profile.objects.get(cust=e))
-
+                        print(companyprofile)
                         try:
-
                             userA = comp_Bids.objects.get(job_id=job.pk, comp=c)
 
-                            # print(userA.job_id)
-
                         except comp_Bids.DoesNotExist:
-
                             userA = None
+                        print(userA)
+                        if userA is not None:
+                            print(userA)
 
-                        if userA:
-                            # print(userA)
-
-                            continue
-
-                        relevant_jobs.append(job)
-
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=job.job_id))
-
+                        else:
+                            print(job)
+                            relevant_jobs.append(job)
+                            print(relevant_jobs)
+                            job_ques.append(Shipment_Related_Question.objects.filter(job_id=job.job_id))
                     object2 = zip(relevant_jobs, job_ques, companyprofile)
-
                     return render(request, 'partner_company/savedjobs.html',
                                   {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
-
-
                 else:
-
                     u.first_login = True
-
                     u.save()
-
                     return redirect('partner_company:create_profile')
-
             else:
-
                 return redirect('/')
     if request.method == 'POST':
         print(request.POST)
@@ -996,10 +940,10 @@ def remove_applied(request, pk):
 
 def remove_saved(request, pk):
     c = patnerComp.objects.get(user=request.user)
-    job = shipJob.objects.get(pk=pk)
-    savej = shipJob_Saved.objects.filter(job_id=job)
+    # job = shipJob.objects.get(pk=pk)
+    savej = shipJob_Saved.objects.filter(pk=pk)
     for s in savej:
-        if s.candidate_id == c:
+        if s.comp == c:
             s.delete()
 
     return redirect('partner_company:SavedJobs')
@@ -1009,15 +953,20 @@ def addTransport(request):
     user = request.user
     if user.is_company:
         pr = patnerComp.objects.get(user=user)
-        if request.method == 'POST':
-            form = addTransportForm(data=request.POST or None)
-            if form.is_valid():
-                f = form.save(commit=False)
-                f.comp = pr
-                f.save()
-        form = addTransportForm()
-        return render(request, 'partner_company/addTransport.html',
-                      {'form': form})
+        try:
+            cp = Comp_profile.objects.get(comp=pr)
+            if request.method == 'POST':
+                form = addTransportForm(data=request.POST or None)
+                if form.is_valid():
+                    f = form.save(commit=False)
+                    f.comp = pr
+                    f.save()
+                    messages.success(request, 'Transport is added.')
+            form = addTransportForm()
+            return render(request, 'partner_company/addTransport.html',
+                          {'form': form,'cp':cp})
+        except Comp_profile.DoesNotExist:
+            return redirect('partner_company:create_profile')
     else:
         return redirect('/')
 
@@ -1026,15 +975,20 @@ def addDriver(request):
     user = request.user
     if user.is_company:
         pr = patnerComp.objects.get(user=user)
-        if request.method == 'POST':
-            form = adddriverForm(data=request.POST or None)
-            if form.is_valid():
-                f = form.save(commit=False)
-                f.comp = pr
-                f.save()
-        form = adddriverForm()
-        return render(request, 'partner_company/adddriver.html',
-                      {'form': form})
+        try:
+            cp = Comp_profile.objects.get(comp=pr)
+            if request.method == 'POST':
+                form = adddriverForm(data=request.POST or None)
+                if form.is_valid():
+                    f = form.save(commit=False)
+                    f.comp = pr
+                    f.save()
+                    messages.success(request, 'Driver is added.')
+            form = adddriverForm()
+            return render(request, 'partner_company/adddriver.html',
+                          {'form': form,'cp':cp})
+        except Comp_profile.DoesNotExist:
+            return redirect('partner_company:create_profile')
     else:
         return redirect('/')
 

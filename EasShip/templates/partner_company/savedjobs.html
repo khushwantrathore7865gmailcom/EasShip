@@ -94,7 +94,7 @@
       </li>
          <li class="nav-item">
 <div class="dropdown">
-  <button class="dropbtn"><img src={{cp.profile_pic.url}}></button>
+  <button class="dropbtn"><img src={{cp.company_logo.url}}></button>
   <div class="dropdown-content">
    <a href="{% url 'partner_company:profile' %}">My Profile</a>
     <a href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a>
@@ -129,9 +129,10 @@
 
 
 
-   <div class="col-md-9 col-12">
+   <div class="col-md-10 col-12 mx-auto">
 
        {% for o in jobs %}
+
        <div class="job-right">
 					<div class="job-right-jobs">
 
@@ -141,21 +142,19 @@
                             {% endif %}
             <div class="jobs-main">
             <div class="text-jobs">
-      <h5>{{o.0.ship_title}}</h5>
+      <h5>{{o.0.job_id.ship_title}}</h5>
                 <p style="font-size:21px">{{o.2.company_name}}</p>
             </div>
             </div>
                         </div>
       <p class="job-para">
-        pickup: {{o.0.picking_Address}}<br>
-        drop:  {{o.0.droping_Address}}<br>
+        pickup: {{o.0.job_id.picking_Address}}<br>
+        drop:  {{o.0.job_id.droping_Address}}<br>
 
 
         Job description:<br>
-        {{o.0.job_description}}
-        About Company:<br>
-        company type:<br>
-        {{o.4.about_company}}<br>
+        {{o.0.job_id.job_description}}
+
 <!--        Job description:<br>-->
 <!--        {{o.4.company_name}}<br>-->
 <!--        Job description:<br>-->
@@ -165,8 +164,8 @@
      <ul class="list-inline">
 </ul>
 
-<a href="{% url 'partner_company:save_job' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
-							Save
+<a href="{% url 'partner_company:remove_saved' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
+							UnSave
 </a>
 
 <button type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">

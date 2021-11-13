@@ -1,10 +1,204 @@
-<!DOCTYPE html>
+{% load static %}
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/style12.css' %}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+<style>
+.dropbtn {
+  background-color: #FFFFFF;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #03A84E;}
+     .divv {
+            float: right;
+
+  background-color: lightgrey;
+  width: 400px;
+  border: 1px solid green;
+  padding: 30px;
+
+  margin: 0px;
+}
+
+		</style>
+  </head>
+  <body>
+
+	<header>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-12">
+					<div class="top-navbar">
+						<nav class="navbar navbar-expand-lg ">
+              <a class="" href="{% url 'partner_company:partner_company_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <nav class="navbar mr-auto" style="box-shadow: 0px 0px 14px 3px lightgrey;padding: inherit;border-radius: 10px;margin: 15px;padding: 2px;">
+ <form class="form-inline" type="get">
+    <div class="input-group" style="width: 456px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
+      </div>
+      <input type="text" class="form-control"  id="search_box" name="search_box" placeholder="Job Title" aria-label="Username" aria-describedby="basic-addon1">
+    </div>
+  </form>
+</nav>
+
+
+
+	<ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+        <a class="nav-link" href="{% url 'partner_company:partner_company_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
+      </li>
+	  <li class="nav-item">
+        <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
+      </li>
+
+
+
+	  <li class="nav-item bell-icon">
+        <a class="nav-link" href="#"><img src="{% static 'images/bell.png' %}"></a>
+      </li>
+         <li class="nav-item">
+<div class="dropdown">
+  <button class="dropbtn"><img src={{cp.company_logo.url}}></button>
+  <div class="dropdown-content">
+   <a href="{% url 'partner_company:profile' %}">My Profile</a>
+    <a href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a>
+    <a href="{% url 'partner_company:logout' %}">Log Out</a>
+  </div>
+</div>
+         </li>
+
+
+	 </ul>
+
+  </div>
+</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</header>
+    {% if messages %}
+<div class="alert alert-success" role="alert">
+
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+
+</div>
+    {% endif %}
+<section class="job-portal">
+
+<div class="col-md-12">
+				<div class="heading">
+					<h3>Add mean of <span>Transportation</span></h3>
+
+                </div></div>
+	<div class="container">
+        <div class="divv">
+
+            <h4>Few guidelines</h4>
+
+                    <ul>
+                        <li>Proper formatting of the text/content of the posting with clear spaces and standard bullets (-) to be used.</li>
+                        <li>No short forms/abbreviations to be used in the text.</li>
+                        <li>Correct mail ID to be included at the end of the posting.</li>
+                        <li>Two skills should be separated by comma.</li>
+                        <li>No spelling mistakes in the content.</li>
+                        <li>JD should be concise and crisp - to the point.</li>
+                    </ul>
+
+        </div>
+
+		<div class="row">
+
+
+  <div class="col-md-10 col-12" >
+				<div class=""><form class="form-horizontal" method="POST" action="">
+{% csrf_token %}
+  <label style="font-size: 20px;">{{form.type_of_transport.label}}</label>
+
+
+        <div class="input-group">
+            {{form.type_of_transport}}
+        </div>
+
+  <label style="font-size: 20px;">{{form.transport_no_plate.label}}</label>
+
+
+        <div class="input-group">
+            {{form.transport_no_plate}}
+        </div>
+
+
+
+
+
+<br>
+<div class="row spacer">
+    <div class="col-4 offset-2">
+        <button type="submit" class="btn btn-block btn-success">Create</button>
+    </div>
+</div>
+</form>
+                </div>
+  </div>
+        </div>
+    </div>
+</section>
+
+{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+{% endblock %}
+</body>
+</html>
 </body>
 </html>
