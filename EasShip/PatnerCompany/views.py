@@ -225,9 +225,13 @@ def partner_company_Home(request):
                         # print(e_date)
                         diff = abs((e_date - s_date).days)
                         # print(diff)
-                        if diff > 30:
-                            # expired_job.append(j)
-                            Expired_ShipJob.objects.create(job_id=j).save()
+                        if diff > 14:
+                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                           job_description=j.job_description,
+                                                           picking_Address=j.picking_Address,
+                                                           droping_Address=j.droping_Address).save()
+
+                            j.delete()
 
                         else:
                             jobs.append(j)
@@ -296,7 +300,7 @@ def partner_company_Home(request):
                 print("ncep", ncep)
                 if u.first_login:
 
-                    job = shipJob.objects.all()
+                    job = shipJob.objects.filter(bid_selected=False)
                     print(job)
                     for j in job:
                         start_date = j.created_on
@@ -313,9 +317,13 @@ def partner_company_Home(request):
                         # print(e_date)
                         diff = abs((e_date - s_date).days)
 
-                        if diff > 30:
-                            # expired_job.append(j)
-                            Expired_ShipJob.objects.create(job_id=j).save()
+                        if diff > 14:
+                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                           job_description=j.job_description,
+                                                           picking_Address=j.picking_Address,
+                                                           droping_Address=j.droping_Address).save()
+
+                            j.delete()
 
                         else:
                             jobs.append(j)
@@ -438,9 +446,13 @@ def ProfileView(request):
                         # print(e_date)
                         diff = abs((e_date - s_date).days)
                         # print(diff)
-                        if diff > 30:
-                            # expired_job.append(j)
-                            Expired_ShipJob.objects.create(job_id=j).save()
+                        if diff > 14:
+                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                           job_description=j.job_description,
+                                                           picking_Address=j.picking_Address,
+                                                           droping_Address=j.droping_Address).save()
+
+                            j.delete()
 
                         else:
                             jobs.append(j)
@@ -682,9 +694,13 @@ def SavedJobs(request):
                         # print(e_date)
                         diff = abs((e_date - s_date).days)
                         # print(diff)
-                        if diff > 30:
-                            # expired_job.append(j)
-                            Expired_ShipJob.objects.create(job_id=j).save()
+                        if diff > 14:
+                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                           job_description=j.job_description,
+                                                           picking_Address=j.picking_Address,
+                                                           droping_Address=j.droping_Address).save()
+
+                            j.delete()
 
                         else:
                             jobs.append(j)
@@ -864,9 +880,13 @@ def AppliedJobs(request):
                         # print(e_date)
                         diff = abs((e_date - s_date).days)
                         # print(diff)
-                        if diff > 30:
-                            # expired_job.append(j)
-                            Expired_ShipJob.objects.create(job_id=j).save()
+                        if diff > 14:
+                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                           job_description=j.job_description,
+                                                           picking_Address=j.picking_Address,
+                                                           droping_Address=j.droping_Address).save()
+
+                            j.delete()
 
                         else:
                             jobs.append(j)

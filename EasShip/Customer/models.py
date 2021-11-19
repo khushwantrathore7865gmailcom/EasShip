@@ -86,7 +86,11 @@ class ProdDesc(models.Model):
 
 
 class Expired_ShipJob(models.Model):
-    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
+    cust = models.ForeignKey(customer, on_delete=models.CASCADE,null=True)
+    ship_title = models.CharField(max_length=1024, null=True)
+    job_description = models.CharField(blank=True, max_length=1024,null=True)
+    picking_Address = models.CharField(max_length=1024,null=True)
+    droping_Address = models.CharField(max_length=1024,null=True)
     created_on = models.DateTimeField(auto_now_add=True, null=True)
 
 

@@ -2,7 +2,7 @@ from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, login_candidate, customer_home, Add_Shipment, Add_prod_desc, unpublish, \
     remove_unpublish, job_detail, view_applied_candidate, shortlistview_applied_candidate, \
     disqualifyview_applied_candidate, shortlist, delete_job, disqualify, publish_job, ProfileView, job_Response, \
-    SignUpVieww, Commission_View, Request_commision, select
+    SignUpVieww, Commission_View, Request_commision, select, Ship_ongoing
 from django.contrib.auth import views as auth_views  # import this
 
 app_name = 'customer'
@@ -41,5 +41,6 @@ urlpatterns = [
     path('removeunpublish/<int:pk>', remove_unpublish, name='remove_unpublish'),
     path('viewprofile/', ProfileView, name='profile'),
     path('account/', Commission_View, name='Commission'),
-    path('account/request', Request_commision, name='Request_commision')
+    path('account/request', Request_commision, name='Request_commision'),
+    path('shipOnProgress/', Ship_ongoing, name='ShipOngoing')
 ]

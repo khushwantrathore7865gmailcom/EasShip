@@ -174,6 +174,7 @@ def customer_home(request):
     expired_job = []
     count = []
     user = request.user
+    context = {}
 
     if user is not None and user.is_customer:
         try:
@@ -187,7 +188,7 @@ def customer_home(request):
                 ep = Customer_profile.objects.get(cust=e)
             except Customer_profile.DoesNotExist:
                 ep = None
-            job = shipJob.objects.filter(cust=e)
+            job = shipJob.objects.filter(cust=e).exclude(bid_selected=True)
             for j in job:
                 start_date = j.created_on
                 # print(start_date)
@@ -203,19 +204,14 @@ def customer_home(request):
                 # print(e_date)
                 diff = abs((e_date - s_date).days)
                 print(diff)
-                try:
-                    e_j = Expired_ShipJob.objects.get(job_id=j)
-                except Expired_ShipJob.DoesNotExist:
-                    e_j = None
-                if diff > 30:
-                    if e_j:
-                        expired_job.append(j)
 
-                    else:
-                        Expired_ShipJob.objects.create(job_id=j).save()
-                        expired_job.append(j)
-                elif e_j:
-                    expired_job.append(j)
+                if diff > 14:
+                    Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                   job_description=j.job_description, picking_Address=j.picking_Address,
+                                                   droping_Address=j.droping_Address).save()
+
+                    j.delete()
+
                 else:
                     jobs.append(j)
                     e = comp_Bids.objects.filter(job_id=j)
@@ -224,8 +220,9 @@ def customer_home(request):
                         count.append(0)
                     else:
                         count.append(e.count())
+                expired_job = Expired_ShipJob.objects.filter(cust=e)
                 o = zip(jobs, count)
-            context = {'jobs': o, 'expired': expired_job, 'ep': ep}
+                context = {'jobs': o, 'expired': expired_job, 'ep': ep}
             return render(request, 'customer/job-post.html', context)
         else:
             return redirect('/')
@@ -269,19 +266,23 @@ def Add_Shipment(request):
 
 def unpublish(request, pk):
     user = request.user
-    job = shipJob.objects.get(pk=pk)
+    j = shipJob.objects.get(pk=pk)
     # print(c)
     # print(job)
-    Expired_ShipJob.objects.create(job_id=job).save()
+    Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                   job_description=j.job_description, picking_Address=j.picking_Address,
+                                   droping_Address=j.droping_Address).save()
+
+    j.delete()
     return redirect('recruiter:employer_home')
 
 
 def remove_unpublish(request, pk):
-    job = shipJob.objects.get(pk=pk)
-    unpub_job = Expired_ShipJob.objects.get(job_id=job)
-    unpub_job.delete()
-    job.created_on = datetime.now()
-    job.save()
+    j = Expired_ShipJob.objects.get(pk=pk)
+    shipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                           job_description=j.job_description, picking_Address=j.picking_Address,
+                           droping_Address=j.droping_Address).save()
+    j.delete()
 
     return redirect('recruiter:employer_home')
 
