@@ -1045,11 +1045,69 @@ def Update_PresentShip(request, pk):
                 f = form.save(commit=False)
                 f.comp = pr
                 f.job_id = job
-                f.current_status = "Driver and Truck assigned"
                 f.save()
             return redirect('partner_company:partner_company_home')
         form = PresentWorkUpdateForm(instance=job)
         return render(request, 'partner_company/setup_presentship.html',
                       {'form': form})
+    else:
+        return redirect('/')
+def PresentShip(request):
+    profile = []
+    user = request.user
+    if user.is_company:
+        pr = patnerComp.objects.get(user=user)
+        c = comp_PresentWork.objects.filter(comp=pr)
+        for cp  in c:
+            profile.append(Customer_profile.objects.get(cust=cp.cust))
+        o = zip(c,profile)
+        return render(request,'partner_company/ShipmentOngoing.html',{'c_p':o})
+    else:
+       return redirect('/')
+def ManageDriver(request):
+    user=request.user
+    cp=[]
+    if user.is_company:
+        comp = patnerComp.objects.get(user=user)
+        drivers = comp_drivers.objects.filter(comp=comp)
+        for d in drivers:
+            try:
+                cp.append(comp_PresentWork.objects.filter(driver=d))
+            except comp_PresentWork.DoesNotExist:
+                c.append(None)
+        info = zip(drivers,cp)
+        return render(request, 'partner_company/DriverManagement.html', {'info': info})
+    else:
+        return redirect('/')
+def ManageTruck(request):
+    user=request.user
+    cp=[]
+    if user.is_company:
+        comp = patnerComp.objects.get(user=user)
+        Trucks = comp_Transport.objects.filter(comp=comp)
+        for d in Trucks:
+            try:
+                cp.append(comp_PresentWork.objects.filter(transport=d))
+            except comp_PresentWork.DoesNotExist:
+                c.append(None)
+        info = zip(Trucks,cp)
+        return render(request, 'partner_company/TransprtManagement.html', {'info': info})
+    else:
+        return redirect('/')
+def DriverRecords(request):
+    user=request.user
+    cp=[]
+    n=[]
+    if user.is_company:
+        comp = patnerComp.objects.get(user=user)
+        drivers = comp_drivers.objects.filter(comp=comp)
+        for d in drivers:
+            try:
+                cp.append(comp_PastWork.objects.filter(driver=d))
+                n.append(len(comp_PastWork.objects.filter(driver=d)))
+            except comp_PastWork.DoesNotExist:
+                c.append(None)
+        info = zip(drivers,cp,n)
+        return render(request, 'partner_company/DriverPastwork.html', {'info': info})
     else:
         return redirect('/')
