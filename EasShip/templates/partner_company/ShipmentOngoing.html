@@ -153,7 +153,7 @@
         payment done :{{o.0.payment_Done}} out of total Payment:{{o.0.Total_payment}}
      </p>
       <p>Current Status : {{o.0.current_status}}</p>
-      <button>Update current status</button>
+            <a type="button" href="{% url 'partner_company:Update_PresentShip' o.0.pk %}" class="btn btn-success">Update current status</a>
   </div>
 
                     </div>

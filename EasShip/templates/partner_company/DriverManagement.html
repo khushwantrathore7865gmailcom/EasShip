@@ -150,9 +150,8 @@
         {% else %}Shipment :Not Assigned{% endif %}
        </p>
   <div class="share">
-     <button>Remove Driver</button>
-{% if o.1 %}
-      <button>Update current status</button>{% endif %}
+
+<a type="button" href="{% url 'partner_company:RemoveDriver' o.0.pk %}" class="btn btn-danger">Remove Driver</a>
   </div>
 
                     </div>

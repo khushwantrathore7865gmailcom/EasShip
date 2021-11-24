@@ -151,9 +151,7 @@
         {% else %}Shipment :Not Assigned{% endif %}
        </p>
   <div class="share">
-     <button>Remove Transport</button>
-
-      <button>Update current status</button>
+     <a type="button" href="{% url 'partner_company:RemoveTruck' o.0.pk %}" class="btn btn-danger">Remove Transport</a>
   </div>
 
                     </div>

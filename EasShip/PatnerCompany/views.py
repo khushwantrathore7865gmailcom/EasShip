@@ -1111,3 +1111,11 @@ def DriverRecords(request):
         return render(request, 'partner_company/DriverPastwork.html', {'info': info})
     else:
         return redirect('/')
+def RemoveDriver(request, pk):
+    comp_drivers.objects.get(pk=pk).delete()
+
+    return redirect('partner_company:ManageDriver')
+def RemoveTruck(request, pk):
+    comp_Transport.objects.get(pk=pk).delete()
+
+    return redirect('partner_company:ManageTruck')

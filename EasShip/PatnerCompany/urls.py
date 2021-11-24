@@ -1,7 +1,7 @@
 from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, partner_company_Home, ProfileView, save_later, SavedJobs, AppliedJobs, \
     remove_applied, remove_saved, ProfileEdit, SignUpVieww, addTransport, addDriver, ManageDriver, ManageTruck, \
-    Update_PresentShip, SetUp_PresentShip, PresentShip, DriverRecords
+    Update_PresentShip, SetUp_PresentShip, PresentShip, DriverRecords, RemoveDriver, RemoveTruck
 from . import views
 from django.contrib.auth import views as auth_views  # import this
 
@@ -36,8 +36,10 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
     path('ManageDriver/', ManageDriver, name='ManageDriver'),
     path('ManageTruck/', ManageTruck, name='ManageTruck'),
-    path('Update_PresentShip/', Update_PresentShip, name='Update_PresentShip'),
-    path('SetUp_PresentShip/', SetUp_PresentShip, name='SetUp_PresentShip'),
+    path('Update_PresentShip/<int:pk>', Update_PresentShip, name='Update_PresentShip'),
+    path('SetUp_PresentShip/<int:pk>', SetUp_PresentShip, name='SetUp_PresentShip'),
     path('PresentShip/', PresentShip, name='PresentShip'),
     path('DriverRecords/', DriverRecords, name='DriverRecords'),
+    path('RemoveDriver/<int:pk>', RemoveDriver, name='RemoveDriver'),
+    path('RemoveTruck/<int:pk>', RemoveTruck, name='RemoveTruck'),
 ]
