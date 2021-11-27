@@ -52,7 +52,6 @@
 		</style>
   </head>
   <body>
-
 	<header>
 		<div class="container">
 			<div class="row">
@@ -65,39 +64,34 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <nav class="navbar mr-auto">
- <form class="form-inline" type="get">
-    <div class="input-group" style="box-shadow: 0px 0px 14px 3px lightgrey;padding: inherit;border-radius: 10px;margin: 15px;padding: 2px;">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
-      </div>
-      <input type="text" class="form-control"  id="search_box" name="search_box" placeholder="Job Title" aria-label="Username" aria-describedby="basic-addon1">
-    </div>
-  </form>
-</nav>
+
 
 
 
 	<ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:partner_company_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
-      </li>
-	  <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
-      </li>
 
-	  <li class="nav-item bell-icon">
-        <a class="nav-link" href="#"><img src="{% static 'images/bell.png' %}"></a>
+
+
+	  <li class="nav-item">
+          <a class="nav-link" href="{% url 'partner_company:ManageDriver' %}"><b>Manage Driver</b></a>
       </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'partner_company:ManageTruck' %}"><b>Manage Transportation</b></a>
+      </li>
+        <li class="nav-item">
+            <div class="dropdown"><button class="dropbtn nav-link" style="color:black;"><b>Shipments</b></button>
+            <div class="dropdown-content">
+                <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
+                <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
+                <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+            </div>
+            </div></li>
          <li class="nav-item">
 <div class="dropdown">
-  <button class="dropbtn"><img src={{cp.profile_pic.url}}></button>
+  <button class="dropbtn">{% if profile.company_logo %}<img src="{{profile.company_logo.url}}">{% else %}<img src="{% static 'images/profile/avatar.png' %}">{% endif %}</button>
   <div class="dropdown-content">
     <a href="{% url 'partner_company:profile' %}">My Profile</a>
-    <a href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a>
+
     <a href="{% url 'partner_company:logout' %}">Log Out</a>
   </div>
 </div>
@@ -121,23 +115,10 @@
 		
 			<div class="col-md-3 col-12">
 				<div class="job-left">
-						<img src={{profile.profile_pic.url}}>
+						<img src={{profile.company_logo.url}}>
 						<div class="job-left-desc">
 							<h2>{{user.first_name}} {{user.last_name}}</h2>
-							{% for p in professional %}
-<!--								<h4>UX/ UI Designer</h4>-->
-							{% if p.is_current %}
-								<h5>Current Compant</h5>
-								<h6>{{p.organization}}</h6>
-								<h5>Current Job position</h5>
-								<h6>{{p.designation}}</h6>
-								<h5>Working from </h5>
-								<h6>{{p.start_year}}</h6>
-							{% endif %}
-							{% endfor %}
-
-							</div>
-
+							<a type="button" class="btn btn-success" href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a></div>
 				</div>
 			</div>
 			
@@ -145,38 +126,21 @@
 				<div class="row">
 						<div class="col-md-7 col-12">
 							<div class="skills-left">
-								<h3>Skills <img src=" {% static 'images/skills-btn.png' %} "></h3>
-								<div class="skill-list">
-									<div class="skill-list-left">
-										<h3>Skills</h3>
-												{% for s in skills %}
-										<div>{{s.skill}}</div>
-										{% endfor %}
-									</div>
-									
-									<div class="skill-list-right">
-										<h3>Rating</h3>
-										{% for s in skills %}
-										<div>{{s.rating}}</div>
-										{% endfor %}
-									</div>
+								<h3>Transports</h3>
+								<div class="skill-list"><ul>
+									{% for t in truck %}<li>
+									<h4>{{t.transport_no_plate}}:</h4>Transport type: {{t.type_of_transport}}</li>
+									{% endfor %}</ul>
 									
 								</div>
 								
-								<h3>Education <img src=" {% static 'images/skills-btn.png' %} "></h3>
-								<div class="skill-list second">
-									<div class="skill-list-left">
-												{% for s in edu %}
-												<div>{{s.institute_name}}</div>
-												{% endfor %}
-									</div>
-									
-									<div class="skill-list-right">
-														
-												{% for s in edu %}
-												<div>{{s.start_year}}-{{s.end_year}}</div>
-												{% endfor %}
-									</div>
+								<h3>Drivers</h3>
+								<div class="skill-list second"><ul>
+									{% for d in driver %}<li>
+									<h4>{{d.name}}:</h4>
+									<p>Phone Number:{{d.phone}}</p></li>
+									{% endfor %}
+										</ul>
 									
 								</div>
 								
@@ -190,104 +154,31 @@
 							<div class="skills-right">
 							  <h3>Contact Details</h3>
 								<p><img src=" {% static 'images/mail.png' %}"> <span><b>Email ID</b> : {{user.email}}</span></p>
-<!--								<p><img src="images/phone.png"> <span><b>Phone no.</b> : (252) 555-0126</span></p>-->
-								<p><img src=" {% static 'images/location.png' %}"> <span><b>Address</b> : 1901 Thornridge Cir. Shiloh, Hawaii 81063</span></p>
-								
-<!--								<hr>-->
-<!--								<div class="contact-btn">-->
-<!--									<button>Shorlist </button>-->
-<!--									<button>Save for later</button>-->
-<!--									<button><span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Report user</span></button>-->
-<!--								-->
-<!--								</div>-->
-							
+								<p><img src="{% static 'images/phone.png' %}"> <span><b>Phone no.</b> : {{profile.phone}}</span></p>
 							</div>
 							
 						</div>
 						
 				</div>
 					
-<!--					<div class="cont-det">-->
-<!--						<h3>Contact Details</h3>-->
-<!--						<p>Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. </p>-->
-<!--						-->
-<!--						<div class="whiteBox">-->
-<!--								<label class="uploadImg">-->
-<!--									<input type="file" name="propertyImage" id="file">-->
-<!--								-->
-<!--								<div class="box">-->
-<!--									<span><img src="images/atttachment.png">Attached Resume</span>-->
-<!--									<p>Amet minim mollit non deserun</p>-->
-<!--									-->
 
-<!--								</div>-->
-<!--								</label>-->
-<!--								-->
-<!--							</div>-->
-
-<!--					</div>-->
 					
 				<div class="employment">
-						<h3>Employment</h3>
-					{% for s in professional %}
+						<h3>Past Shipment Done</h3>
+					{% for s in past_work %}
 
 
-							<h4>{{s.designation}} <img src=" {% static 'images/skills-btn.png' %} "></h4>
-							<p class="small">{{s.organization}}</p>
-					{% if p.is_current %}
-					<p class="small">{{s.start_month}} {{s.start_year}} to present</p>
-					{% else %}
-					<p class="small">{{s.start_month}} {{s.start_year}} to {{s.end_month}} {{s.end_year}}</p>
-					{% endif %}
-
-	<p>Available to join in 1 Months</p>
-<p>Created and automated build and deployment process for the application re-engineering setup for better user
-experience, and leading up to building a continuous integration system for all our products. Experience with container based deployments using Docker, working with Docker images... <span>Read More</span></p>
-	<p class="skills active"><span>Top 5 Key Skills:</span> {% for sk in skills %}{{sk.skill}} {% endfor %}</p>
+							<h4>{{s.job_id.ship_title}} <img src=" {% static 'images/skills-btn.png' %} "></h4>
+							<p >{{s.job_id.picking_Address}} to {{s.job_id.droping_Address}}</p>
+							<p>Driver who completed the task:{{s.driver}}</p>
+					       <p >Completed on: {{s.delivered_on}}</p>
+							<p>Rating:{{s.Rating}}</p>
 
 <hr>
 {% endfor %}
-<!--<h4>DevOps Engineer <img src="images/skills-btn.png"></h4>-->
-<!--<p class="small">Engagedly Software India Private Limited</p>-->
-<!--<p class="small">Aug 2020 to Present (11 months)</p>-->
-<!--<p>Available to join in 1 Months</p>-->
-<!--<p>Created and automated build and deployment process for the application re-engineering setup for better user-->
-<!--experience, and leading up to building a continuous integration system for all our products. Experience with container based deployments using Docker, working with Docker images... <span>Read More</span></p>-->
-<!--<p class="skills">Top 5 Key Skills:  AWS ECS,Docker,Kubernetes,Jfrog Pipelines,Jenkins</p>-->
 
-<!--<hr>-->
-
-
-<!--<h4>DevOps Engineer <img src="images/skills-btn.png"></h4>-->
-<!--<p class="small">Engagedly Software India Private Limited</p>-->
-<!--<p class="small">Aug 2020 to Present (11 months)</p>-->
-<!--<p>Available to join in 1 Months</p>-->
-<!--<p>Created and automated build and deployment process for the application re-engineering setup for better user-->
-<!--experience, and leading up to building a continuous integration system for all our products. Experience with container based deployments using Docker, working with Docker images... <span>Read More</span></p>-->
-<!--<p class="skills">Top 5 Key Skills:  AWS ECS,Docker,Kubernetes,Jfrog Pipelines,Jenkins</p>-->
-
-<!--<hr>-->
 		</div>
 
-<div class="employment-section">
-	<div class="employment-left">
-		<h5>Education</h5>
-		{% for s in edu %}
-		<p>{{s.institute_name}} <span><img src=" {% static 'images/skills-btn.png' %} "></span></p>
-<!--		<p>Arizona State University <span><img src="images/skills-btn.png"></span></p>-->
-<!--		<span class="tech">Visveswaraiah Technological University (VTU) 2016 (Full Time)</span>-->
-		{% endfor %}
-	</div>
-	
-	<div class="employment-right">
-		<h5>Education</h5>
-		{% for s in professional %}
-		<p>{{s.designation}} </p>
-<!--		<p>Back-end development <span>Front-End developer</span></p>-->
-<!--		<p>Application development <span>UX/ UI Designer</span></p>-->
-<!--		<p>UX/ UI Designer</p>-->
-		{% endfor %}
-	</div>
 	
 	
 </div>

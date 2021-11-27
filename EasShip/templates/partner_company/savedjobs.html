@@ -50,54 +50,46 @@
 		</style>
   </head>
   <body>
-
 	<header>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12 col-12">
 					<div class="top-navbar">
 						<nav class="navbar navbar-expand-lg ">
-              <a class="" href="{% url 'partner_company:partner_company_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
+  <a class="" href="{% url 'partner_company:partner_company_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <nav class="navbar mr-auto" style="box-shadow: 0px 0px 14px 3px lightgrey;padding: inherit;border-radius: 10px;margin: 15px;padding: 2px;">
- <form class="form-inline" type="get">
-    <div class="input-group" style="width: 456px;">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
-      </div>
-      <input type="text" class="form-control"  id="search_box" name="search_box" placeholder="Job Title" aria-label="Username" aria-describedby="basic-addon1">
-    </div>
-  </form>
-</nav>
+
 
 
 
 	<ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:partner_company_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
-      </li>
+
+
+
 	  <li class="nav-item">
-        <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
+          <a class="nav-link" href="{% url 'partner_company:ManageDriver' %}"><b>Manage Driver</b></a>
       </li>
-
-
-
-	  <li class="nav-item bell-icon">
-        <a class="nav-link" href="#"><img src="{% static 'images/bell.png' %}"></a>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'partner_company:ManageTruck' %}"><b>Manage Transportation</b></a>
       </li>
+        <li class="nav-item">
+            <div class="dropdown"><button class="dropbtn nav-link" style="color:black;"><b>Shipments</b></button>
+            <div class="dropdown-content">
+                <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
+                <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
+                <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+            </div>
+            </div></li>
          <li class="nav-item">
 <div class="dropdown">
-  <button class="dropbtn"><img src={{cp.company_logo.url}}></button>
+  <button class="dropbtn">{% if cp.company_logo %}<img src="{{cp.company_logo.url}}">{% else %}<img src="{% static 'images/profile/avatar.png' %}">{% endif %}</button>
   <div class="dropdown-content">
-   <a href="{% url 'partner_company:profile' %}">My Profile</a>
-    <a href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a>
+    <a href="{% url 'partner_company:profile' %}">My Profile</a>
+
     <a href="{% url 'partner_company:logout' %}">Log Out</a>
   </div>
 </div>
@@ -122,7 +114,7 @@
 
 				<div class="heading">
 					<h3>Shipment <span>Page</span></h3>
-					<h4>100+ Handpicked Shipping Jobs Just For You</h4>
+					<h4>Shipments you saved for review</h4>
 				</div>
 			</div>
 
