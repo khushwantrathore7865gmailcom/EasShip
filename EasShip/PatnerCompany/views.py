@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import View
 from User.models import User_custom, Referral
-from .forms import SignUpForm, adddriverForm, addTransportForm, PresentWorkSetForm, PresentWorkUpdateForm
+from .forms import SignUpForm, adddriverForm, addTransportForm, PresentWorkSetForm, PresentWorkUpdateForm,Profile
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -174,199 +174,98 @@ def partner_company_Home(request):
         val = request.GET.get('search_box', None)
         print("val")
         print(val)
-        if val:
-            job = shipJob.objects.filter(
-                Q(job_title__icontains=val) |
-                Q(skill__icontains=val) |
-                Q(job_description__icontains=val) |
-                Q(job_salary__icontains=val) |
-                Q(job_location__icontains=val)
-            ).distinct()
-            print(job)
-            jobs = []
-            job_ques = []
-            relevant_jobs = []
-            common = []
-            companyprofile = []
-            job_skills = []
-            u = request.user
-            if u is not None and u.is_company:
-                c = patnerComp.objects.get(user=u)
-                try:
-                    cp = Comp_profile.objects.get(comp=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                try:
-                    cadd = Comp_address.objects.get(comp=c)
-                except Comp_address.DoesNotExist:
-                    cadd = None
-                try:
-                    cep = comp_PastWork.objects.filter(comp=c)
-                except comp_PastWork.DoesNotExist:
-                    cep = None
-                ncep = len(cep)
-                print("ncep",ncep)
+        jobs = []
+        job_ques = []
+        relevant_jobs = []
+        common = []
+        companyprofile = []
+        job_skills = []
+        u = request.user
+        if u is not None and u.is_company:
+            c = patnerComp.objects.get(user=u)
+            try:
+                cp = Comp_profile.objects.get(comp=c)
+            except Comp_profile.DoesNotExist:
+                cp = None
+            try:
+                cadd = Comp_address.objects.get(comp=c)
+            except Comp_address.DoesNotExist:
+                cadd = None
+            try:
+                cep = comp_PastWork.objects.filter(comp=c)
+            except comp_PastWork.DoesNotExist:
+                cep = None
+            ncep = len(cep)
+            print("ncep", ncep)
+            if u.first_login:
 
-                if u.first_login:
-                    print("len job")
-                    print(len(job))
-                    for j in job:
-                        start_date = j.created_on
-                        # print(start_date)
-                        today = datetime.now()
-                        # print(type(today))
-                        stat_date = str(start_date)
-                        start_date = stat_date[:19]
-                        tday = str(today)
-                        today = tday[:19]
-                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                        # print(s_date)
-                        # print(e_date)
-                        diff = abs((e_date - s_date).days)
-                        # print(diff)
-                        if diff > 14:
-                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
-                                                           job_description=j.job_description,
-                                                           picking_Address=j.picking_Address,
-                                                           droping_Address=j.droping_Address).save()
+                job = shipJob.objects.filter(bid_selected=False)
+                print(job)
+                for j in job:
+                    start_date = j.created_on
+                    # print(start_date)
+                    today = datetime.now()
+                    # print(type(today))
+                    stat_date = str(start_date)
+                    start_date = stat_date[:19]
+                    tday = str(today)
+                    today = tday[:19]
+                    s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                    e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                    # print(s_date)
+                    # print(e_date)
+                    diff = abs((e_date - s_date).days)
 
-                            j.delete()
+                    if diff > 14:
+                        Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                       job_description=j.job_description,
+                                                       picking_Address=j.picking_Address,
+                                                       droping_Address=j.droping_Address).save()
 
-                        else:
-                            jobs.append(j)
-                        print("len")
-                        print(len(jobs))
-                    for jo in jobs:
+                        j.delete()
 
-                        e = jo.cust
-                        companyprofile.append(Customer_profile.objects.get(comp=e))
-                        try:
-                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
-                            # print(userS.job_id)
-                        except shipJob_Saved.DoesNotExist:
-                            userS = None
-                        try:
-                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
-                            # print(userA.job_id)
-                        except comp_Bids.DoesNotExist:
-                            userA = None
+                    else:
+                        jobs.append(j)
 
-                        if userA:
-                            # print(userA)
-                            continue
-                        if userS:
-                            # print(userS)
-                            continue
-                        relevant_jobs.append(jo)
-                        print("job:")
-                        print(jo)
+                for job in jobs:
 
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
-                    object2 = zip(relevant_jobs, job_ques, companyprofile)
-                    print(ncep)
-                    return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
-                else:
-                    u.first_login = True
-                    u.save()
-                    return redirect('partner_company:create_profile')
+                    e = job.cust
+                    try:
+                        c_p = Customer_profile.objects.get(cust=e)
+                    except Customer_profile.DoesNotExist:
+                        c_p = None
+                    companyprofile.append(c_p)
+
+                    try:
+                        userS = shipJob_Saved.objects.get(job_id=job.pk, comp_id=c)
+                        # print(userS.job_id)
+                    except shipJob_Saved.DoesNotExist:
+                        userS = None
+                    try:
+                        userA = comp_Bids.objects.get(job_id=job.pk, comp_id=c)
+                        # print(userA.job_id)
+                    except comp_Bids.DoesNotExist:
+                        userA = None
+
+                    if userA:
+                        # print(userA)
+                        continue
+                    if userS:
+                        # print(userS)
+                        continue
+                    relevant_jobs.append(job)
+                    job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
+                object2 = zip(relevant_jobs, job_ques, companyprofile)
+
+                return render(request, 'partner_company/home.html',
+                              {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
+
             else:
-                return redirect('/')
-
+                u.first_login = True
+                u.save()
+                return redirect('partner_company:create_profile')
         else:
-            jobs = []
-            job_ques = []
-            relevant_jobs = []
-            common = []
-            companyprofile = []
-            job_skills = []
-            u = request.user
-            if u is not None and u.is_company:
-                c = patnerComp.objects.get(user=u)
-                try:
-                    cp = Comp_profile.objects.get(comp=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                try:
-                    cadd = Comp_address.objects.get(comp=c)
-                except Comp_address.DoesNotExist:
-                    cadd = None
-                try:
-                    cep = comp_PastWork.objects.filter(comp=c)
-                except comp_PastWork.DoesNotExist:
-                    cep = None
-                ncep = len(cep)
-                print("ncep", ncep)
-                if u.first_login:
-
-                    job = shipJob.objects.filter(bid_selected=False)
-                    print(job)
-                    for j in job:
-                        start_date = j.created_on
-                        # print(start_date)
-                        today = datetime.now()
-                        # print(type(today))
-                        stat_date = str(start_date)
-                        start_date = stat_date[:19]
-                        tday = str(today)
-                        today = tday[:19]
-                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                        # print(s_date)
-                        # print(e_date)
-                        diff = abs((e_date - s_date).days)
-
-                        if diff > 14:
-                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
-                                                           job_description=j.job_description,
-                                                           picking_Address=j.picking_Address,
-                                                           droping_Address=j.droping_Address).save()
-
-                            j.delete()
-
-                        else:
-                            jobs.append(j)
-
-                    for job in jobs:
-
-                        e = job.cust
-                        try:
-                            c_p = Customer_profile.objects.get(cust=e)
-                        except Customer_profile.DoesNotExist:
-                            c_p = None
-                        companyprofile.append(c_p)
-
-                        try:
-                            userS = shipJob_Saved.objects.get(job_id=job.pk, comp_id=c)
-                            # print(userS.job_id)
-                        except shipJob_Saved.DoesNotExist:
-                            userS = None
-                        try:
-                            userA = comp_Bids.objects.get(job_id=job.pk, comp_id=c)
-                            # print(userA.job_id)
-                        except comp_Bids.DoesNotExist:
-                            userA = None
-
-                        if userA:
-                            # print(userA)
-                            continue
-                        if userS:
-                            # print(userS)
-                            continue
-                        relevant_jobs.append(job)
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
-                    object2 = zip(relevant_jobs, job_ques, companyprofile)
-
-                    return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
-
-                else:
-                    u.first_login = True
-                    u.save()
-                    return redirect('partner_company:create_profile')
-            else:
-                return redirect('/')
+            return redirect('/')
 
     if request.method == 'POST':
         print(request.POST)
@@ -397,559 +296,185 @@ def save_later(request, pk):
 
 
 def ProfileView(request):
-    if request.method == 'GET':
-        val = request.GET.get('search_box', None)
-        print("val")
-        print(val)
-        if val:
-            job = shipJob.objects.filter(
-                Q(job_title__icontains=val) |
-                Q(skill__icontains=val) |
-                Q(job_description__icontains=val) |
-                Q(job_salary__icontains=val) |
-                Q(job_location__icontains=val)
-            ).distinct()
-            print(job)
-            jobs = []
-            job_ques = []
-            relevant_jobs = []
-            common = []
-            companyprofile = []
-            job_skills = []
-            u = request.user
-            if u is not None and u.is_company:
-                c = patnerComp.objects.get(user=u)
-                try:
-                    cp = Comp_profile.objects.get(user_id=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                try:
-                    cep = comp_PastWork.objects.get(user_id=c)
-                except comp_PastWork.DoesNotExist:
-                    cep = None
 
-                if u.first_login:
-                    print("len job")
-                    print(len(job))
-                    for j in job:
-                        start_date = j.created_on
-                        # print(start_date)
-                        today = datetime.now()
-                        # print(type(today))
-                        stat_date = str(start_date)
-                        start_date = stat_date[:19]
-                        tday = str(today)
-                        today = tday[:19]
-                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                        # print(s_date)
-                        # print(e_date)
-                        diff = abs((e_date - s_date).days)
-                        # print(diff)
-                        if diff > 14:
-                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
-                                                           job_description=j.job_description,
-                                                           picking_Address=j.picking_Address,
-                                                           droping_Address=j.droping_Address).save()
+        u = request.user
+        c = patnerComp.objects.get(user=u)
+        try:
+            profile = Comp_profile.objects.get(comp=c)
+        except Comp_profile.DoesNotExist:
+            profile = None
+        try:
+            address = Comp_address.objects.get(comp=c)
+        except Comp_address.DoesNotExist:
+            address = None
+        try:
+            truck = comp_Transport.objects.filter(comp=c)
+        except comp_Transport.DoesNotExist:
+            truck = None
+        try:
+            driver = comp_drivers.objects.filter(comp=c)
+        except comp_drivers.DoesNotExist:
+            driver = None
 
-                            j.delete()
-
-                        else:
-                            jobs.append(j)
-                        print("len")
-                        print(len(jobs))
-                    for jo in jobs:
-
-                        e = jo.cust
-                        companyprofile.append(Customer_profile.objects.get(comp=e))
-                        try:
-                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
-                            # print(userS.job_id)
-                        except shipJob_Saved.DoesNotExist:
-                            userS = None
-                        try:
-                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
-                            # print(userA.job_id)
-                        except comp_Bids.DoesNotExist:
-                            userA = None
-
-                        if userA:
-                            # print(userA)
-                            continue
-                        if userS:
-                            # print(userS)
-                            continue
-                        relevant_jobs.append(jo)
-                        print("job:")
-                        print(jo)
-
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
-                    object2 = zip(relevant_jobs, job_ques, companyprofile)
-
-                    return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
-                else:
-                    u.first_login = True
-                    u.save()
-                    return redirect('partner_company:create_profile')
-            else:
-                return redirect('/')
-        else:
-            u = request.user
-            c = patnerComp.objects.get(user=u)
-            try:
-                profile = Comp_profile.objects.get(comp=c)
-            except Comp_profile.DoesNotExist:
-                profile = None
-            try:
-                address = Comp_address.objects.get(comp=c)
-            except Comp_address.DoesNotExist:
-                address = None
-            try:
-                truck = comp_Transport.objects.filter(comp=c)
-            except comp_Transport.DoesNotExist:
-                truck = None
-            try:
-                driver = comp_drivers.objects.filter(comp=c)
-            except comp_drivers.DoesNotExist:
-                driver = None
-
-            try:
-                present_work = comp_PresentWork.objects.filter(comp=c)
-            except comp_PresentWork.DoesNotExist:
-                present_work = None
-            try:
-                past_work = comp_PastWork.objects.filter(comp=c)
-            except comp_PastWork.DoesNotExist:
-                past_work = None
-            return render(request, 'partner_company/skills.html', {
-                "user": u,
-                "profile": profile,
-                "address": address,
-                "present_work": present_work,
-                "past_work": past_work,
-                "truck": truck,
-                "driver": driver
-            })
+        try:
+            present_work = comp_PresentWork.objects.filter(comp=c)
+        except comp_PresentWork.DoesNotExist:
+            present_work = None
+        try:
+            past_work = comp_PastWork.objects.filter(comp=c)
+        except comp_PastWork.DoesNotExist:
+            past_work = None
+        return render(request, 'partner_company/skills.html', {
+            "user": u,
+            "profile": profile,
+            "address": address,
+            "present_work": present_work,
+            "past_work": past_work,
+            "truck": truck,
+            "driver": driver
+        })
 
 
 def ProfileEdit(request):
-    return redirect('partner_company:partner_company_home')
-    # try:
-    #     profile = Candidate.objects.get(user=request.user)
-    # except Candidate.DoesNotExist:
-    #     profile = None
-    # print(profile)
-    # if profile is not None:
-    #     if request.method == 'POST':
-    #         form1 = ProfileRegisterForm(data=request.POST or None, files=request.FILES or None)
-    #         form2 = ProfileRegisterForm_edu(request.POST or None)
-    #         form3 = ProfileRegisterForm_profdetail(request.POST or None)
-    #         form4 = ProfileRegisterForm_resume(request.POST or None)
-    #         form5 = ProfileRegistration_skills(request.POST or None)
-    #         form6 = ProfileRegistration_expdetail(request.POST or None)
-    #         # print(form1)
-    #         if form1.is_valid():
-    #             print(form1.cleaned_data.get('profile_pic'))
-    #             if form1.cleaned_data.get('birth_date'):
-    #                 f1 = form1.save(commit=False)
-    #                 try:
-    #                     c = Candidate_profile.objects.get(user_id=profile)
-    #                 except Candidate_profile.DoesNotExist:
-    #                     c = None
-    #                 if c:
-    #                     c.delete()
-    #
-    #                 f1.user_id = profile
-    #
-    #                 f1.save()
-    #
-    #         if form2.is_valid():
-    #             f2 = form2.save(commit=False)
-    #             if form2.cleaned_data.get('institute_name'):
-    #                 f2.user_id = profile
-    #                 f2.save()
-    #         if form3.is_valid():
-    #             f3 = form3.save(commit=False)
-    #             if form3.cleaned_data.get('designation'):
-    #                 f3.user_id = profile
-    #                 f3.save()
-    #         if form4.is_valid():
-    #             if form4.cleaned_data.get('coverletter_text'):
-    #                 f4 = form4.save(commit=False)
-    #                 f4.user_id = profile
-    #                 f4.save()
-    #
-    #             # f5 = form5.save(commit=False)
-    #             # f5.user_id = profile
-    #             # f5.save()
-    #         if form5.is_valid():
-    #             if form5.cleaned_data.get('skill'):
-    #                 f4 = form4.save(commit=False)
-    #                 f4.user_id = profile
-    #                 f4.save()
-    #             # for form in form5:
-    #             #     # extract name from each form and save
-    #             #     skill = form.cleaned_data.get('skill')
-    #             #     rating = form.cleaned_data.get('rating')
-    #             #     # save book instance
-    #             #     if skill:
-    #             #         Candidate_skills(user_id=profile, skil=skill, rating=rating).save()
-    #         if form6.is_valid():
-    #             d = form6.cleaned_data.get('department')
-    #             print(d)
-    #             if d != "":
-    #                 print("after d is not none")
-    #                 try:
-    #                     cep = Candidate_expdetail.objects.get(user_id=profile)
-    #                 except Candidate_profile.DoesNotExist:
-    #                     cep = None
-    #                 if cep:
-    #                     cep.delete()
-    #                 f6 = form6.save(commit=False)
-    #                 f6.user_id = profile
-    #                 f6.save()
-    #         return redirect('partner_company:ProfileEdit')
-    #     print(request.method)
-    #     try:
-    #         c = Candidate_profile.objects.get(user_id=profile)
-    #         print(c)
-    #     except Candidate_profile.DoesNotExist:
-    #         c = None
-    #         print(c)
-    #     try:
-    #         cr = Candidate_resume.objects.get(user_id=profile)
-    #     except Candidate_resume.DoesNotExist:
-    #         cr = None
-    #     try:
-    #         cep = Candidate_expdetail.objects.get(user_id=profile)
-    #     except Candidate_expdetail.DoesNotExist:
-    #         cep = None
-    #
-    #     form1 = ProfileRegisterForm(instance=c)
-    #     form2 = ProfileRegisterForm_edu()
-    #     form3 = ProfileRegisterForm_profdetail()
-    #     form4 = ProfileRegisterForm_resume(instance=cr)
-    #     form5 = ProfileRegistration_skills()
-    #     form6 = ProfileRegistration_expdetail(instance=cep)
-    #     skills = Candidate_skills.objects.filter(user_id=profile)
-    #     print(skills)
-    #     edu = Candidate_edu.objects.filter(user_id=profile)
-    #     professional = Candidate_profdetail.objects.filter(user_id=profile)
-    #     return render(request, 'partner_company/Profile.html',
-    #                   {"form1": form1, 'form2': form2, "form3": form3, 'form4': form4, "form5": form5, 'form6': form6,
-    #                    'skills': skills, 'edu': edu, 'professional': professional, 'c': c})
-    #
-    # else:
-    #     return redirect('/')
+    user = request.user
+    c = patnerComp.objects.get(user=request.user)
+    if c is not None:
+        try:
+            cp = Comp_profile.objects.get(comp=c)
+        except Comp_profile.DoesNotExist:
+            cp=None
+        if cp is None:
+            if request.method == 'POST':
+                form = Profile(request.POST or None,request.FILES or None)
+                if form.is_valid():
+                    f = form.save(commit=False)
+                    f.comp = c
+                    f.save()
+            form = Profile()
+        else:
+            if request.method == "POST":
+                form = Profile(request.POST,request.FILES, instance=cp)
+                if form.is_valid():
+                    form.save()
+                    return redirect('partner_company:profile')
+
+            form = Profile(instance=cp)
+        return render(request,'partner_company/EditProfile.html',{'form':form})
+    else:
+        return redirect('/')
+
 
 
 def SavedJobs(request):
-    if request.method == 'GET':
-        val = request.GET.get('search_box', None)
-        print("val")
-        print(val)
-        if val:
-            job = shipJob.objects.filter(
-                Q(job_title__icontains=val) |
-                Q(skill__icontains=val) |
-                Q(job_description__icontains=val) |
-                Q(job_salary__icontains=val) |
-                Q(job_location__icontains=val)
-            ).distinct()
+
+    jobs = []
+    job_ques = []
+    relevant_jobs = []
+    common = []
+    companyprofile = []
+    job_skills = []
+    u = request.user
+    if u is not None and u.is_company:
+        if request.method == 'POST':
+            print(request.POST)
+            pk = request.POST.get('pk')
+            print(pk)
+            c = patnerComp.objects.get(user=request.user)
+            job = shipJob.objects.get(pk=pk)
+            questions = Shipment_Related_Question.objects.filter(job_id=job)
+            for q in questions:
+                print(request.POST.get(q.question))
+
+                get_text = request.POST.get(q.question)
+                print(get_text)
+                shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
+            comp_Bids.objects.create(comp=c, job_id=job).save()
+        c = patnerComp.objects.get(user=u)
+        try:
+            cp = Comp_profile.objects.get(comp=c)
+        except Comp_profile.DoesNotExist:
+            cp = None
+        try:
+            cep = comp_PastWork.objects.filter(comp=c)
+        except comp_PastWork.DoesNotExist:
+            cep = None
+        if u.first_login:
+            job = shipJob_Saved.objects.filter(comp=c)
             print(job)
-            jobs = []
-            job_ques = []
-            relevant_jobs = []
-            common = []
-            companyprofile = []
-            job_skills = []
-            u = request.user
-            if u is not None and u.is_company:
-                c = patnerComp.objects.get(user=u)
-                try:
-                    cp = Comp_profile.objects.get(user_id=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                try:
-                    cep = comp_PastWork.objects.get(user_id=c)
-                except comp_PastWork.DoesNotExist:
-                    cep = None
-
-                if u.first_login:
-                    print("len job")
-                    print(len(job))
-                    for j in job:
-                        start_date = j.created_on
-                        # print(start_date)
-                        today = datetime.now()
-                        # print(type(today))
-                        stat_date = str(start_date)
-                        start_date = stat_date[:19]
-                        tday = str(today)
-                        today = tday[:19]
-                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                        # print(s_date)
-                        # print(e_date)
-                        diff = abs((e_date - s_date).days)
-                        # print(diff)
-                        if diff > 14:
-                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
-                                                           job_description=j.job_description,
-                                                           picking_Address=j.picking_Address,
-                                                           droping_Address=j.droping_Address).save()
-
-                            j.delete()
-
-                        else:
-                            jobs.append(j)
-                        print("len")
-                        print(len(jobs))
-                    for jo in jobs:
-
-                        e = jo.cust
-                        companyprofile.append(Customer_profile.objects.get(comp=e))
-                        try:
-                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
-                            # print(userS.job_id)
-                        except shipJob_Saved.DoesNotExist:
-                            userS = None
-                        try:
-                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
-                            # print(userA.job_id)
-                        except comp_Bids.DoesNotExist:
-                            userA = None
-
-                        if userA:
-                            # print(userA)
-                            continue
-                        if userS:
-                            # print(userS)
-                            continue
-                        relevant_jobs.append(jo)
-                        print("job:")
-                        print(jo)
-
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
-                    object2 = zip(relevant_jobs, job_ques, companyprofile)
-
-                    return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
+            for j in job:
+                start_date = j.job_id.created_on
+                # print(start_date)
+                today = datetime.now()
+                # print(type(today))
+                stat_date = str(start_date)
+                start_date = stat_date[:19]
+                tday = str(today)
+                today = tday[:19]
+                s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                # print(s_date)
+                # print(e_date)
+                diff = abs((e_date - s_date).days)
+                print(diff)
+                if diff > 30:
+                    # expired_job.append(j)
+                    Expired_ShipJob.objects.create(job_id=j.job_id).save()
+                    j.delete()
                 else:
-                    u.first_login = True
-                    u.save()
-                    return redirect('partner_company:create_profile')
-            else:
-                return redirect('/')
-
-
-        else:
-            jobs = []
-            job_ques = []
-            relevant_jobs = []
-            common = []
-            companyprofile = []
-            job_skills = []
-            u = request.user
-            if u is not None and u.is_company:
-                c = patnerComp.objects.get(user=u)
+                    jobs.append(j)
+                    print(jobs)
+            for job in jobs:
+                e = job.job_id.cust
+                companyprofile.append(Customer_profile.objects.get(cust=e))
+                print(companyprofile)
                 try:
-                    cp = Comp_profile.objects.get(comp=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                try:
-                    cep = comp_PastWork.objects.filter(comp=c)
-                except comp_PastWork.DoesNotExist:
-                    cep = None
-                if u.first_login:
-                    job = shipJob_Saved.objects.filter(comp=c)
+                    userA = comp_Bids.objects.get(job_id=job.pk, comp=c)
+
+                except comp_Bids.DoesNotExist:
+                    userA = None
+                print(userA)
+                if userA is not None:
+                    print(userA)
+
+                else:
                     print(job)
-                    for j in job:
-                        start_date = j.job_id.created_on
-                        # print(start_date)
-                        today = datetime.now()
-                        # print(type(today))
-                        stat_date = str(start_date)
-                        start_date = stat_date[:19]
-                        tday = str(today)
-                        today = tday[:19]
-                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                        # print(s_date)
-                        # print(e_date)
-                        diff = abs((e_date - s_date).days)
-                        print(diff)
-                        if diff > 30:
-                            # expired_job.append(j)
-                            Expired_ShipJob.objects.create(job_id=j.job_id).save()
-                            j.delete()
-                        else:
-                            jobs.append(j)
-                            print(jobs)
-                    for job in jobs:
-                        e = job.job_id.cust
-                        companyprofile.append(Customer_profile.objects.get(cust=e))
-                        print(companyprofile)
-                        try:
-                            userA = comp_Bids.objects.get(job_id=job.pk, comp=c)
+                    relevant_jobs.append(job)
+                    print(relevant_jobs)
+                    job_ques.append(Shipment_Related_Question.objects.filter(job_id=job.job_id))
+            object2 = zip(relevant_jobs, job_ques, companyprofile)
+            return render(request, 'partner_company/savedjobs.html',
+                          {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
+        else:
+            u.first_login = True
+            u.save()
+            return redirect('partner_company:create_profile')
+    else:
+        return redirect('/')
 
-                        except comp_Bids.DoesNotExist:
-                            userA = None
-                        print(userA)
-                        if userA is not None:
-                            print(userA)
-
-                        else:
-                            print(job)
-                            relevant_jobs.append(job)
-                            print(relevant_jobs)
-                            job_ques.append(Shipment_Related_Question.objects.filter(job_id=job.job_id))
-                    object2 = zip(relevant_jobs, job_ques, companyprofile)
-                    return render(request, 'partner_company/savedjobs.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
-                else:
-                    u.first_login = True
-                    u.save()
-                    return redirect('partner_company:create_profile')
-            else:
-                return redirect('/')
-    if request.method == 'POST':
-        print(request.POST)
-        pk = request.POST.get('pk')
-        print(pk)
-        c = patnerComp.objects.get(user=request.user)
-        job = shipJob.objects.get(pk=pk)
-        questions = Shipment_Related_Question.objects.filter(job_id=job)
-        for q in questions:
-            print(request.POST.get(q.question))
-
-            get_text = request.POST.get(q.question)
-            print(get_text)
-            shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
-        comp_Bids.objects.create(comp=c, job_id=job).save()
 
 
 def AppliedJobs(request):
-    if request.method == 'GET':
-        val = request.GET.get('search_box', None)
-        print("val")
-        print(val)
-        if val:
-            job = shipJob.objects.filter(
-                Q(job_title__icontains=val) |
-                Q(skill__icontains=val) |
-                Q(job_description__icontains=val) |
-                Q(job_salary__icontains=val) |
-                Q(job_location__icontains=val)
-            ).distinct()
-            print(job)
-            jobs = []
-            job_ques = []
-            relevant_jobs = []
-            common = []
-            companyprofile = []
-            job_skills = []
-            u = request.user
-            if u is not None and u.is_company:
-                c = patnerComp.objects.get(user=u)
-                try:
-                    cp = Comp_profile.objects.get(user_id=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                try:
-                    cep = comp_PastWork.objects.get(user_id=c)
-                except comp_PastWork.DoesNotExist:
-                    cep = None
+    companyprofile = []
+    user = request.user
+    if user is not None and user.is_company:
+        c = patnerComp.objects.get(user=request.user)
+        try:
+            cp = Comp_profile.objects.get(comp=c)
+        except Comp_profile.DoesNotExist:
+            cp = None
+        applied = comp_Bids.objects.filter(comp=c)
+        for a in applied:
+            e = a.job_id.cust
+            companyprofile.append(Customer_profile.objects.get(cust=e))
 
-                if u.first_login:
-                    print("len job")
-                    print(len(job))
-                    for j in job:
-                        start_date = j.created_on
-                        # print(start_date)
-                        today = datetime.now()
-                        # print(type(today))
-                        stat_date = str(start_date)
-                        start_date = stat_date[:19]
-                        tday = str(today)
-                        today = tday[:19]
-                        s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                        e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                        # print(s_date)
-                        # print(e_date)
-                        diff = abs((e_date - s_date).days)
-                        # print(diff)
-                        if diff > 14:
-                            Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
-                                                           job_description=j.job_description,
-                                                           picking_Address=j.picking_Address,
-                                                           droping_Address=j.droping_Address).save()
+        objects = zip(applied, companyprofile)
 
-                            j.delete()
-
-                        else:
-                            jobs.append(j)
-                        print("len")
-                        print(len(jobs))
-                    for jo in jobs:
-
-                        e = jo.cust
-                        companyprofile.append(Customer_profile.objects.get(comp=e))
-                        try:
-                            userS = shipJob_Saved.objects.get(job_id=jo.pk, comp=c)
-                            # print(userS.job_id)
-                        except shipJob_Saved.DoesNotExist:
-                            userS = None
-                        try:
-                            userA = comp_Bids.objects.get(job_id=jo.pk, comp=c)
-                            # print(userA.job_id)
-                        except comp_Bids.DoesNotExist:
-                            userA = None
-
-                        if userA:
-                            # print(userA)
-                            continue
-                        if userS:
-                            # print(userS)
-                            continue
-                        relevant_jobs.append(jo)
-                        print("job:")
-                        print(jo)
-
-                        job_ques.append(Shipment_Related_Question.objects.filter(job_id=jo))
-                    object2 = zip(relevant_jobs, job_ques, companyprofile)
-
-                    return render(request, 'partner_company/home.html',
-                                  {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
-                else:
-                    u.first_login = True
-                    u.save()
-                    return redirect('partner_company:create_profile')
-            else:
-                return redirect('/')
-        else:
-            companyprofile = []
-            user = request.user
-            if user is not None and user.is_company:
-                c = patnerComp.objects.get(user=request.user)
-                try:
-                    cp = Comp_profile.objects.get(comp=c)
-                except Comp_profile.DoesNotExist:
-                    cp = None
-                applied = comp_Bids.objects.filter(comp=c)
-                for a in applied:
-                    e = a.job_id.cust
-                    companyprofile.append(Customer_profile.objects.get(cust=e))
-                print(companyprofile[0].company_name)
-                objects = zip(applied, companyprofile)
-
-                return render(request, 'partner_company/applied.html',
-                              {'jobs': objects, 'c': c, 'cp': cp})
-                # objects = zip(applied, companyprofile)
-                # return render(request, 'partner_company/applied.html', {'jobs': objects, 'cp': cp})
-            else:
-                return redirect('/')
+        return render(request, 'partner_company/applied.html',
+                      {'jobs': objects, 'c': c, 'cp': cp})
+        # objects = zip(applied, companyprofile)
+        # return render(request, 'partner_company/applied.html', {'jobs': objects, 'cp': cp})
+    else:
+        return redirect('/')
 
 
 def remove_applied(request, pk):

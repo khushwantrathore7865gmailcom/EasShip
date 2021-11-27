@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from User.models import User_custom
-from .models import comp_Transport, comp_drivers,comp_PresentWork
+from .models import comp_Transport, comp_drivers, comp_PresentWork, Comp_profile
 from django.forms import formset_factory
 from django.forms import modelformset_factory
 
@@ -74,6 +74,8 @@ class addTransportForm(forms.ModelForm):
             'type_of_transport',
             'transport_no_plate',
         ]
+
+
 class PresentWorkSetForm(forms.ModelForm):
     class Meta:
         model = comp_PresentWork
@@ -83,6 +85,8 @@ class PresentWorkSetForm(forms.ModelForm):
             'transport',
 
         ]
+
+
 class PresentWorkUpdateForm(forms.ModelForm):
     class Meta:
         model = comp_PresentWork
@@ -91,4 +95,17 @@ class PresentWorkUpdateForm(forms.ModelForm):
             'co_driver',
             'transport',
             'current_status',
+        ]
+
+
+class Profile(forms.ModelForm):
+
+
+    class Meta:
+        model = Comp_profile
+        fields = [
+            'company_logo',
+            'company_name',
+            'company_type',
+            'phone'
         ]
