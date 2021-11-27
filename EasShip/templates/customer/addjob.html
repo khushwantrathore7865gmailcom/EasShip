@@ -1,27 +1,24 @@
-{% load crispy_forms_tags %}
-{% load static %}
-
-<!DOCTYPE html>
+{% load crispy_forms_tags %} {% load static %}
+<!doctype html>
 <html lang="en">
+
+<!-- Mirrored from grocbees.com/job-portal/job-post.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 27 Jun 2021 09:39:28 GMT -->
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
- <!-- Bootstrap CSS -->
+    <!-- Required meta tags -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-
-<link rel="stylesheet" type="text/css" href=" {% static 'css/style_Addjob.css' %}">
-    <link rel="stylesheet" href=" {% static 'css/style.css'%}">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+    <link rel="stylesheet" href="{% static 'css/style12.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
     <script src="https://kit.fontawesome.com/5a2b925216.js" crossorigin="anonymous"></script>
-
-    
-
-    <title>Title</title>
-    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> {% block mycss %}
     <style>
-    .input100 {
+        .input100 {
             width: 100%;
             padding: 12px 20px;
             margin: 8px 0;
@@ -115,9 +112,11 @@
     </style>
     {% endblock mycss %}
 </head>
-<body class="skills-page">
 
-	 <header>
+<body>
+
+
+    <header>
         <div class="container">
             <div class="row">
                 <div class="col-md-12 col-12">
@@ -129,45 +128,19 @@
   </button>
 
                             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <nav class="navbar mr-auto">
-                                    <form class="form-inline new-form">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control" placeholder="Job Title" aria-label="Username" aria-describedby="basic-addon1">
-                                            <button class="search">Search</button>
-                                        </div>
-                                    </form>
-                                </nav>
+
 
 
                                 <ul class="navbar-nav ml-auto">
+
                                     <li class="nav-item ">
-                                        <a class="nav-link" href="{% url 'customer:customer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-                                        <span class="menu-text">Home</span>
-                                    </li>
-                                    <li class="nav-item ">
-                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><i class="fas fa-briefcase"></i></a>
-                                        <span class="menu-text">Add Shipment </span>
+                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><b>Add New Shipment</b></a>
+
                                     </li>
                                     <!--	  <li class="nav-item">-->
                                     <!--        <a class="nav-link" href="#">Resume</a>-->
                                     <!--      </li>-->
-                                    <li class="nav-item ">
-                                        <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
-                                        <span class="menu-text">Contact Us </span>
-                                    </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
-                                        <span class="menu-text">About Us </span>
-                                    </li>
-
-                                    <li class="nav-item bell-icon ">
-                                        <a class="nav-link" href="#"><i class="fa fa-bell" aria-hidden="true"></i> </a>
-                                        <span class="menu-text">Notification</span>
-                                    </li>
 
                                     <li class="nav-item">
                                         <div class="dropdown">
@@ -190,7 +163,6 @@
         </div>
 
     </header>
-
 <section class="job-portal">
 <div class="col-md-12">
 				<div class="heading">

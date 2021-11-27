@@ -18,6 +18,7 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> {% block mycss %}
     <style>
+
         .dropbtn {
             background-color: #FFFFFF;
             color: white;
@@ -98,45 +99,19 @@
   </button>
 
                             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <nav class="navbar mr-auto">
-                                    <form class="form-inline new-form">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control" placeholder="Job Title" aria-label="Username" aria-describedby="basic-addon1">
-                                            <button class="search">Search</button>
-                                        </div>
-                                    </form>
-                                </nav>
+
 
 
                                 <ul class="navbar-nav ml-auto">
+
                                     <li class="nav-item ">
-                                        <a class="nav-link" href="{% url 'customer:customer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-                                        <span class="menu-text">Home</span>
-                                    </li>
-                                    <li class="nav-item ">
-                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><i class="fas fa-briefcase"></i></a>
-                                        <span class="menu-text">Add Shipment </span>
+                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><b>Add New Shipment</b></a>
+
                                     </li>
                                     <!--	  <li class="nav-item">-->
                                     <!--        <a class="nav-link" href="#">Resume</a>-->
                                     <!--      </li>-->
-                                    <li class="nav-item ">
-                                        <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
-                                        <span class="menu-text">Contact Us </span>
-                                    </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
-                                        <span class="menu-text">About Us </span>
-                                    </li>
-
-                                    <li class="nav-item bell-icon ">
-                                        <a class="nav-link" href="#"><i class="fa fa-bell" aria-hidden="true"></i> </a>
-                                        <span class="menu-text">Notification</span>
-                                    </li>
 
                                     <li class="nav-item">
                                         <div class="dropdown">
@@ -180,9 +155,29 @@
 
                     <div class="job-posted">
                         <ul class="nav nav-tabs">
-                            <li class="none"><a data-toggle="tab" href="#home">Past Job </a></li>
-                            <li class="active"><a data-toggle="tab" href="#menu1">Currrent Jobs </a></li>
+                            <li class="none" id="tab0"><a data-toggle="tab" href="#home" onclick='tabClicked("tab0")'>Past Shipment</a></li>
+                            <li class="active" id="tab1"><a data-toggle="tab" href="#menu1" onclick='tabClicked("tab1")'>Bids on Shipment</a></li>
+                            <li class="none" id="tab2"><a data-toggle="tab" href="#menu2" onclick='tabClicked("tab2")'>Ongoing Shipment</a></li>
                         </ul>
+                        <script>
+                            function tabClicked(str) {
+                                if (str == 'tab0') {
+                                    document.getElementById('tab1').setAttribute('class', 'none');
+                                    document.getElementById('tab2').setAttribute('class', 'none');
+                                    document.getElementById('tab0').setAttribute('class', 'active');
+                                } else {
+                                    if (str == 'tab1') {
+                                        document.getElementById('tab1').setAttribute('class', 'active');
+                                        document.getElementById('tab2').setAttribute('class', 'none');
+                                        document.getElementById('tab0').setAttribute('class', 'none');
+                                    } else {
+                                        document.getElementById('tab1').setAttribute('class', 'none');
+                                        document.getElementById('tab2').setAttribute('class', 'active');
+                                        document.getElementById('tab0').setAttribute('class', 'none');
+                                    }
+                                }
+                            }
+                        </script>
 
 
 
@@ -245,8 +240,8 @@
                                                 <!--					<td></td>-->
                                                 <td>{{ job.0.created_on.date }}</td>
                                                 <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.0.pk %}">{{ job.1 }}</a></td>
-                                                <td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
-                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
                                                         <a class="dropdown-item" href="{% url 'customer:delete_job' job.0.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
                                                         <a class="dropdown-item" href="{% url 'customer:job_detail' job.0.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png" />View Job</a>
                                                         <a class="dropdown-item" href="{% url 'customer:unpublish' job.0.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Unpublish Job</a>
@@ -259,6 +254,43 @@
                                         {% endif %} {% endfor %}
                                     </table>
                                 </div>
+                            </div>
+                            <div id="menu2" class="tab-pane fade">
+                                <div class="table-main">
+                                    <table class="w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>Posted Shipment</th>
+                                                <!--					<th>Share by</th>-->
+                                                <th>Shared date</th>
+                                                <th>Shipper Selected</th>
+                                                <th>Shipment Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        {% for job in jobs %}
+                                        <tbody>
+                                            <tr>
+                                                <td><label></label>
+                                                    <a href="{% url 'customer:job_detail' job.0.pk %}"> <span>{{ job.0.ship_title }}</span></a>
+                                                </td>
+                                                <!--					<td></td>-->
+                                                <td>{{ job.0.created_on.date }}</td>
+                                                <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.0.pk %}">{{ job.1 }}</a></td>
+                                                <td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <a class="dropdown-item" href="{% url 'customer:job_detail' job.0.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png" />View Job</a>
+                                                        <a class="dropdown-item" href="{% url 'customer:unpublish' job.0.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Unpublish Job</a>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
 
                             </div>
 

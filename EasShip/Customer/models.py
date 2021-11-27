@@ -22,46 +22,47 @@ class Customer_profile(models.Model):
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Please enter valid phone number. Correct format is 91XXXXXXXX")
     phone = models.CharField(validators=[phone_regex], max_length=20, blank=True)
-    email = models.EmailField(max_length=25, blank=True, )
+    # email = models.EmailField(max_length=25, blank=True, )
     company_type = models.CharField(max_length=250, blank=True, )
     company_name = models.CharField(max_length=250, blank=True, )
     company_logo = models.ImageField(blank=True, )
+    address = models.TextField(null=True)
 
 
-class Customer_address(models.Model):
-    cust = models.ForeignKey(customer, on_delete=models.CASCADE)
-    address1 = models.CharField(
-        "Address line 1",
-        max_length=1024,
-    )
-
-    address2 = models.CharField(
-        "Address line 2",
-        max_length=1024,
-    )
-
-    zip_code = models.CharField(
-        "ZIP / Postal code",
-        max_length=12,
-    )
-
-    city = models.CharField(
-        "City",
-        max_length=1024,
-    )
-    state = models.CharField(
-        "State",
-        max_length=1024,
-    )
-
-    country = models.CharField(
-        "Country",
-        max_length=1024,
-    )
-
-    class Meta:
-        verbose_name = "Customer Company Address"
-        verbose_name_plural = "Customer Company Addresses"
+# class Customer_address(models.Model):
+#     cust = models.ForeignKey(customer, on_delete=models.CASCADE)
+#     address1 = models.CharField(
+#         "Address line 1",
+#         max_length=1024,
+#     )
+#
+#     address2 = models.CharField(
+#         "Address line 2",
+#         max_length=1024,
+#     )
+#
+#     zip_code = models.CharField(
+#         "ZIP / Postal code",
+#         max_length=12,
+#     )
+#
+#     city = models.CharField(
+#         "City",
+#         max_length=1024,
+#     )
+#     state = models.CharField(
+#         "State",
+#         max_length=1024,
+#     )
+#
+#     country = models.CharField(
+#         "Country",
+#         max_length=1024,
+#     )
+#
+#     class Meta:
+#         verbose_name = "Customer Company Address"
+#         verbose_name_plural = "Customer Company Addresses"
 
 
 class shipJob(models.Model):

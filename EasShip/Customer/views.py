@@ -7,13 +7,13 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.views.generic import View
 from User.models import User_custom, Referral, Commission_request
-from .forms import SignUpForm, ShipJob, prod_Detail_Formset
+from .forms import SignUpForm, ShipJob, prod_Detail_Formset, Profile
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_text, force_bytes
 from .tokens import account_activation_token
-from .models import customer, Customer_address, Customer_profile, ProdDesc, shipJob, Expired_ShipJob, \
+from .models import customer, Customer_profile, ProdDesc, shipJob, Expired_ShipJob, \
     Shipment_Related_Question
 from PatnerCompany.models import shipJob_jobanswer, comp_Bids, Comp_address, Comp_profile, comp_Transport, \
     comp_PresentWork, comp_PastWork, comp_drivers
@@ -173,6 +173,9 @@ def customer_home(request):
     jobs = []
     expired_job = []
     count = []
+    sj = []
+    cb = []
+
     user = request.user
     context = {}
 
@@ -183,11 +186,12 @@ def customer_home(request):
             e = None
         # uncomment this after making the profile update correct
         # if Employer_profile.objects.get(employer=e):
-        if e:
-            try:
-                ep = Customer_profile.objects.get(cust=e)
-            except Customer_profile.DoesNotExist:
-                ep = None
+
+        try:
+            ep = Customer_profile.objects.get(cust=e)
+        except Customer_profile.DoesNotExist:
+            ep = None
+        if user.first_login:
             job = shipJob.objects.filter(cust=e).exclude(bid_selected=True)
             for j in job:
                 start_date = j.created_on
@@ -222,10 +226,18 @@ def customer_home(request):
                         count.append(e.count())
                 expired_job = Expired_ShipJob.objects.filter(cust=e)
                 o = zip(jobs, count)
-                context = {'jobs': o, 'expired': expired_job, 'ep': ep}
+                sjob = shipJob.objects.filter(cust=user, bid_selected=True)
+                for s in sjob:
+                    sj.append(s)
+                    cbid = comp_Bids.objects.filter(job_id=s)
+                    cb.append(cbid)
+                object = zip(sj, cb)
+                context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep}
             return render(request, 'customer/job-post.html', context)
         else:
-            return redirect('/')
+            user.first_login = True
+            user.save()
+            return redirect('customer:create_profile')
     else:
         return redirect('/')
     # user = request.user
@@ -509,7 +521,7 @@ def disqualify(request, pk):
 def delete_job(request, pk):
     ShipJob.objects.get(pk=pk).delete()
 
-    return redirect('recruiter:employer_home')
+    return redirect('customer:customer_home')
 
 
 @login_required(login_url='/')
@@ -517,20 +529,53 @@ def publish_job(request, pk):
     e = ShipJob.objects.get(pk=pk)
     e.is_save_later = False
     e.save()
-    return redirect('recruiter:job_detail', pk)
+    return redirect('customer:job_detail', pk)
 
 
 @login_required(login_url='/')
 def ProfileView(request):
     u = request.user
     e = customer.objects.get(user=u)
-    profile = Customer_profile.objects.get(employer=e)
+    try:
+        profile = Customer_profile.objects.get(cust=e)
+    except Customer_profile.DoesNotExist:
+        profile = None
 
-    return render(request, 'employer/skills.html', {
+    return render(request, 'customer/skills.html', {
         "user": u,
         "profile": profile,
 
     })
+
+
+def ProfileEdit(request):
+    user = request.user
+    c = customer.objects.get(user=request.user)
+    if c is not None:
+        try:
+            cp = Customer_profile.objects.get(cust=c)
+        except Customer_profile.DoesNotExist:
+            cp = None
+        if cp is None:
+            if request.method == 'POST':
+                form = Profile(request.POST or None, request.FILES or None)
+                if form.is_valid():
+                    f = form.save(commit=False)
+                    f.cust = c
+                    f.save()
+            form = Profile()
+        else:
+            if request.method == "POST":
+                form = Profile(request.POST, request.FILES, instance=cp)
+                if form.is_valid():
+                    form.save()
+
+                    return redirect('customer:profile')
+
+            form = Profile(instance=cp)
+        return render(request, 'partner_company/EditProfile.html', {'form': form})
+    else:
+        return redirect('/')
 
 
 @login_required(login_url='/')

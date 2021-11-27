@@ -58,56 +58,32 @@
   </head>
   <body>
 
-	<header>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 col-12">
-					<div class="top-navbar">
-						<nav class="navbar navbar-expand-lg ">
-  <a class="" href="{% url 'customer:customer_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-12">
+                    <div class="top-navbar">
+                        <nav class="navbar navbar-expand-lg ">
+                            <a class="" href="{% url 'customer:customer_home' %}"> <img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <nav class="navbar mr-auto">
-  <form class="form-inline new-form">
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon1"><i class="fa fa-search" aria-hidden="true"></i></span>
-      </div>
-      <input type="text" class="form-control" placeholder="Job Title" aria-label="Username" aria-describedby="basic-addon1">
-	  <button class="search">Search</button>
-    </div>
-  </form>
-</nav>
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-<ul class="navbar-nav ml-auto">
+
+
+                                <ul class="navbar-nav ml-auto">
+
                                     <li class="nav-item ">
-                                        <a class="nav-link" href="{% url 'customer:customer_home' %}"><i class="fa fa-home" aria-hidden="true"></i></a>
-                                        <span class="menu-text">Home</span>
-                                    </li>
-                                    <li class="nav-item ">
-                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><i class="fas fa-briefcase"></i></a>
-                                        <span class="menu-text">Add job </span>
+                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><b>Add New Shipment</b></a>
+
                                     </li>
                                     <!--	  <li class="nav-item">-->
                                     <!--        <a class="nav-link" href="#">Resume</a>-->
                                     <!--      </li>-->
-                                    <li class="nav-item ">
-                                        <a class="nav-link " href="#"><i class="fas fa-phone-square-alt fa-xs"></i></a>
-                                        <span class="menu-text">Contact Us </span>
-                                    </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#"><i class="fas fa-address-card fa-2x"></i></a>
-                                        <span class="menu-text">About Us </span>
-                                    </li>
-
-                                    <li class="nav-item bell-icon ">
-                                        <a class="nav-link" href="#"><i class="fa fa-bell" aria-hidden="true"></i> </a>
-                                        <span class="menu-text">Notification</span>
-                                    </li>
 
                                     <li class="nav-item">
                                         <div class="dropdown">
@@ -122,14 +98,14 @@
 
                                 </ul>
 
-  </div>
-</nav>
-					</div>
-				</div>
-			</div>
-		</div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	</header>
+    </header>
        <section class="job-portal all-jobs">
 	<div class="container main-wid">
 		<div class="row">

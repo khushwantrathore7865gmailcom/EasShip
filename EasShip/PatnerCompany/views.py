@@ -356,6 +356,7 @@ def ProfileEdit(request):
                 form = Profile(request.POST,request.FILES, instance=cp)
                 if form.is_valid():
                     form.save()
+
                     return redirect('partner_company:profile')
 
             form = Profile(instance=cp)
