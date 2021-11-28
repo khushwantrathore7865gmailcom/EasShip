@@ -1,7 +1,7 @@
 from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, partner_company_Home, ProfileView, save_later, SavedJobs, AppliedJobs, \
     remove_applied, remove_saved, ProfileEdit, SignUpVieww, addTransport, addDriver, ManageDriver, ManageTruck, \
-    Update_PresentShip, SetUp_PresentShip, PresentShip, DriverRecords, RemoveDriver, RemoveTruck
+    Update_PresentShip, SetUp_PresentShip, PresentShip, DriverRecords, RemoveDriver, RemoveTruck,apply_Shipment
 from . import views
 from django.contrib.auth import views as auth_views  # import this
 
@@ -13,6 +13,7 @@ urlpatterns = [
     path('removeApplied/<int:pk>', remove_applied, name='remove'),
     path('removeSaved/<int:pk>', remove_saved, name='remove_saved'),
     path('save/<int:pk>', save_later, name='save_job'),
+    path('bid/<int:pk>', apply_Shipment, name='apply_Shipment'),
     path('login', views.login_candidate, name='partner_company/login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('signup', SignUpView.as_view(), name='partner_company/register'),

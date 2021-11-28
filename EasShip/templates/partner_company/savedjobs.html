@@ -160,9 +160,9 @@
 							UnSave
 </a>
 
-<button type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
+<a href="{% url 'partner_company:apply_Shipment' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" >
 							Apply
-</button>
+</a>
 
                         </div>
                     </div>
@@ -178,38 +178,7 @@
     </div>
 
     </section>
-    <div class="container">
-{% for o in jobs %}
 
-      <div class="modal fade" id="{{o.0.pk}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Questions to be answered by you </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form action = "" method = "POST">
-    {% csrf_token %}
-
-
-          {% for q in o.3 %}
-       {{q.question}}
-          <input type = "hidden" name = "pk" value="{{o.0.pk}}" />
-          <input type="text" name="{{q.question}}" >
-          {% endfor %}
-
-
-        <input class="btn btn-success" type="submit" value="Apply">
-
-   </form>
-      </div>
-
-    </div>
-  </div>
-</div>
-    {% endfor %}
-    </div>
 
  <!-- Optional JavaScript; choose one of the two! -->
 

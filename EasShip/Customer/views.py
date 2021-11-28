@@ -218,15 +218,15 @@ def customer_home(request):
 
                 else:
                     jobs.append(j)
-                    e = comp_Bids.objects.filter(job_id=j)
+                    c_b = comp_Bids.objects.filter(job_id=j)
 
-                    if e is None:
+                    if c_b is None:
                         count.append(0)
                     else:
-                        count.append(e.count())
+                        count.append(c_b.count())
                 expired_job = Expired_ShipJob.objects.filter(cust=e)
                 o = zip(jobs, count)
-                sjob = shipJob.objects.filter(cust=user, bid_selected=True)
+                sjob = shipJob.objects.filter(cust=e, bid_selected=True)
                 for s in sjob:
                     sj.append(s)
                     cbid = comp_Bids.objects.filter(job_id=s)

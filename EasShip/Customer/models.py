@@ -98,4 +98,3 @@ class Expired_ShipJob(models.Model):
 class Shipment_Related_Question(models.Model):
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     question = models.CharField(max_length=100)
-    answer_size = models.IntegerField(default=10)

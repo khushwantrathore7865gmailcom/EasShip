@@ -170,118 +170,123 @@ def login_candidate(request):
 
 
 def partner_company_Home(request):
-    if request.method == 'GET':
-        val = request.GET.get('search_box', None)
-        print("val")
-        print(val)
-        jobs = []
-        job_ques = []
-        relevant_jobs = []
-        common = []
-        companyprofile = []
-        job_skills = []
-        u = request.user
-        if u is not None and u.is_company:
-            c = patnerComp.objects.get(user=u)
-            try:
-                cp = Comp_profile.objects.get(comp=c)
-            except Comp_profile.DoesNotExist:
-                cp = None
-            try:
-                cadd = Comp_address.objects.get(comp=c)
-            except Comp_address.DoesNotExist:
-                cadd = None
-            try:
-                cep = comp_PastWork.objects.filter(comp=c)
-            except comp_PastWork.DoesNotExist:
-                cep = None
-            ncep = len(cep)
-            print("ncep", ncep)
-            if u.first_login:
+    jobs = []
+    job_ques = []
+    relevant_jobs = []
+    common = []
+    companyprofile = []
+    job_skills = []
+    u = request.user
+    if u is not None and u.is_company:
+        c = patnerComp.objects.get(user=u)
+        try:
+            cp = Comp_profile.objects.get(comp=c)
+        except Comp_profile.DoesNotExist:
+            cp = None
+        try:
+            cadd = Comp_address.objects.get(comp=c)
+        except Comp_address.DoesNotExist:
+            cadd = None
+        try:
+            cep = comp_PastWork.objects.filter(comp=c)
+        except comp_PastWork.DoesNotExist:
+            cep = None
+        ncep = len(cep)
+        print("ncep", ncep)
+        if u.first_login:
 
-                job = shipJob.objects.filter(bid_selected=False)
-                print(job)
-                for j in job:
-                    start_date = j.created_on
-                    # print(start_date)
-                    today = datetime.now()
-                    # print(type(today))
-                    stat_date = str(start_date)
-                    start_date = stat_date[:19]
-                    tday = str(today)
-                    today = tday[:19]
-                    s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-                    e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
-                    # print(s_date)
-                    # print(e_date)
-                    diff = abs((e_date - s_date).days)
+            job = shipJob.objects.filter(bid_selected=False)
+            print(job)
+            for j in job:
+                start_date = j.created_on
+                # print(start_date)
+                today = datetime.now()
+                # print(type(today))
+                stat_date = str(start_date)
+                start_date = stat_date[:19]
+                tday = str(today)
+                today = tday[:19]
+                s_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+                e_date = datetime.strptime(today, "%Y-%m-%d %H:%M:%S")
+                # print(s_date)
+                # print(e_date)
+                diff = abs((e_date - s_date).days)
 
-                    if diff > 14:
-                        Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
-                                                       job_description=j.job_description,
-                                                       picking_Address=j.picking_Address,
-                                                       droping_Address=j.droping_Address).save()
+                if diff > 14:
+                    Expired_ShipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
+                                                   job_description=j.job_description,
+                                                   picking_Address=j.picking_Address,
+                                                   droping_Address=j.droping_Address).save()
 
-                        j.delete()
+                    j.delete()
 
-                    else:
-                        jobs.append(j)
+                else:
+                    jobs.append(j)
 
-                for job in jobs:
+            for job in jobs:
 
-                    e = job.cust
-                    try:
-                        c_p = Customer_profile.objects.get(cust=e)
-                    except Customer_profile.DoesNotExist:
-                        c_p = None
-                    companyprofile.append(c_p)
+                e = job.cust
+                try:
+                    c_p = Customer_profile.objects.get(cust=e)
+                except Customer_profile.DoesNotExist:
+                    c_p = None
+                companyprofile.append(c_p)
 
-                    try:
-                        userS = shipJob_Saved.objects.get(job_id=job.pk, comp_id=c)
-                        # print(userS.job_id)
-                    except shipJob_Saved.DoesNotExist:
-                        userS = None
-                    try:
-                        userA = comp_Bids.objects.get(job_id=job.pk, comp_id=c)
-                        # print(userA.job_id)
-                    except comp_Bids.DoesNotExist:
-                        userA = None
+                try:
+                    userS = shipJob_Saved.objects.get(job_id=job.pk, comp_id=c)
+                    # print(userS.job_id)
+                except shipJob_Saved.DoesNotExist:
+                    userS = None
+                try:
+                    userA = comp_Bids.objects.get(job_id=job.pk, comp_id=c)
+                    # print(userA.job_id)
+                except comp_Bids.DoesNotExist:
+                    userA = None
 
-                    if userA:
-                        # print(userA)
-                        continue
-                    if userS:
-                        # print(userS)
-                        continue
-                    relevant_jobs.append(job)
-                    job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
-                object2 = zip(relevant_jobs, job_ques, companyprofile)
+                if userA:
+                    # print(userA)
+                    continue
+                if userS:
+                    # print(userS)
+                    continue
+                relevant_jobs.append(job)
+                job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
+            object2 = zip(relevant_jobs, job_ques, companyprofile)
 
-                return render(request, 'partner_company/home.html',
-                              {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
+            return render(request, 'partner_company/home.html',
+                          {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
 
-            else:
-                u.first_login = True
-                u.save()
-                return redirect('partner_company:create_profile')
         else:
-            return redirect('/')
+            u.first_login = True
+            u.save()
+            return redirect('partner_company:create_profile')
+    else:
+        return redirect('/')
 
-    if request.method == 'POST':
-        print(request.POST)
-        pk = request.POST.get('pk')
-        print(pk)
+
+
+def apply_Shipment(request, pk):
+    u = request.user
+
+    if u is not None and u.is_company:
         c = patnerComp.objects.get(user=request.user)
         job = shipJob.objects.get(pk=pk)
         questions = Shipment_Related_Question.objects.filter(job_id=job)
-        for q in questions:
-            print(request.POST.get(q.question))
 
-            get_text = request.POST.get(q.question)
-            print(get_text)
-            shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
-        comp_Bids.objects.create(comp=c, job_id=job).save()
+        if request.method == 'POST':
+            print(request.POST)
+            pk = pk
+            print(pk)
 
+
+            for q in questions:
+                get_text = request.POST.get(q.question)
+                print(get_text)
+                shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
+            comp_Bids.objects.create(comp=c, job_id=job).save()
+        return render(request, 'partner_company/applyShip.html',{'question':questions,'job':job})
+    else:
+        return redirect('/')
 
 def save_later(request, pk):
     c = patnerComp.objects.get(user=request.user)
