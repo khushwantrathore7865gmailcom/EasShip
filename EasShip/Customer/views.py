@@ -261,6 +261,10 @@ def Add_Shipment(request):
     u = request.user
     if u is not None and u.is_customer:
         users = customer.objects.get(user=u)
+        try:
+            cp = Customer_profile.objects.get(cust=users)
+        except Customer_profile.DoesNotExist:
+            cp=None
         form = ShipJob()
         if request.method == 'POST':
             form = ShipJob(request.POST)
@@ -271,7 +275,7 @@ def Add_Shipment(request):
             pk = f.pk
             print(pk)
             return redirect('customer:Add_prod_desc', pk)
-        return render(request, 'customer/addjob.html', {'form': form})
+        return render(request, 'customer/addjob.html', {'form': form,'ep':cp})
     else:
         return redirect('/')
 
@@ -301,6 +305,12 @@ def remove_unpublish(request, pk):
 
 def Add_prod_desc(request, pk):
     u = request.user
+
+    users = customer.objects.get(user=u)
+    try:
+        cp = Customer_profile.objects.get(cust=users)
+    except Customer_profile.DoesNotExist:
+        cp = None
     ship = shipJob.objects.get(pk=pk)
     form = prod_Detail_Formset(request.GET or None)
     if request.method == 'POST':
@@ -320,7 +330,7 @@ def Add_prod_desc(request, pk):
                              length=length, width=width, height=height).save()
             return redirect('customer:customer_home')
 
-    return render(request, 'customer/add_job_desc.html', {"form2": form})
+    return render(request, 'customer/add_job_desc.html', {"form2": form,'ep':cp})
 
 
 def job_detail(request, pk):
@@ -534,17 +544,22 @@ def publish_job(request, pk):
 
 @login_required(login_url='/')
 def ProfileView(request):
+    oldshipment = []
     u = request.user
     e = customer.objects.get(user=u)
     try:
         profile = Customer_profile.objects.get(cust=e)
     except Customer_profile.DoesNotExist:
         profile = None
+    sp = ShipJob.objects.filter(cust=e)
+    for s in sp:
+        if s.is_completed:
+            oldshipment.append(comp_PastWork.objects.get(jobid=s))
 
     return render(request, 'customer/skills.html', {
         "user": u,
         "profile": profile,
-
+        "past_work": oldshipment
     })
 
 

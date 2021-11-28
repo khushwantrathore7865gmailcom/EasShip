@@ -81,10 +81,9 @@
 
                                     <li class="nav-item">
                                         <div class="dropdown">
-                                            <button class="dropbtn"><img src={{ep.company_logo.url}}></button>
+                                            <button class="dropbtn"><img src={{profile.company_logo.url}}></button>
                                             <div class="dropdown-content">
-                                                <a href="#">My Profile</a>
-                                                <a href="#">Edit Profile</a>
+                                                <a href="{% url 'customer:profile' %}">My Profile</a>
                                                 <a href="{% url 'customer:logout' %}">Log Out</a>
                                             </div>
                                         </div>
@@ -110,8 +109,8 @@
 						<img src={{profile.company_logo.url}}>
 						<div class="job-left-desc">
 							<h2>{{user.first_name}} {{user.last_name}}</h2>
-							<p>{{profile.company_type}}</p>
-							<a type="button" class="btn btn-success" href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a></div>
+							<p>{{profile.company_name}}</p>
+							<a type="button" class="btn btn-success" href="{% url 'customer:ProfileEdit' %}">Edit Profile</a></div>
 				</div>
 			</div>
 			
@@ -119,22 +118,15 @@
 				<div class="row">
 						<div class="col-md-7 col-12">
 							<div class="skills-left">
-								<h3>Transports</h3>
-								<div class="skill-list"><ul>
-									{% for t in truck %}<li>
-									<h4>{{t.transport_no_plate}}:</h4>Transport type: {{t.type_of_transport}}</li>
-									{% endfor %}</ul>
-									
+								<h3>{{profile.company_name}}</h3>
+								<div class="skill-list"><div>
+									<p>{{profile.company_type}}</p></div>
+
 								</div>
-								
-								<h3>Drivers</h3>
-								<div class="skill-list second"><ul>
-									{% for d in driver %}<li>
-									<h4>{{d.name}}:</h4>
-									<p>Phone Number:{{d.phone}}</p></li>
-									{% endfor %}
-										</ul>
-									
+
+								<div class="skill-list second">
+									<p>Address:{{profile.address}}</p>
+
 								</div>
 								
 								
