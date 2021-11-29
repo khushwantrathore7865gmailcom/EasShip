@@ -264,7 +264,7 @@ def Add_Shipment(request):
         try:
             cp = Customer_profile.objects.get(cust=users)
         except Customer_profile.DoesNotExist:
-            cp=None
+            cp = None
         form = ShipJob()
         if request.method == 'POST':
             form = ShipJob(request.POST)
@@ -275,7 +275,7 @@ def Add_Shipment(request):
             pk = f.pk
             print(pk)
             return redirect('customer:Add_prod_desc', pk)
-        return render(request, 'customer/addjob.html', {'form': form,'ep':cp})
+        return render(request, 'customer/addjob.html', {'form': form, 'ep': cp})
     else:
         return redirect('/')
 
@@ -330,7 +330,7 @@ def Add_prod_desc(request, pk):
                              length=length, width=width, height=height).save()
             return redirect('customer:customer_home')
 
-    return render(request, 'customer/add_job_desc.html', {"form2": form,'ep':cp})
+    return render(request, 'customer/add_job_desc.html', {"form2": form, 'ep': cp})
 
 
 def job_detail(request, pk):
@@ -352,11 +352,11 @@ def view_applied_candidate(request, pk):
     if user is not None and user.is_customer:
         candidate_user = []
         candidate_profile = []
-        address_profile = []
-        professional_profile = []
-        c_bid = []
+
         candidate_answer = []
-        # Question=[]
+
+        rating = []
+        number = []
         e = customer.objects.get(user=request.user)
 
         cp = Customer_profile.objects.get(cust=e)
@@ -365,26 +365,30 @@ def view_applied_candidate(request, pk):
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
-            c_bid.append(can)
+
             c = can.comp
             try:
                 c_p = Comp_profile.objects.get(comp=c)
             except Comp_profile.DoesNotExist:
                 c_p = None
-            try:
-                c_e = Comp_address.objects.get(comp=c)
-            except Comp_address.DoesNotExist:
-                c_e = None
+
             try:
                 p_p = comp_PastWork.objects.filter(comp=c)
             except comp_PastWork.DoesNotExist:
                 p_p = None
+            count = len(p_p)
+            number.append(count)
+            r = 0
+            for p in p_p:
+                r = r + p.Rating
+            if count ==0:
+                rating.append(0)
+            else:
+                rating.append(r / count)
             candidate_profile.append(c_p)
             print("working filter")
             print(candidate_profile)
             candidate_user.append(c.user)
-            address_profile.append(c_e)
-            professional_profile.append(p_p)
 
             for q in question:
                 candidate_answer.append(
@@ -392,8 +396,7 @@ def view_applied_candidate(request, pk):
 
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
-        objects = zip(candidate_profile, address_profile, professional_profile,
-                      candidate_user, candidate_Applied, c_bid)
+        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating)
 
         return render(request, 'customer/job_candidate.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})

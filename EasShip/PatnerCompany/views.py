@@ -277,13 +277,14 @@ def apply_Shipment(request, pk):
             print(request.POST)
             pk = pk
             print(pk)
-
-
+            bid = request.POST.get('bid')
+            comp = request.POST.get('comp')
             for q in questions:
                 get_text = request.POST.get(q.question)
                 print(get_text)
                 shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
-            comp_Bids.objects.create(comp=c, job_id=job).save()
+            comp_Bids.objects.create(comp=c,Bid_amount=bid, complete_in=comp,job_id=job).save()
+            return redirect('partner_company:partner_company_home')
         return render(request, 'partner_company/applyShip.html',{'question':questions,'job':job})
     else:
         return redirect('/')
