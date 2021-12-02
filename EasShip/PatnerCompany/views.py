@@ -252,7 +252,7 @@ def partner_company_Home(request):
                 relevant_jobs.append(job)
                 job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
             object2 = zip(relevant_jobs, job_ques, companyprofile)
-            select = comp_Bids.objects.filter(comp_id=c,is_selected=True,assign_driver=False)
+            select = comp_Bids.objects.filter(comp_id=c,is_selected=True,completed_shipment=False)
             print(select)
             return render(request, 'partner_company/home.html',
                           {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd,'select':select})

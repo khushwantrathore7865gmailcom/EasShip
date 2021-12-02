@@ -202,11 +202,11 @@
                                         <tbody>
                                             <tr>
                                                 <td><label></label>
-                                                    <a href="{% url 'customer:job_detail' job.pk %}"> <span>{{ job.ship_title }}</span></a>
+                                                    <a href="{% url 'customer:job_detail' job.pk %}" style="color:#03A84E"> <span>{{ job.ship_title }}</span></a>
                                                 </td>
                                                 <!--					<td></td>-->
                                                 <td>{{ job.created_on.date }}</td>
-                                                <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.pk %}">{{ job.get_applied_no }}</a></td>
+                                                <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.pk %}" style="color:#03A84E">{{ job.get_applied_no }}</a></td>
                                                 <td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                                         <a class="dropdown-item" href="{% url 'customer:delete_job' job.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
@@ -238,11 +238,11 @@
                                         <tbody>
                                             <tr>
                                                 <td><label></label>
-                                                    <a href="{% url 'customer:job_detail' job.0.pk %}"> <span>{{ job.0.ship_title }}</span></a>
+                                                    <a href="{% url 'customer:job_detail' job.0.pk %}" style="color:#03A84E"> <span>{{ job.0.ship_title }}</span></a>
                                                 </td>
                                                 <!--					<td></td>-->
                                                 <td>{{ job.0.created_on.date }}</td>
-                                                <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.0.pk %}">{{ job.1 }}</a></td>
+                                                <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.0.pk %}"  style="color:#03A84E">{{ job.1 }}</a></td>
                                                 <td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
                                                         <a class="dropdown-item" href="{% url 'customer:delete_job' job.0.pk %}"><img src="{% static 'images/btn-icon/delete.png' %}"> Delete Job</a>
@@ -275,11 +275,11 @@
                                         <tbody>
                                             <tr>
                                                 <td><label></label>
-                                                    <a href="{% url 'customer:job_detail' job.0.job_id.pk %}"> <span>{{ job.0.job_id.ship_title }}</span></a>
+                                                    <a href="{% url 'customer:job_detail' job.0.job_id.pk %}" style="color:#03A84E"> <span>{{ job.0.job_id.ship_title }}</span></a>
                                                 </td>
                                                 <!--					<td></td>-->
                                                 <td>{{ job.0.job_id.created_on.date }}</td>
-                                                <td style="text-align: center"><a href="{% url 'customer:Bid_detail' job.0.Total_payment.pk %}">{{ job.1.company_name }}</a></td>
+                                                <td style="text-align: center"><a href="{% url 'customer:Bid_detail' job.0.Total_payment.pk %}" style="color:#03A84E">{{ job.1.company_name }}</a></td>
                                                 <td>{{ job.0.current_status }}</td>
                                                 <td class="dropdown">
                                                     {% if pay %}
