@@ -112,6 +112,7 @@
                 <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
                 <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
                 <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+                <a class="nav-link" href="{% url 'partner_company:PastShipment' %}">Past Shipment</a>
             </div>
             </div></li>
          <li class="nav-item">
@@ -136,7 +137,11 @@
 		</div>
 
 	</header>
-
+    {% if select %}
+<div class="alert alert-success" role="alert">
+ Congratulation you got a new Shipment. <a href="{% url 'partner_company:AppliedJobs' %}" class="alert-link">Click Here</a> to set Transportation for your new Shipment.
+</div>
+    {% endif %}
 <section class="job-portal">
 	<div class="container">
 		<div class="row">
@@ -153,10 +158,20 @@
 						{% if cp.company_logo %}<img src="{{cp.company_logo.url}}">{% else %}<img src="{% static 'images/profile/avatar.png' %}">{% endif %}
 						<div class="job-left-desc">
 							<h2>{{cp.company_name }}</h2>
+                            <h5>Name:
+
+                            <span>{{c.user.first_name}} {{c.user.last_name}}</span>
+
+                                    </h5>
 
 								<h5>Email:
 
                             <span>{{c.user}}</span>
+
+                                    </h5>
+                            <h5>Phone number:
+
+                            <span>{{cp.phone}}</span>
 
                                     </h5>
                             <h5>Number of past workdone:
@@ -164,11 +179,6 @@
                             <span>{{n}}</span>
 
                                     </h5>
-
-								<h5>Location:
-								{% if cadd %}<span>{{cadd.city}},{{cadd.state}}{% else %}-</span>{% endif %}</h5>
-
-
 
 						</div>
 				</div>

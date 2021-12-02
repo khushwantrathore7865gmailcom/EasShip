@@ -252,9 +252,10 @@ def partner_company_Home(request):
                 relevant_jobs.append(job)
                 job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
             object2 = zip(relevant_jobs, job_ques, companyprofile)
-
+            select = comp_Bids.objects.filter(comp_id=c,is_selected=True,assign_driver=False)
+            print(select)
             return render(request, 'partner_company/home.html',
-                          {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd})
+                          {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd,'select':select})
 
         else:
             u.first_login = True
@@ -330,14 +331,17 @@ def ProfileView(request):
             past_work = comp_PastWork.objects.filter(comp=c)
         except comp_PastWork.DoesNotExist:
             past_work = None
+        n= len(past_work)
         return render(request, 'partner_company/skills.html', {
+            'c':c,
             "user": u,
             "profile": profile,
             "address": address,
             "present_work": present_work,
             "past_work": past_work,
             "truck": truck,
-            "driver": driver
+            "driver": driver,
+            'n':n
         })
 
 
@@ -483,7 +487,28 @@ def AppliedJobs(request):
     else:
         return redirect('/')
 
+def PastShipment(request):
+    companyprofile = []
+    user = request.user
+    if user is not None and user.is_company:
+        c = patnerComp.objects.get(user=request.user)
+        try:
+            cp = Comp_profile.objects.get(comp=c)
+        except Comp_profile.DoesNotExist:
+            cp = None
+        past = comp_PastWork.objects.filter(comp=c)
+        for a in past:
+            e = a.job_id.cust
+            companyprofile.append(Customer_profile.objects.get(cust=e))
 
+        objects = zip(past, companyprofile)
+
+        return render(request, 'partner_company/past.html',
+                      {'jobs': objects, 'c': c, 'cp': cp})
+        # objects = zip(applied, companyprofile)
+        # return render(request, 'partner_company/applied.html', {'jobs': objects, 'cp': cp})
+    else:
+        return redirect('/')
 def remove_applied(request, pk):
     comp_Bids.objects.get(pk=pk).delete()
 
@@ -549,28 +574,46 @@ def SetUp_PresentShip(request, pk):
     user = request.user
     if user.is_company:
         pr = patnerComp.objects.get(user=user)
+        cp = Comp_profile.objects.get(comp=pr)
         job = shipJob.objects.get(pk=pk)
+        cb = comp_Bids.objects.get(job_id=job,comp=pr)
+
         if request.method == 'POST':
             form = PresentWorkSetForm(data=request.POST or None)
             if form.is_valid():
                 f = form.save(commit=False)
                 f.comp = pr
                 f.job_id = job
+                f.Total_payment=cb
                 f.current_status = "Driver and Truck assigned"
                 f.save()
+                cb.assign_driver =True
+                cb.save()
+
             return redirect('partner_company:partner_company_home')
         form = PresentWorkSetForm()
         return render(request, 'partner_company/setup_presentShip.html',
-                      {'form': form})
+                      {'form': form,'cp':cp})
     else:
         return redirect('/')
 
-
-def Update_PresentShip(request, pk):
+def cancel_setup(request,pk):
     user = request.user
     if user.is_company:
+        cb=comp_Bids.objects.get(pk=pk)
+        cb.job_id.bid_selected=False
+        cb.delete()
+
+        return redirect('partner_company:partner_company_home')
+    else:
+        return redirect('/')
+def Update_PresentShip(request, pk):
+    user = request.user
+    # print(user)
+    if user.is_company:
         pr = patnerComp.objects.get(user=user)
-        job = get_object_or_404(shipJob, pk=pk)
+        cp = Comp_profile.objects.get(comp=pr)
+        job = comp_PresentWork.objects.get(pk=pk)
         if request.method == 'POST':
             form = PresentWorkUpdateForm(request.POST, instance=job)
             if form.is_valid():
@@ -581,7 +624,7 @@ def Update_PresentShip(request, pk):
             return redirect('partner_company:partner_company_home')
         form = PresentWorkUpdateForm(instance=job)
         return render(request, 'partner_company/setup_presentship.html',
-                      {'form': form})
+                      {'form': form,'cp':cp})
     else:
         return redirect('/')
 def PresentShip(request):
@@ -595,7 +638,7 @@ def PresentShip(request):
             cpr=None
         c = comp_PresentWork.objects.filter(comp=pr)
         for cp  in c:
-            profile.append(Customer_profile.objects.get(cust=cp.cust))
+            profile.append(Customer_profile.objects.get(cust=cp.job_id.cust))
         o = zip(c,profile)
         return render(request,'partner_company/ShipmentOngoing.html',{'c_p':o,'cp':cpr})
     else:
@@ -657,6 +700,27 @@ def DriverRecords(request):
                 c.append(None)
         info = zip(drivers,cp,n)
         return render(request, 'partner_company/DriverPastwork.html', {'info': info,'cp':cpr})
+    else:
+        return redirect('/')
+def TruckRecords(request):
+    user=request.user
+    cp=[]
+    n=[]
+    if user.is_company:
+        comp = patnerComp.objects.get(user=user)
+        try:
+            cpr = Comp_profile.objects.get(comp=comp)
+        except Comp_profile.DoesNotExist:
+            cpr=None
+        Truck = comp_Transport.objects.filter(comp=comp)
+        for t in Truck:
+            try:
+                cp.append(comp_PastWork.objects.filter(transport=t))
+                n.append(len(comp_PastWork.objects.filter(transport=t)))
+            except comp_PastWork.DoesNotExist:
+                c.append(None)
+        info = zip(Truck,cp,n)
+        return render(request, 'partner_company/TruckPastwork.html', {'info': info,'cp':cpr})
     else:
         return redirect('/')
 def RemoveDriver(request, pk):

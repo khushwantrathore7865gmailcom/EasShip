@@ -133,7 +133,11 @@
         </div>
 
     </header>
-
+{% if pay %}
+    <div class="alert alert-success" role="alert">
+  Please Pay advance so that shipper can start the shipment by selecting<b> Ongoing Shipment</b>.
+</div>
+    {% endif %}
     <section class="job-portal">
         <div class="container">
             <div class="row">
@@ -267,20 +271,26 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        {% for job in jobs %}
+                                        {% for job in og %}
                                         <tbody>
                                             <tr>
                                                 <td><label></label>
-                                                    <a href="{% url 'customer:job_detail' job.0.pk %}"> <span>{{ job.0.ship_title }}</span></a>
+                                                    <a href="{% url 'customer:job_detail' job.0.job_id.pk %}"> <span>{{ job.0.job_id.ship_title }}</span></a>
                                                 </td>
                                                 <!--					<td></td>-->
-                                                <td>{{ job.0.created_on.date }}</td>
-                                                <td style="text-align: center"><a href="{% url 'customer:view_applied_candidate' job.0.pk %}">{{ job.1 }}</a></td>
-                                                <td class="dropdown"><span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
+                                                <td>{{ job.0.job_id.created_on.date }}</td>
+                                                <td style="text-align: center"><a href="{% url 'customer:Bid_detail' job.0.Total_payment.pk %}">{{ job.1.company_name }}</a></td>
+                                                <td>{{ job.0.current_status }}</td>
+                                                <td class="dropdown">
+                                                    {% if pay %}
+                                                    <a href="" type="button" class="btn btn-success">Pay Advance</a>
+                                                    {% else %}
+                                                    <span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        <a class="dropdown-item" href="{% url 'customer:job_detail' job.0.pk %}"><img src="https://img.icons8.com/ios/32/FFFFFF/visible--v2.png" />View Job</a>
-                                                        <a class="dropdown-item" href="{% url 'customer:unpublish' job.0.pk %}"><img src="{% static 'images/btn-icon/1.png' %}"> Unpublish Job</a>
+                                                        <a class="dropdown-item" href="{% url 'customer:job_detail' job.0.job_id.pk %}">View Job</a>
+                                                        <a class="dropdown-item" href="{% url 'customer:unpublish' job.0.pk %}">Request Update</a>
                                                     </div>
+                                                    {% endif %}
                                                 </td>
 
                                             </tr>

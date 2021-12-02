@@ -83,6 +83,7 @@
                 <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
                 <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
                 <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+                <a class="nav-link" href="{% url 'partner_company:PastShipment' %}">Past Shipment</a>
             </div>
             </div></li>
          <li class="nav-item">
@@ -134,9 +135,9 @@
             </div>
                         </div>
     <p class="job-para">
-        Driver :{{o.0.driver}}
-        CoDriver :{{o.0.co_driver}}
-        Transport assign :{{o.0.transport}}
+        Driver :{{o.0.driver.name}}&emsp;&emsp;&emsp;&emsp;
+        CoDriver :{{o.0.co_driver.name}}<br>
+        Transport assign :{{o.0.transport.transport_no_plate }}-{{o.0.transport.type_of_transport }}
         pickup: {{o.0.job_id.picking_Address}}<br>
         drop:  {{o.0.job_id.droping_Address}}<br>
 
@@ -146,7 +147,11 @@
        </p>
   <div class="share">
      <p>
-        payment done :{{o.0.payment_Done}} out of total Payment:{{o.0.Total_payment}}
+         {% if o.0.payment_Done %}
+         Payment Done:{{o.0.payment_Done}} out of total Payment:{{o.0.Total_payment}}
+         {% else %}
+        Payment done :Not done Yet
+         {% endif %}
      </p>
       <p>Current Status : {{o.0.current_status}}</p>
             <a type="button" href="{% url 'partner_company:Update_PresentShip' o.0.pk %}" class="btn btn-success">Update current status</a>

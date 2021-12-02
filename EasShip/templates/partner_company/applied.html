@@ -82,6 +82,7 @@
                 <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
                 <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
                 <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+                <a class="nav-link" href="{% url 'partner_company:PastShipment' %}">Past Shipment</a>
             </div>
             </div></li>
          <li class="nav-item">
@@ -143,7 +144,8 @@
   <div class="share">
      <p>
          {% if o.0.is_selected %}
-         Status : Is Selected
+         <a type="button" href="{% url 'partner_company:SetUp_PresentShip' o.0.job_id.pk %}" class="btn btn-success">Set Transportation</a>
+         <a type="button" href="{% url 'partner_company:cancel_setup' o.0.job_id.pk %}" class="btn btn-danger">Cancel</a>
          {% elif o.0.is_shortlisted %}
          Status :Is Shortlisted
          {% elif o.0.is_disqualified %}

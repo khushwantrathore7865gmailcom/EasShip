@@ -88,6 +88,8 @@ class PresentWorkSetForm(forms.ModelForm):
 
 
 class PresentWorkUpdateForm(forms.ModelForm):
+    completed_shipment=forms.BooleanField(label='Completed Shipment', help_text='Reached to the location of Dropping Address')
+
     class Meta:
         model = comp_PresentWork
         fields = [
@@ -95,6 +97,7 @@ class PresentWorkUpdateForm(forms.ModelForm):
             'co_driver',
             'transport',
             'current_status',
+            'completed_shipment'
         ]
 
 

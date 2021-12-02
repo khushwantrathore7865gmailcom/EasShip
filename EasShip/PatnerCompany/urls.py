@@ -1,7 +1,8 @@
 from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, partner_company_Home, ProfileView, save_later, SavedJobs, AppliedJobs, \
     remove_applied, remove_saved, ProfileEdit, SignUpVieww, addTransport, addDriver, ManageDriver, ManageTruck, \
-    Update_PresentShip, SetUp_PresentShip, PresentShip, DriverRecords, RemoveDriver, RemoveTruck,apply_Shipment
+    Update_PresentShip, SetUp_PresentShip, PresentShip, DriverRecords, RemoveDriver, RemoveTruck, apply_Shipment, \
+    TruckRecords,PastShipment,cancel_setup
 from . import views
 from django.contrib.auth import views as auth_views  # import this
 
@@ -10,6 +11,7 @@ urlpatterns = [
     path('', partner_company_Home, name='partner_company_home'),
     path('savedJobs/', SavedJobs, name='SavedJobs'),
     path('appliedJobs/', AppliedJobs, name='AppliedJobs'),
+    path('PastShipment/', PastShipment, name='PastShipment'),
     path('removeApplied/<int:pk>', remove_applied, name='remove'),
     path('removeSaved/<int:pk>', remove_saved, name='remove_saved'),
     path('save/<int:pk>', save_later, name='save_job'),
@@ -39,8 +41,10 @@ urlpatterns = [
     path('ManageTruck/', ManageTruck, name='ManageTruck'),
     path('Update_PresentShip/<int:pk>', Update_PresentShip, name='Update_PresentShip'),
     path('SetUp_PresentShip/<int:pk>', SetUp_PresentShip, name='SetUp_PresentShip'),
+    path('cancel_SetUp/<int:pk>', cancel_setup, name='cancel_setup'),
     path('PresentShip/', PresentShip, name='PresentShip'),
     path('DriverRecords/', DriverRecords, name='DriverRecords'),
+    path('VehicleRecords/', TruckRecords, name='VehicleRecords'),
     path('RemoveDriver/<int:pk>', RemoveDriver, name='RemoveDriver'),
     path('RemoveTruck/<int:pk>', RemoveTruck, name='RemoveTruck'),
 ]

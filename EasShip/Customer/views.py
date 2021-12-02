@@ -175,6 +175,7 @@ def customer_home(request):
     count = []
     sj = []
     cb = []
+    c__p = []
 
     user = request.user
     context = {}
@@ -227,12 +228,20 @@ def customer_home(request):
                 expired_job = Expired_ShipJob.objects.filter(cust=e)
                 o = zip(jobs, count)
                 sjob = shipJob.objects.filter(cust=e, bid_selected=True)
+                pay = False
                 for s in sjob:
-                    sj.append(s)
-                    cbid = comp_Bids.objects.filter(job_id=s)
+                    p = comp_PresentWork.objects.get(job_id=s)
+                    sj.append(p)
+
+                    if p.payment_Done == "":
+                        pay = True
+                    cbid = Comp_profile.objects.get(comp=p.comp)
+                    print(cbid)
                     cb.append(cbid)
+
                 object = zip(sj, cb)
-                context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep}
+                context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep, 'pay': pay}
+
             return render(request, 'customer/job-post.html', context)
         else:
             user.first_login = True
@@ -346,6 +355,19 @@ def job_detail(request, pk):
         return redirect('/')
 
 
+def Bid_detail(request, pk):
+    user = request.user
+    if user is not None and user.is_customer:
+        e = customer.objects.get(user=request.user)
+        job = comp_Bids.objects.get(pk=pk)
+        company = Comp_profile.objects.get(comp=job.comp)
+        # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
+        # objects = zip(job,candidate_Applied)
+        return render(request, 'customer/Bid_details.html', {'job': job, 'c': company})
+    else:
+        return redirect('/')
+
+
 @login_required(login_url='/')
 def view_applied_candidate(request, pk):
     user = request.user
@@ -381,7 +403,7 @@ def view_applied_candidate(request, pk):
             r = 0
             for p in p_p:
                 r = r + p.Rating
-            if count ==0:
+            if count == 0:
                 rating.append(0)
             else:
                 rating.append(r / count)
@@ -493,7 +515,7 @@ def shortlist(request, pk):
 def select(request, pk):
     user = request.user
     e = comp_Bids.objects.get(pk=pk)
-    e.is_shortlisted = True
+    e.is_shortlisted = False
     e.is_disqualified = False
     e.is_selected = True
     e.save()
@@ -511,10 +533,6 @@ def select(request, pk):
             if r:
                 r.commissions = e.Bid_amount * 0.05
                 r.save()
-        else:
-            c.is_shortlisted = False
-            c.is_disqualified = True
-            c.save()
 
     return redirect('customer:view_applied_candidate', e.job_id.pk)
 
@@ -554,7 +572,7 @@ def ProfileView(request):
         profile = Customer_profile.objects.get(cust=e)
     except Customer_profile.DoesNotExist:
         profile = None
-    sp = ShipJob.objects.filter(cust=e)
+    sp = shipJob.objects.filter(cust=e)
     for s in sp:
         if s.is_completed:
             oldshipment.append(comp_PastWork.objects.get(jobid=s))

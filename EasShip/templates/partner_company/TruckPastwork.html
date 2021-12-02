@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/style12.css' %}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
-<style>
+ 		<style>
 .dropbtn {
   background-color: #FFFFFF;
   color: white;
@@ -112,75 +112,58 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
-
 				<div class="heading">
-					<h3>Shipment <span>Page</span></h3>
-					<h4>Shipments you saved for review</h4>
+					<h3>Transport vehicle<span>Past Work</span></h3>
+
 				</div>
 			</div>
 
+<div class="col-md-10 col-12 mx-auto">
 
-
-
-   <div class="col-md-10 col-12 mx-auto">
-
-       {% for o in jobs %}
-
-       <div class="job-right">
+       {% for o in info %}
+				<div class="job-right">
 					<div class="job-right-jobs">
 
-						<div class="job-right-jobs-image">
-                        {% if o.2.company_logo %}
-                            <img src={{o.2.company_logo.url}}>
-                            {% endif %}
+
             <div class="jobs-main">
             <div class="text-jobs">
-      <h5>{{o.0.job_id.ship_title}}</h5>
-                <p style="font-size:21px">{{o.2.company_name}}</p>
+      <h5>{{o.0.transport_no_plate}}</h5><p style="font-size:21px">Total Number of shipment done:{{o.2}}</p>
+                   <p style="font-size:21px">{{o.0.type_of_transport}}</p>
             </div>
             </div>
-                        </div>
-      <p class="job-para">
-        pickup: {{o.0.job_id.picking_Address}}<br>
-        drop:  {{o.0.job_id.droping_Address}}<br>
+                        {% if o.1 %}
+    <h6>Shipment Done</h6>
+    <ul>   <li>
+    <p class="job-para">
+        Shipment Title:{{o.1.job_id.ship_title}}<br>
+        pickup: {{o.1.job_id.picking_Address}}<br>
+        drop:  {{o.1.job_id.droping_Address}}<br>
+        Deliverd on:{{o.1.delivered_on}}<br>
+        Rating: {{o.1.Rating}}
 
 
-        Job description:<br>
-        {{o.0.job_id.job_description}}
-
-<!--        Job description:<br>-->
-<!--        {{o.4.company_name}}<br>-->
-<!--        Job description:<br>-->
-<!--        {{o.4.company_name}}<br>-->
-    </p>
+       </p></li>
+        </ul>{% endif %}
                         <div class="share">
-     <ul class="list-inline">
-</ul>
-
-<a href="{% url 'partner_company:remove_saved' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{o.0.pk}}">
-							UnSave
-</a>
-
-<a href="{% url 'partner_company:apply_Shipment' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" >
-							Apply
-</a>
-
-                        </div>
+<a type="button" href="{% url 'partner_company:RemoveDriver' o.0.pk %}" class="btn btn-danger">Remove Driver</a>
+                            </div>
                     </div>
-       </div>
 
- {% endfor %}
+
+
 
 </div>
 
+
+
+{% endfor %}
+</div>
 
         </div>
 
     </div>
 
     </section>
-
-
  <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

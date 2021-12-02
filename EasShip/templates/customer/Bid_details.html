@@ -1,19 +1,20 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-  
-<!-- Mirrored from grocbees.com/job-portal/skills.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Jul 2021 03:56:35 GMT -->
-<head>
+  <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href=" {% static 'css/style_skills.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style12.css' %}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
- <style>
-.dropbtn {
+<script src="https://kit.fontawesome.com/5a2b925216.js" crossorigin="anonymous"></script>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    .dropbtn {
   background-color: #FFFFFF;
   color: white;
   padding: 16px;
@@ -49,9 +50,10 @@
 .dropdown:hover .dropbtn {background-color: #03A84E;}
 
 
-		</style>
+</style>
   </head>
   <body>
+
 
     <header>
         <div class="container">
@@ -81,7 +83,7 @@
 
                                     <li class="nav-item">
                                         <div class="dropdown">
-                                            <button class="dropbtn"><img src={{profile.company_logo.url}}></button>
+                                            <button class="dropbtn"><img src={{ep.company_logo.url}}></button>
                                             <div class="dropdown-content">
                                                 <a href="{% url 'customer:profile' %}">My Profile</a>
                                                 <a href="{% url 'customer:logout' %}">Log Out</a>
@@ -99,78 +101,51 @@
         </div>
 
     </header>
-
-<section class="job-portal">
+    <section class="job-portal">
 	<div class="container">
 		<div class="row">
-		
-			<div class="col-md-3 col-12">
-				<div class="job-left">
-						<img src={{profile.company_logo.url}}>
-						<div class="job-left-desc">
-							<h2>{{user.first_name}} {{user.last_name}}</h2>
-							<p>{{profile.company_name}}</p>
-							<a type="button" class="btn btn-success" href="{% url 'customer:ProfileEdit' %}">Edit Profile</a></div>
+			<div class="col-md-10 mx-auto col-12">
+				<div class="heading">
+					<h2>Job Title: <span>{{job.job_id.job_title}}</span></h2>
+
 				</div>
 			</div>
-			
-			<div class="col-md-9 col-12">
-				<div class="row">
-						<div class="col-md-7 col-12">
-							<div class="skills-left">
-								<h3>{{profile.company_name}}</h3>
-								<div class="skill-list"><div>
-									<p>{{profile.company_type}}</p></div>
+<div class="col-md-10 col-12 mx-auto">
+				<div class="job-right developer">
+					<div class="job-right-jobs">
+						<div class="job-right-jobs-image">
+                            {% if c.company_logo %}
+						<img src="{{c.company_logo.url}}">
+                            {% endif %}
+						<div class="jobs-main">
+							<div class="text-jobs">
 
-								</div>
-
-								<div class="skill-list second">
-									<p>Address:{{profile.address}}</p>
-
-								</div>
-								
-								
-								
-							</div>
+                                <h5>{{c.company_name}}</h5>
+                                </div>
+                            <p class="min"><span>Bid on:</span>{{job.bid_on}}</p>
 						</div>
-						
-						
-						<div class="col-md-5 col-12">
-							<div class="skills-right">
-							  <h3>Contact Details</h3>
-								<p><img src=" {% static 'images/mail.png' %}"> <span><b>Email ID</b> : {{user.email}}</span></p>
-								<p><img src="{% static 'images/phone.png' %}"> <span><b>Phone no.</b> : {{profile.phone}}</span></p>
-							</div>
-							
-						</div>
-						
-				</div>
-					
-
-					
+                    </div>
+						<h3>JOB DESCRIPTION</h3>
+                        <p class="job-para">
+                            Pickup Address:{{job.job_id.picking_Address}}</p>
+                            <p class="job-para">
+                        Drop Address:{{job.job_id.droping_Address}}</p>
+                        <p class="job-para">
+                        Pickup Address:{{job.job_id.job_description}}</p>
 
 
-	
-	
+                    <h3>Bid Description</h3>
+                      <ul class="list-inline">
+							<li>Bid: <span>{{job.Bid_amount}}</span></li>
+                          <li>Complete_in: <span>{{job.complete_in}}</span></li>
+                            </ul>
+
+                    </div>
+                </div>
 </div>
-				
-</div>
-			
-</div>
-	</div>
-</section>
+        </div>
+    </div>
+    </section>
 
-<footer>
-<p>Footer section</p>
-</footer>
-
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  </body>
-
-<!-- Mirrored from grocbees.com/job-portal/skills.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Jul 2021 03:56:40 GMT -->
+</body>
 </html>

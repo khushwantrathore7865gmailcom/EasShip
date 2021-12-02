@@ -84,6 +84,7 @@
                 <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
                 <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
                 <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+				<a class="nav-link" href="{% url 'partner_company:PastShipment' %}">Past Shipment</a>
             </div>
             </div></li>
          <li class="nav-item">
@@ -116,10 +117,34 @@
 			<div class="col-md-3 col-12">
 				<div class="job-left">
 						<img src={{profile.company_logo.url}}>
-						<div class="job-left-desc">
-							<h2>{{user.first_name}} {{user.last_name}}</h2>
+					<div class="job-left-desc">
+							<h2>{{profile.company_name }}</h2>
+                            <h5>Name:
+
+                            <span>{{c.user.first_name}} {{c.user.last_name}}</span>
+
+                                    </h5>
+
+								<h5>Email:
+
+                            <span>{{c.user}}</span>
+
+                                    </h5>
+						 <h5>Phone number:
+
+                            <span>{{profile.phone}}</span>
+
+                                    </h5>
+                            <h5>Number of past workdone:
+
+                            <span>{{n}}</span>
+
+                                    </h5>
+
 							<a type="button" class="btn btn-success" href="{% url 'partner_company:ProfileEdit' %}">Edit Profile</a></div>
-				</div>
+
+						</div>
+
 			</div>
 			
 			<div class="col-md-9 col-12">
@@ -163,21 +188,7 @@
 					
 
 					
-				<div class="employment">
-						<h3>Past Shipment Done</h3>
-					{% for s in past_work %}
 
-
-							<h4>{{s.job_id.ship_title}} <img src=" {% static 'images/skills-btn.png' %} "></h4>
-							<p >{{s.job_id.picking_Address}} to {{s.job_id.droping_Address}}</p>
-							<p>Driver who completed the task:{{s.driver}}</p>
-					       <p >Completed on: {{s.delivered_on}}</p>
-							<p>Rating:{{s.Rating}}</p>
-
-<hr>
-{% endfor %}
-
-		</div>
 
 	
 	
@@ -186,7 +197,7 @@
 </div>
 			
 </div>
-	</div>
+
 </section>
 
 <footer>

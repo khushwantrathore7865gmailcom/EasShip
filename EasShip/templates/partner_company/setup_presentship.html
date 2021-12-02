@@ -1,10 +1,250 @@
-<!DOCTYPE html>
+{% load static %}
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{{form}}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="bootstrap.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/stylemod.css' %}">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+          <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  		<style>
+.dropbtn {
+  background-color: #FFFFFF;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #03A84E;}
+		.job-left.job-left-images-new img {
+    width: 270px;
+    height: 270px;
+    border-radius: 50%;
+}
+.job-left-desc {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0px 50px 0px rgb(0 0 1 / 25%);
+}
+
+.job-left.job-left-images-new {
+    position: relative;
+}
+
+.job-left.job-left-images-new:after {content: "";position: absolute;background: #fff;top: 22%;left: 0;width: 100%;height: 30%;z-index: -1;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0px 50px 0px rgb(0 0 1 / 25%);
+}
+.job-left.job-left-images-new {
+    background: transparent;
+    box-shadow: none;
+}
+.job-left-desc {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 39px 50px 0px rgb(0 0 1 / 14%);
+}
+
+
+		</style>
+  </head>
+  <body>
+
+	<header>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-12">
+					<div class="top-navbar">
+						<nav class="navbar navbar-expand-lg ">
+  <a class="" href="{% url 'partner_company:partner_company_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+
+
+	<ul class="navbar-nav ml-auto">
+
+
+
+	  <li class="nav-item">
+          <a class="nav-link" href="{% url 'partner_company:ManageDriver' %}"><b>Manage Driver</b></a>
+      </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'partner_company:ManageTruck' %}"><b>Manage Transportation</b></a>
+      </li>
+        <li class="nav-item">
+            <div class="dropdown"><button class="dropbtn nav-link" style="color:black;"><b>Shipments</b></button>
+            <div class="dropdown-content">
+                <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
+                <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
+                <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+                <a class="nav-link" href="{% url 'partner_company:PastShipment' %}">Past Shipment</a>
+            </div>
+            </div></li>
+         <li class="nav-item">
+<div class="dropdown">
+  <button class="dropbtn">{% if cp.company_logo %}<img src="{{cp.company_logo.url}}">{% else %}<img src="{% static 'images/profile/avatar.png' %}">{% endif %}</button>
+  <div class="dropdown-content">
+    <a href="{% url 'partner_company:profile' %}">My Profile</a>
+
+    <a href="{% url 'partner_company:logout' %}">Log Out</a>
+  </div>
+</div>
+         </li>
+
+
+	 </ul>
+
+  </div>
+</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</header>
+
+<section class="job-portal">
+<div class="col-md-12">
+				<div class="heading">
+					<h3>Post <span>Job</span></h3>
+
+                </div></div>
+	<div class="container">
+        <div class="divv">
+
+            <h4>Few guidelines</h4>
+
+                    <ul>
+                        <li>Proper formatting of the text/content of the posting with clear spaces and standard bullets (-) to be used.</li>
+                        <li>No short forms/abbreviations to be used in the text.</li>
+                        <li>Correct mail ID to be included at the end of the posting.</li>
+                        <li>Two skills should be separated by comma.</li>
+                        <li>No spelling mistakes in the content.</li>
+                        <li>JD should be concise and crisp - to the point.</li>
+                    </ul>
+
+        </div>
+
+		<div class="row">
+
+
+  <div class="col-md-10 col-12" >
+				<div class="">
+<form class="form-horizontal" method="POST" action="">
+{% csrf_token %}
+  {{form.as_p}}
+    <div class="row spacer">
+    <div class="col-4 offset-2">
+    <button type="submit" class="btn btn-block btn-success">Update</button>
+    </div>
+    </div>
+<!--    <a type="button" class="btn btn-success">update</a>-->
+</form>
+                </div>
+  </div>
+        </div>
+    </div>
+</section>
+
+{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script type="text/javascript">
+function updateElementIndex(el, prefix, ndx) {
+    var id_regex = new RegExp('(' + prefix + '-\\d+)');
+    var replacement = prefix + '-' + ndx;
+    if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+    if (el.id) el.id = el.id.replace(id_regex, replacement);
+    if (el.name) el.name = el.name.replace(id_regex, replacement);
+}
+function cloneMore(selector, prefix) {
+    var newElement = $(selector).clone(true);
+    var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+    newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        var name = $(this).attr('name')
+        if(name) {
+            name = name.replace('-' + (total-1) + '-', '-' + total + '-');
+            var id = 'id_' + name;
+            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        }
+    });
+    newElement.find('label').each(function() {
+        var forValue = $(this).attr('for');
+        if (forValue) {
+          forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+          $(this).attr({'for': forValue});
+        }
+    });
+    total++;
+    $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+    $(selector).after(newElement);
+    var conditionRow = $('.form-row:not(:last)');
+    conditionRow.find('.btn.add-form-row')
+    .removeClass('btn-success').addClass('btn-danger')
+    .removeClass('add-form-row').addClass('remove-form-row')
+    .html('-');
+    return false;
+}
+function deleteForm(prefix, btn) {
+    var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    if (total > 1){
+        btn.closest('.form-row').remove();
+        var forms = $('.form-row');
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        for (var i=0, formCount=forms.length; i<formCount; i++) {
+            $(forms.get(i)).find(':input').each(function() {
+                updateElementIndex(this, prefix, i);
+            });
+        }
+    }
+    return false;
+}
+$(document).on('click', '.add-form-row', function(e){
+    e.preventDefault();
+    cloneMore('.form-row:last', 'form');
+    return false;
+});
+$(document).on('click', '.remove-form-row', function(e){
+    e.preventDefault();
+    deleteForm('form', $(this));
+    return false;
+});
+
+</script>
+{% endblock %}
 </body>
 </html>

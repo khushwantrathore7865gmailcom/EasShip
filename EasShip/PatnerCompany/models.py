@@ -86,14 +86,15 @@ class shipJob_jobanswer(models.Model):
 
 
 class comp_Bids(models.Model):
-    comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
-    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
+    comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE, db_constraint=False)
+    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE, db_constraint=False)
     Bid_amount = models.CharField(max_length=1024)
     complete_in = models.IntegerField()
     bid_on = models.DateTimeField(auto_now_add=True)
     is_shortlisted = models.BooleanField(default=False)
     is_disqualified = models.BooleanField(default=False)
     is_selected = models.BooleanField(default=False)
+    completed_shipment = models.BooleanField(default=False)
 
 
 class shipJob_Saved(models.Model):
@@ -104,20 +105,21 @@ class shipJob_Saved(models.Model):
 class comp_PresentWork(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
-    driver = models.ForeignKey(comp_drivers, on_delete=models.DO_NOTHING, related_name='drivers')
-    co_driver = models.ForeignKey(comp_drivers, on_delete=models.DO_NOTHING, related_name='codrivers')
-    transport = models.ForeignKey(comp_Transport, on_delete=models.DO_NOTHING, related_name='transports')
+    driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='drivers')
+    co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codrivers')
+    transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transports')
     current_status = models.CharField(max_length=1024)
-    Total_payment = models.ForeignKey(comp_Bids, on_delete=models.DO_NOTHING)
+    Total_payment = models.ForeignKey(comp_Bids, on_delete=models.CASCADE)
     payment_Done = models.CharField(max_length=1024)
     Payment_complete = models.BooleanField(default=False)
+    ask_finalpay = models.BooleanField(default=False)
 
 
 class comp_PastWork(models.Model):
-    comp = models.ForeignKey(patnerComp, on_delete=models.DO_NOTHING)
-    job_id = models.ForeignKey(shipJob, on_delete=models.DO_NOTHING)
+    comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
+    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     Rating = models.CharField(max_length=1024)
-    driver = models.ForeignKey(comp_drivers, on_delete=models.DO_NOTHING, related_name='driver')
-    co_driver = models.ForeignKey(comp_drivers, on_delete=models.DO_NOTHING, related_name='codriver')
-    transport = models.ForeignKey(comp_Transport, on_delete=models.DO_NOTHING, related_name='transport')
+    driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='driver')
+    co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codriver')
+    transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transport')
     delivered_on = models.DateTimeField(auto_now_add=True)

@@ -133,8 +133,10 @@
 
 
    <div class="col-md-10 col-12 mx-auto">
-{% if c.6.is_shortlisted %}
-    {% elif c.6.is_disqualified %}
+{% if c.2.is_shortlisted %}
+    {% elif c.2.is_disqualified %}
+       {% elif c.2.is_selected %}
+Already Selected
     {% else %}
 				<div class="job-right all-job-rights">
 					<div class="job-right-jobs">
@@ -183,9 +185,9 @@
 
 
 <div class="download">
-
-                                <a class="btn btn-success  " href="{% url 'customer:disqualify' c.1.pk %}" role="button">Shortlist</a>
-                                <a class="btn btn-success " href="{% url 'customer:disqualify' c.1.pk %}" role="button">Reject</a>
+                                <a class="btn btn-success" href="{% url 'customer:select' c.2.pk %}" role="button">Select</a>
+                                <a class="btn btn-outline-success  " href="{% url 'customer:disqualify' c.2.pk %}" role="button">Shortlist</a>
+                                <a class="btn btn-outline-danger" href="{% url 'customer:disqualify' c.2.pk %}" role="button">Reject</a>
 
 
     
