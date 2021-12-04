@@ -69,8 +69,8 @@ class shipJob(models.Model):
     cust = models.ForeignKey(customer, on_delete=models.CASCADE)
     ship_title = models.CharField(max_length=1024, null=True)
     job_description = models.CharField(blank=True, max_length=1024)
-    picking_Address = models.CharField(max_length=1024)
-    droping_Address = models.CharField(max_length=1024)
+    picking_Address = models.TextField(null=True)
+    droping_Address = models.TextField(null=True)
     created_on = models.DateTimeField(auto_now_add=True, null=True)
     bid_selected = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
@@ -90,8 +90,8 @@ class Expired_ShipJob(models.Model):
     cust = models.ForeignKey(customer, on_delete=models.CASCADE,null=True)
     ship_title = models.CharField(max_length=1024, null=True)
     job_description = models.CharField(blank=True, max_length=1024,null=True)
-    picking_Address = models.CharField(max_length=1024,null=True)
-    droping_Address = models.CharField(max_length=1024,null=True)
+    picking_Address = models.TextField(null=True)
+    droping_Address = models.TextField(null=True)
     created_on = models.DateTimeField(auto_now_add=True, null=True)
 
 

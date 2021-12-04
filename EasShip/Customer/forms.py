@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from User.models import User_custom,Commission_request
-from .models import shipJob, ProdDesc,Customer_profile
+from User.models import User_custom, Commission_request
+from .models import shipJob, ProdDesc, Customer_profile
 from django.forms import formset_factory
 from django.forms import modelformset_factory
 
@@ -59,6 +59,20 @@ class SignUpForm(UserCreationForm):
 
 
 class ShipJob(forms.ModelForm):
+    ship_title = forms.CharField(label='Title of your New Shipment', max_length=30, required=False,
+                                 widget=forms.TextInput(
+                                     attrs={'class': "input100"}))
+    job_description = forms.CharField(
+        label='Enter the description about the shipment (do mention if shipment is fragile)', max_length=30,
+        required=False, widget=forms.TextInput(
+            attrs={'class': "input100"}))
+    picking_Address = forms.CharField(label='Enter the address from where to pick the shipment', max_length=30,
+                                      required=False, widget=forms.Textarea(
+            attrs={'class': "input100"}))
+    droping_Address = forms.CharField(label='Enter the address where to drop the shipment', max_length=30,
+                                      required=False, widget=forms.Textarea(
+            attrs={'class': "input100"}))
+
     class Meta:
         model = shipJob
         fields = [
@@ -73,42 +87,42 @@ class Prod_Detail(forms.Form):
     prod_box = forms.CharField(
         label='number of box ',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control input100',
             'placeholder': 'Total number of boxes of product'
         })
     )
     prod_in_box = forms.CharField(
         label='number of units in box ',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control input100',
             'placeholder': 'Total number of units in  boxes of product'
         })
     )
     Weight_box = forms.CharField(
         label='weight of box ',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control input100',
             'placeholder': 'weight of boxes of product'
         })
     )
     length = forms.CharField(
         label='length of box ',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control input100',
             'placeholder': 'length of boxes of product'
         })
     )
     width = forms.CharField(
         label='width of box ',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control input100',
             'placeholder': 'width of boxes of product'
         })
     )
     height = forms.CharField(
         label='height of box ',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control input100',
             'placeholder': 'height of boxes of product'
         })
     )
@@ -116,9 +130,8 @@ class Prod_Detail(forms.Form):
 
 prod_Detail_Formset = formset_factory(Prod_Detail, extra=1)
 
+
 class Profile(forms.ModelForm):
-
-
     class Meta:
         model = Customer_profile
         fields = [

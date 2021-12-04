@@ -59,6 +59,11 @@ class SignUpForm(UserCreationForm):
 
 
 class adddriverForm(forms.ModelForm):
+    name = forms.CharField(label='Name of the new Driver', max_length=30, required=False, widget=forms.TextInput(
+        attrs={'class': "input100"}))
+    phone = forms.CharField(label='Phone of the new Driver', max_length=30, required=False, widget=forms.NumberInput(
+        attrs={'class': "input100"}))
+
     class Meta:
         model = comp_drivers
         fields = [
@@ -68,6 +73,13 @@ class adddriverForm(forms.ModelForm):
 
 
 class addTransportForm(forms.ModelForm):
+    type_of_transport = forms.CharField(label='Type of the Transportation', max_length=30, required=False,
+                                        widget=forms.TextInput(
+                                            attrs={'class': "input100"}))
+    transport_no_plate = forms.CharField(label='Number of the Transportation', max_length=30, required=False,
+                                         widget=forms.TextInput(
+                                             attrs={'class': "input100"}))
+
     class Meta:
         model = comp_Transport
         fields = [
@@ -88,7 +100,8 @@ class PresentWorkSetForm(forms.ModelForm):
 
 
 class PresentWorkUpdateForm(forms.ModelForm):
-    completed_shipment=forms.BooleanField(label='Completed Shipment', help_text='Reached to the location of Dropping Address')
+    completed_shipment = forms.BooleanField(label='Completed Shipment',
+                                            help_text='Reached to the location of Dropping Address')
 
     class Meta:
         model = comp_PresentWork
@@ -102,8 +115,6 @@ class PresentWorkUpdateForm(forms.ModelForm):
 
 
 class Profile(forms.ModelForm):
-
-
     class Meta:
         model = Comp_profile
         fields = [
