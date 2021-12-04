@@ -2,9 +2,18 @@
 
 <!doctype html>
 <html lang="en">
-  
+
 <!-- Mirrored from grocbees.com/job-portal/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 26 Jun 2021 12:19:02 GMT -->
+
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,149 +21,309 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{% static 'css/util.css'%}">
-	<link rel="stylesheet" type="text/css" href=" {% static 'css/main.css' %}">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/util.css'%}">
+    <link rel="stylesheet" type="text/css" href=" {% static 'css/main.css' %}">
 
-  </head>
-  <style>
-	  .mobile-main-section h3 {
-    font-family: Lato;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 29px;
-    letter-spacing: 0em;
-    text-align: left;
-    padding: 0px;
-}
-.mobile-main-images img {
-    margin-bottom: 40px;
-    margin-left: 28px;
-}
-.wrap-login100 {
-    width: 600px;
-    background: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 3px 20px 0px rgb(0 0 0 / 10%);
-    -moz-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
-    -webkit-box-shadow: 0 3px 20px 0px rgb(0 0 0 / 10%);
-    -o-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
-    -ms-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
-}
+</head>
+<style>
+     .tech-slideshow {
+        height: 200px;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        background-color: #ccc;
+        overflow: hidden;
+        transform: translate3d(0, 0, 0);
+    }
 
-.p-t-80 {
-    padding-top: 30px;
-}
-input:focus::placeholder {
-  color: transparent;
-}
+    .tech-slideshow>div {
+        height: 200px;
+        width: 1800px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translate3d(0, 0, 0);
+    }
 
-.txt0 {
-    
-    font-size: 13px;
-    color: #57b846;
-    line-height: 1.4;
-}
-.modal-content {
-    position: relative;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    width: 0%;
-    pointer-events: auto;
-    background-color: #808080;
-    background-clip: padding-box;
-    border: 1px solid rgba(0,0,0,.2);
-    border-radius: .3rem;
-    outline: 0;
-}
-.p-t-178 {
-    padding-top: 94px;
-}
-.txt10 {
-    font-family: Ubuntu-Regular;
-    font-size: 11px;
-    color: #999999;
-    line-height: 0.4;
-}
-.txt11 {
-    font-family: Ubuntu-Bold;
-    font-size: 11px;
-    color: #57b846;
-    line-height: 1.4;
-    
-}
-	  </style>
-  
-    
-	<header>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 col-12">
-					<div class="top-navbar">
-						<nav class="navbar navbar-expand-lg ">
-  <a href="http://ec2-54-184-90-146.us-west-2.compute.amazonaws.com/"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    .tech-slideshow .mover-1 {
+        animation: moveSlideshow 30s linear infinite;
+    }
+
+    .tech-slideshow .mover-2 {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+        background-position: 0 -200px;
+        animation: moveSlideshow 15s linear infinite;
+    }
+
+    .tech-slideshow:hover .mover-2 {
+        opacity: 1;
+    }
+
+    @keyframes moveSlideshow {
+        100% {
+            transform: translateX(-66.6666%);
+        }
+    }
+
+    .mobile-main-section h3 {
+        font-family: Lato;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 29px;
+        letter-spacing: 0em;
+        text-align: left;
+        padding: 0px;
+    }
+
+    .mobile-main-images img {
+        margin-bottom: 10px;
+        margin-left: 28px;
+
+    }
+
+    .wrap-login100 {
+        width: 600px;
+        background: #fff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 3px 20px 0px rgb(0 0 0 / 10%);
+        -moz-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+        -webkit-box-shadow: 0 3px 20px 0px rgb(0 0 0 / 10%);
+        -o-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+        -ms-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .p-t-80 {
+        padding-top: 30px;
+    }
+
+    input:focus::placeholder {
+        color: transparent;
+    }
+
+    .txt0 {
+        font-size: 13px;
+        color: #57b846;
+        line-height: 1.4;
+    }
+
+    .modal-content {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        width: 0%;
+        pointer-events: auto;
+        background-color: #808080;
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, .2);
+        border-radius: .3rem;
+        outline: 0;
+    }
+
+    .p-t-178 {
+        padding-top: 110px;
+    }
+
+    .customer-logos {
+        background-color: rgb(29, 31, 29);
+    }
+    /* Slider */
+
+    .slick-slide {
+        margin: 0px 20px;
+    }
+
+    .slick-slide img {
+        width: 100%;
+    }
+
+    .slick-slider {
+        position: relative;
+        display: block;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -khtml-user-select: none;
+        -ms-touch-action: pan-y;
+        touch-action: pan-y;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .slick-list {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    .slick-list:focus {
+        outline: none;
+    }
+
+    .slick-list.dragging {
+        cursor: pointer;
+        cursor: hand;
+    }
+
+    .slick-slider .slick-track,
+    .slick-slider .slick-list {
+        -webkit-transform: translate3d(0, 0, 0);
+        -moz-transform: translate3d(0, 0, 0);
+        -ms-transform: translate3d(0, 0, 0);
+        -o-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    .slick-track {
+        position: relative;
+        top: 0;
+        left: 0;
+        display: block;
+    }
+
+    .slick-track:before,
+    .slick-track:after {
+        display: table;
+        content: '';
+    }
+
+    .slick-track:after {
+        clear: both;
+    }
+
+    .slick-loading .slick-track {
+        visibility: hidden;
+    }
+
+    .slick-slide {
+        display: none;
+        float: left;
+        height: 100%;
+        min-height: 1px;
+    }
+
+    [dir='rtl'] .slick-slide {
+        float: right;
+    }
+
+    .slick-slide img {
+        display: block;
+    }
+
+    .slick-slide.slick-loading img {
+        display: none;
+    }
+
+    .slick-slide.dragging img {
+        pointer-events: none;
+    }
+
+    .slick-initialized .slick-slide {
+        display: block;
+    }
+
+    .slick-loading .slick-slide {
+        visibility: hidden;
+    }
+
+    .slick-vertical .slick-slide {
+        display: block;
+        height: auto;
+        border: 1px solid transparent;
+    }
+
+    .slick-arrow.slick-hidden {
+        display: none;
+    }
+
+     ::-webkit-scrollbar {
+        width: 20px;
+    }
+    /* Track */
+
+     ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 2px grey;
+    }
+    /* Handle */
+
+     ::-webkit-scrollbar-thumb {
+        background: lightgrey;
+    }
+    /* Handle on hover */
+
+     ::-webkit-scrollbar-thumb:hover {
+        background: grey;
+    }
+</style>
+
+
+<header>
+    <div class="container">
+        <div class="row" style="margin-bottom:-25px">
+            <div class="col-md-12 col-12">
+                <div class="top-navbar">
+                    <nav class="navbar navbar-expand-lg ">
+                        <a href="http://ec2-54-184-90-146.us-west-2.compute.amazonaws.com/"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mx-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="http://ec2-54-184-90-146.us-west-2.compute.amazonaws.com/">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#work-main">How it works</a>
-      </li>
-<!--	  <li class="nav-item">-->
-<!--        <a class="nav-link" href="#">Testimonial</a>-->
-<!--      </li>-->
-	  
-    </ul>
-	
-	
-	<ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="#"> Build Resume</a>
-      </li>
-	  <li class="nav-item button">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#customermodal">customer Login</a>
-      </li>
-	  {% comment %} <li class="nav-item button">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#partner_companymodal">partner_company Login</a>
-      </li> {% endcomment %}
-	 </ul> 
-    
-  </div>
-</nav>
-					</div>
-				</div>
-			</div>
-		</div>
-				
-	</header>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav mx-auto">
+
+                                <!--	  <li class="nav-item">-->
+                                <!--        <a class="nav-link" href="#">Testimonial</a>-->
+                                <!--      </li>-->
+
+                            </ul>
+
+
+                            <ul class="navbar-nav">
+<li class="nav-item button" style="border-start-start-radius:  20px 20px; border-end-end-radius: 20px;">
+                                    <a class="nav-link" href="{% url 'user:Login' %}">Login</a>
+                                </li>
+                                <li class="nav-item button" style="border-start-start-radius:  20px 20px; border-end-end-radius: 20px;">
+                                    <a class="nav-link" href="{% url 'customer:customer/register' %}" >Customer Signup</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</header>
 	<body>
 <section>
 	<div class="limiter">
@@ -369,11 +538,50 @@ input:focus::placeholder {
 
 
         </div>
-      </div>
+  </div></div></div>
+<footer class="bg-dark " style="margin-top: 10px;">
+                <div class="container" style="    max-inline-size: inherit;padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0"><img src="/static/images/" style=" " alt="" width="50" class="mb-3">
+                            <p class="font-italic" style="color: white;">Get Shipper for your Shipments !!<br> Tell us what Shipment you want to complete</p>
+                            <ul class="list-inline mt-4">
+                                <li class="list-inline-item"><a href="#" target="_blank" title="twitter"><i style="font-size: xx-large;    color: #00ddf3;" class="fa fa-twitter"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="facebook"><i style="font-size: xx-large;color: #007eff;" class="fa fa-facebook"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="instagram"><i style="font-size: xx-large;color: #f704d9;" class="fa fa-instagram"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="pinterest"><i style="font-size: xx-large;color: #f70404;" class="fa fa-pinterest"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="vimeo"><i style="font-size: xx-large;color: #1e04f7;" class="fa fa-vimeo"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                            <h6 class="text-uppercase font-weight-bold mb-4" style="color:white">Account</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{% url 'user:Login' %}" class="text" style="color: white;">Login</a></li>
+                                <li class="mb-2"><a href="{% url 'partner_company:partner_company/register' %}" class="text" style="color: white;">Shipper Register</a></li>
+                                <li class="mb-2"><a href="{% url 'customer:customer/register' %}" class="text" style="color: white;">Customer Register</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                            <h6 class="text-uppercase font-weight-bold mb-4" style="color:white">Company</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="#" class="text" style="color: white;">About Us</a></li>
+                                <li class="mb-2"><a href="#" class="text" style="color: white;">Contact Us</a></li>
+                                <!-- <li class="mb-2"><a href="#" class="text-muted">Wishlist</a></li>
+            <li class="mb-2"><a href="#" class="text-muted">Our Products</a></li> -->
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-lg-0">
+
+                            <img src="{% static 'images/green.png' %} " width="75" height="75">
+                        </div>
+                    </div>
+                    <!-- Copyrights -->
+
+                </div>
+
+
+            </footer>
 <!--  end customer-->
-{% comment %} <footer>
-<p>Footer section</p>
-</footer> {% endcomment %}
+
 
 
     <!-- Optional JavaScript -->
