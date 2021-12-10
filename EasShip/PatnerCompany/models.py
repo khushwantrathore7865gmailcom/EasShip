@@ -88,7 +88,12 @@ class shipJob_jobanswer(models.Model):
 class comp_Bids(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE, db_constraint=False)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE, db_constraint=False)
-    Bid_amount = models.CharField(max_length=1024)
+    Bid_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2)
+    Bid_byPartner = models.DecimalField(
+        max_digits=12,
+        decimal_places=2, null=True)
     complete_in = models.IntegerField()
     bid_on = models.DateTimeField(auto_now_add=True)
     is_shortlisted = models.BooleanField(default=False)
@@ -110,7 +115,9 @@ class comp_PresentWork(models.Model):
     transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transports')
     current_status = models.CharField(max_length=1024)
     Total_payment = models.ForeignKey(comp_Bids, on_delete=models.CASCADE)
-    payment_Done = models.CharField(max_length=1024)
+    payment_Done = models.DecimalField(
+        max_digits=12,
+        decimal_places=2, null=True)
     Payment_complete = models.BooleanField(default=False)
     ask_finalpay = models.BooleanField(default=False)
 

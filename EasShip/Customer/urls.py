@@ -2,7 +2,7 @@ from django.urls import include, path, reverse_lazy
 from .views import SignUpView, ActivateAccount, login_candidate, customer_home, Add_Shipment, Add_prod_desc, unpublish, \
     remove_unpublish, job_detail, view_applied_candidate, shortlistview_applied_candidate, \
     disqualifyview_applied_candidate, shortlist, delete_job, disqualify, publish_job, ProfileView, job_Response, \
-    SignUpVieww, Commission_View, Request_commision, select, Ship_ongoing,ProfileEdit,Bid_detail
+    SignUpVieww, Commission_View, Request_commision, select, Ship_ongoing,ProfileEdit,Bid_detail,handlerequest,payPayment
 from django.contrib.auth import views as auth_views  # import this
 
 app_name = 'customer'
@@ -45,5 +45,7 @@ urlpatterns = [
     path('create_profile/', ProfileEdit, name='create_profile'),
     path('account/', Commission_View, name='Commission'),
     path('account/request', Request_commision, name='Request_commision'),
-    path('shipOnProgress/', Ship_ongoing, name='ShipOngoing')
+    path('shipOnProgress/', Ship_ongoing, name='ShipOngoing'),
+    path("checkout/<int:pk>", payPayment, name="Checkout"),
+    path("handlerequest/",handlerequest, name="HandleRequest"),
 ]

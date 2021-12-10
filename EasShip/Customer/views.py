@@ -1,5 +1,11 @@
 from datetime import datetime
+import json
+import requests
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
+from .utils import generate_id
+import paytmchecksum
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
@@ -17,6 +23,9 @@ from .models import customer, Customer_profile, ProdDesc, shipJob, Expired_ShipJ
     Shipment_Related_Question
 from PatnerCompany.models import shipJob_jobanswer, comp_Bids, Comp_address, Comp_profile, comp_Transport, \
     comp_PresentWork, comp_PastWork, comp_drivers
+
+payment_id = "XiCkyY61890791146830"
+payment_key = "PzkUpfSbO1sD5Be3"
 
 
 # Create your views here.
@@ -181,6 +190,7 @@ def customer_home(request):
     context = {}
 
     if user is not None and user.is_customer:
+
         try:
             e = customer.objects.get(user=user)
         except customer.DoesNotExist:
@@ -668,3 +678,74 @@ def Ship_ongoing(request):
         return render(request, 'customer/ship_ongoing.html', {'obj': object})
     else:
         return redirect('/')
+
+
+def payPayment(request, pk):
+    c_pwork = comp_PresentWork.objects.get(pk=pk)
+    company = Comp_profile.objects.get(comp=c_pwork.comp)
+    if request.method == 'POST':
+
+        if c_pwork.payment_Done:
+            pay = c_pwork.Total_payment.Bid_amount - c_pwork.payment_Done
+        else:
+            pay = (c_pwork.Total_payment.Bid_amount) / 2
+
+        order_id = generate_id()
+        paytmParams = dict()
+        paytmParams["body"] = {
+            "requestType": "Payment",
+            "mid": payment_id,
+            "websiteName": "WEBSTAGING",
+            "orderId": order_id,
+            "callbackUrl": reverse('customer:customer_home'),
+            "txnAmount": {
+                "value": str(pay),
+                "currency": "INR",
+            },
+            "userInfo": {
+                "custId": c_pwork.job_id.cust.user.email,
+            },
+        }
+        checksum = paytmchecksum.PaytmChecksum.generateSignature(json.dumps(paytmParams["body"]), payment_key)
+        paytmParams["head"] = {
+            "signature": checksum
+        }
+
+        post_data = json.dumps(paytmParams)
+        url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid={payment_id}&orderId={order_id}"
+
+        # for Production
+        # url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
+        response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
+        print(response)
+        payment_page = {
+            'mid': payment_id,
+            'txnToken': response['body']['txnToken'],
+            'orderId': paytmParams['body']['orderId'],
+        }
+        return render(request, 'customer/paytm.html', {'data': payment_page})
+    return render(request, 'customer/checkout.html', {'cp': c_pwork, 'c': company})
+
+
+@csrf_exempt
+def handlerequest(request):
+    # paytm will send you post request here
+    form = request.POST
+    param_dict = {}
+    order_id = request.POST.get('ORDERID')
+    payment_mode = request.POST.get('PAYMENTMODE')
+    transaction_id = request.POST.get('TXNID')
+    Bank_transaction_id = request.POST.get('BANKTXNID')
+    # transaction_id = request.POST.get('TXNDATE')
+    res_msg = request.POST.get('RESPMSG')
+    for i in form.keys():
+        param_dict[i] = form[i]
+
+    checksum = request.POST.get('CHECKSUMHASH')
+    verify = paytmchecksum.PaytmChecksum.verifySignature(param_dict, payment_key, checksum)
+    if verify:
+        if param_dict['RESPCODE'] == '01':
+            print('order successful')
+        else:
+            print('order was not successful because' + param_dict['RESPMSG'])
+    return render(request, 'customer/paymentstatus.html', {'response': param_dict})

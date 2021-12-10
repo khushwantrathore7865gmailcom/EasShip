@@ -283,7 +283,7 @@
                                                 <td>{{ job.0.current_status }}</td>
                                                 <td class="dropdown">
                                                     {% if pay %}
-                                                    <a href="" type="button" class="btn btn-success">Pay Advance</a>
+                                                    <a href="{% url 'customer:Checkout' job.0.pk %}" type="button" class="btn btn-success">Pay</a>
                                                     {% else %}
                                                     <span class="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">...</span>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
