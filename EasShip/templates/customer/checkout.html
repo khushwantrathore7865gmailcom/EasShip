@@ -1,4 +1,5 @@
 {% load static %}
+{% load mathfilters %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -141,7 +142,7 @@
                           {% if cp.payment_Done %}
 							<li>Total Bid: <span>{{cp.Total_payment.Bid_amount}}</span></li>
                            <li>Payment Done: <span>{{cp.payment_Done}}</span></li>
-                           <li>Rest payment: <span>{{cp.Total_payment.Bid_amount-cp.payment_Done}}</span></li>
+                           <li>Rest payment: <span>{{cp.Total_payment.Bid_amount|sub:cp.payment_Done}}</span></li>
                           {% else %}
                           <li>Total Bid: <span>{{cp.Total_payment.Bid_amount}}</span></li>
                            <li>Payment Done: <span>0</span></li>
@@ -150,6 +151,7 @@
 
                             </ul>
                      <form method="post">
+                         {% csrf_token %}
                          <button type="submit">Pay</button></form>
                     </div>
                 </div>

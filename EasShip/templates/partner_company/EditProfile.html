@@ -138,8 +138,17 @@
 			<div class="wrap-login100">
 <form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit">Submit</button>
+    {% for f in form %}
+    <div class="wrap-input100 validate-input" data-validate = "Please enter password">
+        {{f}}
+						<span class="focus-input100"></span>
+					</div>
+    {% endfor %}
+    <div class="container-login100-form-btn">
+						<button class="login100-form-btn" type="submit">
+							Submit
+						</button>
+					</div>
 </form>
 
 			</div>

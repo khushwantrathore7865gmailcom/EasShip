@@ -22,7 +22,7 @@ from .tokens import account_activation_token
 from .models import customer, Customer_profile, ProdDesc, shipJob, Expired_ShipJob, \
     Shipment_Related_Question
 from PatnerCompany.models import shipJob_jobanswer, comp_Bids, Comp_address, Comp_profile, comp_Transport, \
-    comp_PresentWork, comp_PastWork, comp_drivers
+    comp_PresentWork, comp_PastWork, comp_drivers, Orders
 
 payment_id = "XiCkyY61890791146830"
 payment_key = "PzkUpfSbO1sD5Be3"
@@ -204,6 +204,7 @@ def customer_home(request):
             ep = None
         if user.first_login:
             job = shipJob.objects.filter(cust=e).exclude(bid_selected=True)
+            print(job)
             for j in job:
                 start_date = j.created_on
                 # print(start_date)
@@ -235,22 +236,26 @@ def customer_home(request):
                         count.append(0)
                     else:
                         count.append(c_b.count())
-                expired_job = Expired_ShipJob.objects.filter(cust=e)
-                o = zip(jobs, count)
-                sjob = shipJob.objects.filter(cust=e, bid_selected=True)
-                pay = False
-                for s in sjob:
-                    p = comp_PresentWork.objects.get(job_id=s)
-                    sj.append(p)
+            expired_job = Expired_ShipJob.objects.filter(cust=e)
+            o = zip(jobs, count)
+            sjob = shipJob.objects.filter(cust=e, bid_selected=True)
+            print(sjob)
+            print(e)
+            pay = False
+            for s in sjob:
+                p = comp_PresentWork.objects.get(job_id=s)
+                sj.append(p)
 
-                    if p.payment_Done == "":
-                        pay = True
-                    cbid = Comp_profile.objects.get(comp=p.comp)
-                    print(cbid)
-                    cb.append(cbid)
+                if p.payment_Done is None:
+                    pay = True
 
-                object = zip(sj, cb)
-                context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep, 'pay': pay}
+                cbid = Comp_profile.objects.get(comp=p.comp)
+                print(cbid)
+                cb.append(cbid)
+
+            object = zip(sj, cb)
+            print('object', pay)
+            context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep, 'pay': pay}
 
             return render(request, 'customer/job-post.html', context)
         else:
@@ -691,13 +696,14 @@ def payPayment(request, pk):
             pay = (c_pwork.Total_payment.Bid_amount) / 2
 
         order_id = generate_id()
+        print(order_id)
         paytmParams = dict()
         paytmParams["body"] = {
             "requestType": "Payment",
             "mid": payment_id,
             "websiteName": "WEBSTAGING",
             "orderId": order_id,
-            "callbackUrl": reverse('customer:customer_home'),
+            "callbackUrl": 'http://127.0.0.1:8000' + reverse('customer:HandleRequest'),
             "txnAmount": {
                 "value": str(pay),
                 "currency": "INR",
@@ -715,14 +721,16 @@ def payPayment(request, pk):
         url = f"https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid={payment_id}&orderId={order_id}"
 
         # for Production
-        # url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765"
+        # url = f"https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid={payment_id}&orderId={order_id}"
         response = requests.post(url, data=post_data, headers={"Content-type": "application/json"}).json()
-        print(response)
+
         payment_page = {
             'mid': payment_id,
             'txnToken': response['body']['txnToken'],
             'orderId': paytmParams['body']['orderId'],
         }
+        order = Orders(order_id=order_id, work=c_pwork, amount=pay)
+        order.save()
         return render(request, 'customer/paytm.html', {'data': payment_page})
     return render(request, 'customer/checkout.html', {'cp': c_pwork, 'c': company})
 
@@ -736,8 +744,14 @@ def handlerequest(request):
     payment_mode = request.POST.get('PAYMENTMODE')
     transaction_id = request.POST.get('TXNID')
     Bank_transaction_id = request.POST.get('BANKTXNID')
-    # transaction_id = request.POST.get('TXNDATE')
+    transaction_date = request.POST.get('TXNDATE')
     res_msg = request.POST.get('RESPMSG')
+    context = {'error_message': res_msg}
+    if res_msg != 'Txn Success':
+        o = Orders.objects.get(order_id=order_id)
+        o.order_done = f'Failed due to  {res_msg}'
+        o.save()
+        return render(request, 'customer/paymentstatus.html', context)
     for i in form.keys():
         param_dict[i] = form[i]
 
@@ -746,6 +760,14 @@ def handlerequest(request):
     if verify:
         if param_dict['RESPCODE'] == '01':
             print('order successful')
+            o = Orders.objects.get(order_id=order_id)
+            o.order_done = 'order successful'
+            o.save()
+
         else:
+            f= param_dict['RESPMSG']
             print('order was not successful because' + param_dict['RESPMSG'])
+            o = Orders.objects.get(order_id=order_id)
+            o.order_done = f'Failed due to {f}'
+            o.save()
     return render(request, 'customer/paymentstatus.html', {'response': param_dict})

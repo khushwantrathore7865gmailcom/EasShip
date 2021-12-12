@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/style12.css' %}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
 <script src="https://kit.fontawesome.com/5a2b925216.js" crossorigin="anonymous"></script>
-
+<link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
     .dropbtn {
@@ -48,7 +48,38 @@
 .dropdown:hover .dropdown-content {display: block;}
 
 .dropdown:hover .dropbtn {background-color: #03A84E;}
-
+ section {
+        text-align: center;
+        padding: 40px 0;
+        background: #EBF0F5;
+      }
+        h1 {
+          color: #8CDD87;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-weight: 900;
+          font-size: 40px;
+          margin-bottom: 10px;
+        }
+        p {
+          color: #404F5E;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-size:20px;
+          margin: 0;
+        }
+      i {
+        color: #8CDD87;
+        font-size: 100px;
+        line-height: 200px;
+        margin-left:-15px;
+      }
+      .success{
+        background: white;
+        padding: 60px;
+        border-radius: 4px;
+        box-shadow: 0 2px 3px #C8D0D8;
+        display: inline-block;
+        margin: 0 auto;
+      }
 
 </style>
   </head>
@@ -103,14 +134,26 @@
     </header>
     <section class="job-portal">
 <div class="container">
-    {{response}}
+
     <div class="col my-4">
 
-        <h2>Payment status regarding your order Id {{response.ORDERID}}</h2>
+
         {% if response.RESPCODE == '01' %}
-        ORDER SUCCESS
+        <div class="card success">
+      <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+        <i class="checkmark">✓</i>
+      </div>
+        <h1>Success</h1>
+        <p>Payment is done Successfully<br/><a href="{% url 'customer:customer_home' %}" type="button" class="btn btn-success" style="color:white;">Home to see the update</a></p>
+      </div>
         {% else %}
-        ORDER FAILURE
+         <div class="card success">
+      <div style="border-radius:200px; height:200px; width:200px; background: #ffcccb; margin:0 auto;">
+        <i class="checkmark" style="color:#FF0000">✗</i>
+      </div>
+        <h1 style="color:#FF0000">Order Failed</h1>
+        <p>Payment is done Successfully<br/><a href="{% url 'customer:customer_home' %}" type="button" class="btn btn-success" style="color:white;">Home to see the update</a></p>
+      </div>
         {% endif%}
 
     </div>

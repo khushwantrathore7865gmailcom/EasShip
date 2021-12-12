@@ -130,3 +130,12 @@ class comp_PastWork(models.Model):
     co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codriver')
     transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transport')
     delivered_on = models.DateTimeField(auto_now_add=True)
+
+
+class Orders(models.Model):
+    order_id = models.CharField(max_length=5000, null=True)
+    work = models.ForeignKey(comp_PresentWork, on_delete=models.CASCADE)
+    order_done = models.CharField(max_length=5000, null=True)
+    amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2, null=True)

@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-0*h142qbbs@8#6brj_n-lx^#9s83zlj&v@kg2z10e1ay292tfp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'PatnerCompany',
     'Customer',
     'crispy_forms',
+    'mathfilters',
 
 ]
 

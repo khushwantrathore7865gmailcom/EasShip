@@ -103,6 +103,7 @@ class PresentWorkUpdateForm(forms.ModelForm):
     completed_shipment = forms.BooleanField(label='Completed Shipment',
                                             help_text='Reached to the location of Dropping Address')
 
+
     class Meta:
         model = comp_PresentWork
         fields = [
@@ -115,6 +116,15 @@ class PresentWorkUpdateForm(forms.ModelForm):
 
 
 class Profile(forms.ModelForm):
+    company_name = forms.CharField(label='Enter name of company', max_length=30, required=False,
+                                        widget=forms.TextInput(
+                                            attrs={'class': "input100"}))
+    company_type = forms.CharField(label='Enter Type  of company', max_length=30, required=False,
+                                   widget=forms.TextInput(
+                                       attrs={'class': "input100"}))
+    phone = forms.CharField(label='Phone of the Company', max_length=30, required=False, widget=forms.NumberInput(
+        attrs={'class': "input100"}))
+
     class Meta:
         model = Comp_profile
         fields = [

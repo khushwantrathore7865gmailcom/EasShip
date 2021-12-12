@@ -1,20 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Paytm merchant payment page</title>
-</head>
-<body>
-<h1>Redirecting you to the merchant....</h1>
-<h1>Please do not refresh your page....</h1>
-<form action="https://securegw-stage.paytm.in/theia/processTransaction" method="post" name="paytm">
-    {% for key, value in param_dict.items %}
+<!doctype html>
+<html>
+   <head>
+      <title>Show Payment Page</title>
+   </head>
+   <body>
+      <center>
+         <h1>Please do not refresh this page...</h1>
+      </center>
+      <form method="post" action="https://securegw-stage.paytm.in/theia/api/v1/showPaymentPage?mid={{data.mid}}&orderId={{data.orderId}}" name="paytm">
+         <table border="1">
+            <tbody>
+
+    {% for key, value in data.items %}
     <input type="hidden" name="{{key}}" value="{{value}}">
     {% endfor %}
-
-</form>
-</body>
-<script>
-document.paytm.submit()
-</script>
+            </tbody>
+         </table>
+         <script type="text/javascript"> document.paytm.submit(); </script>
+      </form>
+   </body>
 </html>
