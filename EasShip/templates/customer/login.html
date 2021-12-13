@@ -54,7 +54,7 @@
 
 					<div class="text-right p-t-13 p-b-23">
 						<span class="txt1">
-							Forgot
+							<a href="{% url 'customer:reset_password' %}">Forgot Password</a>
 						</span>
 
 <!--						<a href="#" class="txt2">-->
@@ -68,15 +68,7 @@
 						</button>
 					</div>
 
-					<div class="flex-col-c p-t-80 p-b-40">
-						<span class="txt1 p-b-9">
-							Don’t have an account?
-						</span>
 
-						<a href="{% url 'customer:customer/register' %}" class="txt3">
-							Sign up now
-						</a>
-					</div>
 				</form>
 
 

@@ -23,7 +23,7 @@ from .models import customer, Customer_profile, ProdDesc, shipJob, Expired_ShipJ
     Shipment_Related_Question
 from PatnerCompany.models import shipJob_jobanswer, comp_Bids, Comp_address, Comp_profile, comp_Transport, \
     comp_PresentWork, comp_PastWork, comp_drivers, Orders
-
+from django.contrib.auth.decorators import login_required
 payment_id = "XiCkyY61890791146830"
 payment_key = "PzkUpfSbO1sD5Be3"
 
@@ -52,20 +52,20 @@ class SignUpView(View):
                 user = form.save(commit=False)
                 user.username = user.email
                 user.user_name = user.email
-                user.is_active = True  # change this to False after testing
+                user.is_active = False  # change this to False after testing
                 user.is_customer = True
                 user.save()
                 new_candidate = customer(user=user, is_email_verified=False)  # change is email to False after testing
                 new_candidate.save()
                 current_site = get_current_site(request)
-                # subject = 'Activate Your WorkAdaptar Account'
-                # message = render_to_string('emails/account_activation_email.html', {
-                #     'user': user,
-                #     'domain': current_site.domain,
-                #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                #     'token': account_activation_token.make_token(user),
-                # })
-                # user.email_user(subject, message)
+                subject = 'Activate Your WorkAdaptar Account'
+                message = render_to_string('emails/account_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                user.email_user(subject, message)
                 messages.success(
                     request, ('Please check your mail for complete registration.'))
                 return redirect('customer:customer/login')
@@ -177,7 +177,7 @@ def login_candidate(request):
         context = {}
         return render(request, 'customer/login.html', context)
 
-
+@login_required(login_url='/')
 def customer_home(request):
     jobs = []
     expired_job = []
@@ -280,7 +280,7 @@ def customer_home(request):
     # else:
     #     return redirect('/')
 
-
+@login_required(login_url='/')
 def Add_Shipment(request):
     u = request.user
     if u is not None and u.is_customer:
@@ -303,7 +303,7 @@ def Add_Shipment(request):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def unpublish(request, pk):
     user = request.user
     j = shipJob.objects.get(pk=pk)
@@ -314,9 +314,9 @@ def unpublish(request, pk):
                                    droping_Address=j.droping_Address).save()
 
     j.delete()
-    return redirect('recruiter:employer_home')
+    return redirect('customer:customer_home')
 
-
+@login_required(login_url='/')
 def remove_unpublish(request, pk):
     j = Expired_ShipJob.objects.get(pk=pk)
     shipJob.objects.create(cust=j.cust, ship_title=j.ship_title,
@@ -324,9 +324,9 @@ def remove_unpublish(request, pk):
                            droping_Address=j.droping_Address).save()
     j.delete()
 
-    return redirect('recruiter:employer_home')
+    return redirect('customer:customer_home')
 
-
+@login_required(login_url='/')
 def Add_prod_desc(request, pk):
     u = request.user
 
@@ -356,7 +356,7 @@ def Add_prod_desc(request, pk):
 
     return render(request, 'customer/add_job_desc.html', {"form2": form, 'ep': cp})
 
-
+@login_required(login_url='/')
 def job_detail(request, pk):
     user = request.user
     if user is not None and user.is_customer:
@@ -369,7 +369,7 @@ def job_detail(request, pk):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def Bid_detail(request, pk):
     user = request.user
     if user is not None and user.is_customer:
@@ -598,7 +598,7 @@ def ProfileView(request):
         "past_work": oldshipment
     })
 
-
+@login_required(login_url='/')
 def ProfileEdit(request):
     user = request.user
     c = customer.objects.get(user=request.user)
@@ -668,7 +668,7 @@ def Commission_View(request):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def Ship_ongoing(request):
     user = request.user
     sj = []
@@ -684,7 +684,7 @@ def Ship_ongoing(request):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def payPayment(request, pk):
     c_pwork = comp_PresentWork.objects.get(pk=pk)
     company = Comp_profile.objects.get(comp=c_pwork.comp)

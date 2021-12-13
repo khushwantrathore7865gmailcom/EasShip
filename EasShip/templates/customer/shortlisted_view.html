@@ -1,23 +1,24 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-<head>
-<!-- Required meta tags -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/style12.css'%}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+       <!-- THIS LINE -->
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
-
-
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="{% static 'css/style12.css'%}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
 <script src="https://kit.fontawesome.com/5a2b925216.js" crossorigin="anonymous"></script>
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
- 		<style>
-.dropbtn {
+<style>
+    .dropbtn {
   background-color: #FFFFFF;
   color: white;
   padding: 16px;
@@ -53,9 +54,9 @@
 .dropdown:hover .dropbtn {background-color: #03A84E;}
 
 
-		</style>
-</head>
-<body>
+</style>
+  </head>
+  <body>
 
 
     <header>
@@ -104,148 +105,98 @@
         </div>
 
     </header>
+       <section class="job-portal all-jobs">
+	<div class="container main-wid">
+		<div class="row">
+			<div class="col-md-10 col-12 mx-auto">
+				<div class="heading">
+					<h3>{{job.job_title}}</h3>
+				</div>
+			</div>
 
-<section class="job-portal all-jobs">
-<div class="container main-wid">
-<div class="row">
-  <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12 mx-auto">
-    <div class="heading">
-      <center> <h2 class="text-center">SHORTLISTED VIEW</h2>  </center>
-<br>
-<h3 class="text-primary text-left"> {{job.job_title}}</h3>
-<div class="col-md-12 col- s12 l12">
-  <div class="job-right all-job-rights">
-    <div class="job-right-jobs">
+			<div class="col-md-10 col-12 mx-auto">
+				<div class="heading-action">
+					<ul class="list-inline">
+						<li>Action <span>Taken</span></li>
+                        <li><a href="{% url 'customer:shortlist_view_applied_candidate' job.pk %}">Shortlisted Shippers</a></li>
+						<li><a href="{% url 'customer:disqualify_view_applied_candidate' job.pk %}"> Disqualified Shippers</a>  </li>
 
-  <ul class="list-inline">
-    <li class="list-inline-item"><h9>ACTION TAKEN </h9> </li>
-    <li class="list-inline-item"><h9>ACTION TAKEN </h9> </li>
-    <li class="list-inline-item"><h9>ACTION TAKEN </h9> </li>
-    <li class="list-inline-item"><h9>ACTION TAKEN </h9> </li>
- </ul>
+					</ul>
+				</div>
+			</div>
 
-
-
-
-
-
-    </div>
-      </div>
-  </div>
-
-
-</div>
-</div>
-<br>
-<br>
-  </div>
 {% for c in candidate %}
 
 {% if c.6.is_shortlisted %}
-      <div class="col-xs-12 s12 l12">
+      <div class="job-right all-job-rights">
+					<div class="job-right-jobs">
 
-    <div class="job-right all-job-rights">
-      <div class="job-right-jobs">
-      <input type="checkbox" placehlder="check">
+					<!-- <input type="checkbox" placehlder="check"> -->
 
-        <div class="job-right-jobs-image">
-        <img src={{c.0.profile_pic.url}}>
-        <div class="jobs-main">
-          <div class="text-jobs">
-            <h5>{{c.5.first_name}} {{c.5.last_name}}</h5>
-              <ul class="list-inline">
-              <li><img src="{% static 'images/suitcase.png' %}">{{c.7.Total_Working}}</li>
-              <li><img src="{% static 'images/money.png' %}"> {{c.7.exp_salary}}</li>
-              <li><img src="{% static 'images/location.png' %}"> {{c.7.prefer_location}}</li>
-            </ul>
-          </div>
+<div class="col-md-10 col-12 mx-auto">
+						<div class="job-right-jobs-image">
+
+						<img src={{c.0.company_logo.url}}>
+						<div class="jobs-main">
+
+							<div class="text-jobs">
+                                <h5>{{c.0.company_name}}</h5>
+                              <h3>{{c.1.first_name}} {{c.1.last_name}}</h3>
 
 
-        </div>
-      </div>
-          <div class="info">
-          <div class="info-left">
-            <ul class="list-inline">
-                        <li><img src="{% static 'images/mail.png' %}"> Email ID: <span>{{c.0.user_id}}</span></li>
-<!--									<li><img src="images/phone.png"> Phone no. : <span>(252) 555-0126</span></li>-->
-              <li><img src="{% static 'images/location.png' %}"> Location : <span>{{c.0.address}}</span></li>
-<!--									<li><img src="images/educa.png">Education :  <span>Software Engineering, MBA in.... </span></li>-->
-              <li>                                 {{ post.body|safe|truncatewords:"50"|linebreaks }}
-                <a href="{{ url_for_full_content }}">view  more</a></li>
-            </ul>
+
+
+							</div>
+
+
+
+                            </div>
+					</div>
+
+               <div class="info">
+							<div class="info-left">
+								<ul class="list-inline">
+                           	<li>Email ID: <span>{{c.1.username}}</span></li>
+									<li> Phone no. : <span>{{c.0.phone}}</span></li>
+									<li>Bid Placed: <span>{{c.2.Bid_amount}}</span></li>
+									<li>Shipment will be done in :  <span>{{c.2.complete_in}}(days)</span></li>
+                                    <li>Total shipment done:  <span>{{c.3}} </span></li>
+                                    <li>Rating:  <span>{{c.4}} </span></li>
+
+								</ul>
+
+							</div>
+
+						</div>
             </div>
 
 
-                  <div class="info-right p-3 mb-2 bg-secondary bgcolor ccc">
-              <h3 class="text-green">Skills</h3>
-              <p class="text-black">{% for s in c.3 %}
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                               {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
-                              {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}), {{s.skill}}({{s.rating}}),
 
-                                  {% endfor %}
-                              </p>
-                              <div class = "post_body text-white">
-                                {{ post.body|safe|truncatewords:"50"|linebreaks }}
-                                <a href="{{ url_for_full_content }}">view  more</a>
-                                <br>
-                                <a class="btn btn-success  " href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">Apply</a>
-                                <a class="btn btn-success" href="{% url 'recruiter:disqualify' c.6.pk %}" role="button">disqualify</a>
-                    </div>
-                  </div>
-                </div>
 
 
 <div class="download">
-
-          <a class="btn btn-success" href="{{c.4.coverletter_link.url}}" role="button">Download Cover letter</a>
-          <a class="btn btn-success" href="{{c.4.resume_link.url}}" role="button">Resume link</a>
-
-</div>
-
-
-<!--    <a class="btn btn-primary" href="{% url 'recruiter:shortlist' c.6.pk %}" role="button">Shortlist</a>-->
-<div class="accordion" id="accordionExample">
-<div class="card">
-<div class="card-header" id="headingOne">
-  <h5 class="mb-0">
-    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{c.0.user_id}}" aria-expanded="false" aria-controls="collapseOne">
-      {{c.0.user_id}}
-    </button>
-  </h5>
-</div>
-
-<div id={{c.0.user_id}} class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-  <div class="card-body">
-
-{% for q in question %}
-      <div>
-  <span style="color: #03A84E;">Q.</span> {{q.question}}<span style="color: #03A84E;">?</span></div>
-
-      {% for a in answer %}
-
-      {% if a.question_id == q %}
-      {% if a.candidate_id == c.0.user_id %}
-      <div>
-      {{a.answer}}</div>
-      {% endif %}
-      {% endif %}
-      {% endfor %}
-      {% endfor %}
-
-  </div>
-</div>
-</div>
-</div></div>
+                                <a class="btn btn-success" href="{% url 'customer:select' c.2.pk %}" role="button">Select</a>
+<!--                                <a class="btn btn-outline-success  " href="{% url 'customer:disqualify' c.2.pk %}" role="button">Shortlist</a>-->
+                                <a class="btn btn-outline-danger" href="{% url 'customer:disqualify' c.2.pk %}" role="button">Reject</a>
 
 
 
 </div>
+
+
+
+
+
+</div>
+
+
+
+
+
 
 {% elif c.6.is_disqualified %}
+          {% elif c.2.is_selected %}
+Already Selected
 {% else %}
 
 {% endif %}
@@ -256,9 +207,12 @@
 
 
 
-  </div>
-</div>
+			</div>
+	</div>
 </section>
+
+<!-- skills model -->
+
 
 <footer class="bg-dark " style="margin-top: 10px;">
                 <div class="container" style="    max-inline-size: inherit;padding-top: 20px;">
@@ -316,10 +270,39 @@ padding: 21px;
   font-size: 0.7em;
 
 }
-.bgcolor{background-color: rgba(228, 13, 13, 0.801);}
-.bgcolor {
-  background-color: #b9bcbe!important;
+.download{
+  margin-top: 4px;
+
 }
+.btm{
+position:absolute;
+bottom:10px;
+}
+
+
+.bgcolor {
+  min-height: 320px;
+  float: right;
+  background-color: #ced4da;
+}
+
+.job-right-jobs{
+box-shadow:0px;
+padding:5px;
+}
+*{
+box-sizing:unset;
+}
+.job-right.all-job-rights .job-right-jobs {
+    padding: 0px 0px 0px 0px;
+}
+
+.card-header{
+background-color:#ced4da;
+}
+
+
+
 </style>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

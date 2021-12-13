@@ -17,7 +17,7 @@ from .tokens import account_activation_token
 from .models import patnerComp, Comp_profile, Comp_address, comp_Bids, comp_drivers, comp_PastWork, comp_PresentWork, \
     comp_Transport, shipJob_Saved, shipJob_jobanswer
 from Customer.models import shipJob, Expired_ShipJob, Shipment_Related_Question, Customer_profile
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -43,20 +43,20 @@ class SignUpView(View):
                 user = form.save(commit=False)
                 user.username = user.email
                 user.user_name = user.email
-                user.is_active = True  # change this to False after testing
+                user.is_active = False  # change this to False after testing
                 user.is_company = True
                 user.save()
                 new_candidate = patnerComp(user=user, is_email_verified=False)  # change is email to False after testing
                 new_candidate.save()
                 current_site = get_current_site(request)
-                # subject = 'Activate Your WorkAdaptar Account'
-                # message = render_to_string('emails/account_activation_email.html', {
-                #     'user': user,
-                #     'domain': current_site.domain,
-                #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                #     'token': account_activation_token.make_token(user),
-                # })
-                # user.email_user(subject, message)
+                subject = 'Activate Your WorkAdaptar Account'
+                message = render_to_string('emails/account_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                user.email_user(subject, message)
                 messages.success(
                     request, ('Please check your mail for complete registration.'))
                 return redirect('partner_company:partner_company/login')
@@ -168,7 +168,7 @@ def login_candidate(request):
         context = {}
         return render(request, 'partner_company/login.html', context)
 
-
+@login_required(login_url='/')
 def partner_company_Home(request):
     jobs = []
     job_ques = []
@@ -265,7 +265,7 @@ def partner_company_Home(request):
         return redirect('/')
 
 
-
+@login_required(login_url='/')
 def apply_Shipment(request, pk):
     u = request.user
 
@@ -289,7 +289,7 @@ def apply_Shipment(request, pk):
         return render(request, 'partner_company/applyShip.html',{'question':questions,'job':job})
     else:
         return redirect('/')
-
+@login_required(login_url='/')
 def save_later(request, pk):
     c = patnerComp.objects.get(user=request.user)
     if c is not None:
@@ -301,7 +301,7 @@ def save_later(request, pk):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def ProfileView(request):
 
         u = request.user
@@ -344,7 +344,7 @@ def ProfileView(request):
             'n':n
         })
 
-
+@login_required(login_url='/')
 def ProfileEdit(request):
     user = request.user
     c = patnerComp.objects.get(user=request.user)
@@ -375,7 +375,7 @@ def ProfileEdit(request):
         return redirect('/')
 
 
-
+@login_required(login_url='/')
 def SavedJobs(request):
 
     jobs = []
@@ -463,7 +463,7 @@ def SavedJobs(request):
         return redirect('/')
 
 
-
+@login_required(login_url='/')
 def AppliedJobs(request):
     companyprofile = []
     user = request.user
@@ -486,7 +486,7 @@ def AppliedJobs(request):
         # return render(request, 'partner_company/applied.html', {'jobs': objects, 'cp': cp})
     else:
         return redirect('/')
-
+@login_required(login_url='/')
 def PastShipment(request):
     companyprofile = []
     user = request.user
@@ -509,12 +509,13 @@ def PastShipment(request):
         # return render(request, 'partner_company/applied.html', {'jobs': objects, 'cp': cp})
     else:
         return redirect('/')
+@login_required(login_url='/')
 def remove_applied(request, pk):
     comp_Bids.objects.get(pk=pk).delete()
 
     return redirect('partner_company:AppliedJobs')
 
-
+@login_required(login_url='/')
 def remove_saved(request, pk):
     c = patnerComp.objects.get(user=request.user)
     # job = shipJob.objects.get(pk=pk)
@@ -525,7 +526,7 @@ def remove_saved(request, pk):
 
     return redirect('partner_company:SavedJobs')
 
-
+@login_required(login_url='/')
 def addTransport(request):
     user = request.user
     if user.is_company:
@@ -547,7 +548,7 @@ def addTransport(request):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def addDriver(request):
     user = request.user
     if user.is_company:
@@ -569,7 +570,7 @@ def addDriver(request):
     else:
         return redirect('/')
 
-
+@login_required(login_url='/')
 def SetUp_PresentShip(request, pk):
     user = request.user
     if user.is_company:
@@ -596,7 +597,7 @@ def SetUp_PresentShip(request, pk):
                       {'form': form,'cp':cp})
     else:
         return redirect('/')
-
+@login_required(login_url='/')
 def cancel_setup(request,pk):
     user = request.user
     if user.is_company:
@@ -607,6 +608,7 @@ def cancel_setup(request,pk):
         return redirect('partner_company:partner_company_home')
     else:
         return redirect('/')
+@login_required(login_url='/')
 def Update_PresentShip(request, pk):
     user = request.user
     # print(user)
@@ -627,6 +629,7 @@ def Update_PresentShip(request, pk):
                       {'form': form,'cp':cp})
     else:
         return redirect('/')
+@login_required(login_url='/')
 def PresentShip(request):
     profile = []
     user = request.user
@@ -643,6 +646,7 @@ def PresentShip(request):
         return render(request,'partner_company/ShipmentOngoing.html',{'c_p':o,'cp':cpr})
     else:
        return redirect('/')
+@login_required(login_url='/')
 def ManageDriver(request):
     user=request.user
     cp=[]
@@ -662,6 +666,7 @@ def ManageDriver(request):
         return render(request, 'partner_company/DriverManagement.html', {'info': info,'cp':cpr})
     else:
         return redirect('/')
+@login_required(login_url='/')
 def ManageTruck(request):
     user=request.user
     cp=[]
@@ -681,6 +686,7 @@ def ManageTruck(request):
         return render(request, 'partner_company/TransprtManagement.html', {'info': info,'cp':cpr})
     else:
         return redirect('/')
+@login_required(login_url='/')
 def DriverRecords(request):
     user=request.user
     cp=[]
@@ -702,6 +708,7 @@ def DriverRecords(request):
         return render(request, 'partner_company/DriverPastwork.html', {'info': info,'cp':cpr})
     else:
         return redirect('/')
+@login_required(login_url='/')
 def TruckRecords(request):
     user=request.user
     cp=[]
@@ -723,10 +730,12 @@ def TruckRecords(request):
         return render(request, 'partner_company/TruckPastwork.html', {'info': info,'cp':cpr})
     else:
         return redirect('/')
+@login_required(login_url='/')
 def RemoveDriver(request, pk):
     comp_drivers.objects.get(pk=pk).delete()
 
     return redirect('partner_company:ManageDriver')
+@login_required(login_url='/')
 def RemoveTruck(request, pk):
     comp_Transport.objects.get(pk=pk).delete()
 
