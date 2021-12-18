@@ -24,9 +24,9 @@ with open(os.path.join(BASE_DIR,"secert_key.txt")) as f:
     SECRET_KEY=f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -127,28 +127,27 @@ STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "static_root
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "media_root")
-
+AUTH_USER_MODEL = 'User.User_custom'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'user_custom.User_custom'
+
 EMAIL_BACKEND='django_smtp_ssl.SSLEmailBackend'
 EMAIL_HOST="smtppro.zoho.in"
 EMAIL_PORT=465
 EMAIL_USE_SSL=False
 EMAIL_USE_TLS=True
-EMAIL_HOST_USER="connect@easshipp.in"
-DEFAULT_FROM_EMAIL="connect@easshipp.in"
+EMAIL_HOST_USER="easshipp@easshipp.in"
+DEFAULT_FROM_EMAIL="easshipp@easshipp.in"
 #EMAIL_HOST_PASSWORD="SL@Top1Day"
 EMAIL_HOST_PASSWORD="Keepitup123@"
-AUTH_USER_MODEL = 'User.User_custom'
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
 
-SECURE_HSTS_SECONDS=31536000
-SECURE_HSTS_PRELOAD=True
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
+#
+# SECURE_HSTS_SECONDS=31536000
+# SECURE_HSTS_PRELOAD=True
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
