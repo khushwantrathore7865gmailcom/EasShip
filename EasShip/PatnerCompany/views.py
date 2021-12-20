@@ -59,7 +59,7 @@ class SignUpView(View):
                 user.email_user(subject, message)
                 messages.success(
                     request, ('Please check your mail for complete registration.'))
-                return redirect('partner_company:partner_company/login')
+                return redirect('user:Login')
                 # return render(request, self.template_name, {'form': form})
         else:
             return render(request, self.template_name, {'form': form})
