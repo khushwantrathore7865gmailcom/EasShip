@@ -176,12 +176,9 @@ input::-webkit-inner-spin-button {
 <form class="form-horizontal" method="POST" action="">
     {% csrf_token %}
     {{ form2.management_form }}
-{% for form in form2 %}
+
     {{form2}}
-      <div class="input-group-append">
-                <button class="btn btn-success add-form-row">+</button>
-            </div>
-    {% endfor %}
+
             <button type="submit" class="btn btn-block btn-success">Post</button>
 
 </form>

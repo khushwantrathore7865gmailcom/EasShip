@@ -78,12 +78,11 @@ class shipJob(models.Model):
 
 class ProdDesc(models.Model):
     shipment = models.ForeignKey(shipJob, on_delete=models.CASCADE, null=True)
-    prod_box = models.IntegerField()
-    prod_in_box = models.IntegerField()
-    Weight_box = models.CharField(max_length=1024)
-    length = models.CharField(max_length=1024)
-    width = models.CharField(max_length=1024)
-    height = models.CharField(max_length=1024)
+    value = models.FloatField(null=True)
+    Weight_box = models.FloatField()
+    length = models.FloatField()
+    width = models.FloatField()
+    height = models.FloatField()
 
 
 class Expired_ShipJob(models.Model):

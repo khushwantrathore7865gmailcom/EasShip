@@ -49,7 +49,7 @@ class SignUpView(View):
                 new_candidate = patnerComp(user=user, is_email_verified=False)  # change is email to False after testing
                 new_candidate.save()
                 current_site = get_current_site(request)
-                subject = 'Activate Your WorkAdaptar Account'
+                subject = 'Activate Your EasShipp Account'
                 message = render_to_string('emails/account_activation_email.html', {
                     'user': user,
                     'domain': current_site.domain,

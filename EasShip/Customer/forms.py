@@ -83,52 +83,53 @@ class ShipJob(forms.ModelForm):
         ]
 
 
-class Prod_Detail(forms.Form):
-    prod_box = forms.CharField(
-        label='number of box ',
+class Prod_Detail(forms.ModelForm):
+    value = forms.CharField(
+        label='Value of Shipment',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
-            'placeholder': 'Total number of boxes of product'
+            'placeholder': 'Estimated value of shipment'
         })
     )
-    prod_in_box = forms.CharField(
-        label='number of units in box ',
-        widget=forms.TextInput(attrs={
-            'class': 'form-control input100',
-            'placeholder': 'Total number of units in  boxes of product'
-        })
-    )
+
     Weight_box = forms.CharField(
-        label='weight of box ',
+        label='Weight of box(in kg)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
-            'placeholder': 'weight of boxes of product'
+            'placeholder': 'weight of Shipment'
         })
     )
     length = forms.CharField(
-        label='length of box ',
+        label='Length of Shipment(in meter)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
-            'placeholder': 'length of boxes of product'
+            'placeholder': 'Length of Shipment'
         })
     )
     width = forms.CharField(
-        label='width of box ',
+        label='Width of Shipment(in meter)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
-            'placeholder': 'width of boxes of product'
+            'placeholder': 'Width of Shipment'
         })
     )
     height = forms.CharField(
-        label='height of box ',
+        label='Height of Shipment(in meter)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
-            'placeholder': 'height of boxes of product'
+            'placeholder': 'Height of Shipment'
         })
     )
 
-
-prod_Detail_Formset = formset_factory(Prod_Detail, extra=1)
+    class Meta:
+        model = ProdDesc
+        fields = [
+            'value',
+            'Weight_box',
+            'length',
+            'width',
+            'height'
+        ]
 
 
 class Profile(forms.ModelForm):

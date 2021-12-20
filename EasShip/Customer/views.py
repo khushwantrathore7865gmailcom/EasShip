@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.views.generic import View
 from User.models import User_custom, Referral, Commission_request
-from .forms import SignUpForm, ShipJob, prod_Detail_Formset, Profile
+from .forms import SignUpForm, ShipJob, Prod_Detail, Profile
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -58,7 +58,7 @@ class SignUpView(View):
                 new_candidate = customer(user=user, is_email_verified=False)  # change is email to False after testing
                 new_candidate.save()
                 current_site = get_current_site(request)
-                subject = 'Activate Your WorkAdaptar Account'
+                subject = 'Activate Your EasShipp Account'
                 message = render_to_string('emails/account_activation_email.html', {
                     'user': user,
                     'domain': current_site.domain,
@@ -68,7 +68,7 @@ class SignUpView(View):
                 user.email_user(subject, message)
                 messages.success(
                     request, ('Please check your mail for complete registration.'))
-                return redirect('customer:customer/login')
+                return redirect('user:Login')
                 # return render(request, self.template_name, {'form': form})
         else:
             return render(request, self.template_name, {'form': form})
@@ -336,22 +336,13 @@ def Add_prod_desc(request, pk):
     except Customer_profile.DoesNotExist:
         cp = None
     ship = shipJob.objects.get(pk=pk)
-    form = prod_Detail_Formset(request.GET or None)
+    form = Prod_Detail()
     if request.method == 'POST':
-        form = prod_Detail_Formset(request.POST)
+        form = Prod_Detail(request.POST)
         if form.is_valid:
-            for f in form:
-                print(f)
-                prod_box = f.cleaned_data.get('prod_box')
-                print(prod_box)
-                prod_in_box = f.cleaned_data.get('prod_in_box')
-                Weight_box = f.cleaned_data.get('Weight_box')
-                length = f.cleaned_data.get('length')
-                width = f.cleaned_data.get('width')
-                height = f.cleaned_data.get('height')
-                if prod_box:
-                    ProdDesc(shipment=ship, prod_box=prod_box, prod_in_box=prod_in_box, Weight_box=Weight_box,
-                             length=length, width=width, height=height).save()
+            f = form.save(commit=False)
+            f.shipment = ship
+            f.save()
             return redirect('customer:customer_home')
 
     return render(request, 'customer/add_job_desc.html', {"form2": form, 'ep': cp})
