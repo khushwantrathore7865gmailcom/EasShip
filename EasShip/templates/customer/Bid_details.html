@@ -1,11 +1,13 @@
 {% load static %}
+{% load mathfilters %}
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/style12.css' %}">
@@ -106,7 +108,7 @@
 		<div class="row">
 			<div class="col-md-10 mx-auto col-12">
 				<div class="heading">
-					<h2>Job Title: <span>{{job.job_id.job_title}}</span></h2>
+					<h2>Shipment Title: <span>{{job.job_id.ship_title}}</span></h2>
 
 				</div>
 			</div>
@@ -125,19 +127,29 @@
                             <p class="min"><span>Bid on:</span>{{job.bid_on}}</p>
 						</div>
                     </div>
-						<h3>JOB DESCRIPTION</h3>
+						<h3>SHIPMENT DESCRIPTION</h3>
                         <p class="job-para">
                             Pickup Address:{{job.job_id.picking_Address}}</p>
                             <p class="job-para">
-                        Drop Address:{{job.job_id.droping_Address}}</p>
+                        Destination Address:{{job.job_id.droping_Address}}</p>
                         <p class="job-para">
-                        Pickup Address:{{job.job_id.job_description}}</p>
+                        Shipment Description:{{job.job_id.job_description}}</p>
 
 
                     <h3>Bid Description</h3>
                       <ul class="list-inline">
-							<li>Bid: <span>{{job.Bid_amount}}</span></li>
+							<li>Total Amount: <span>{{job.Bid_amount}}</span></li>
                           <li>Complete_in: <span>{{job.complete_in}}</span></li>
+                          {% if cp.payment_Done %}
+							
+                           <li>Payment Done: <span>{{cp.payment_Done}}</span></li>
+                           <li>Remaining Payment: <span>{{cp.Total_payment.Bid_amount|sub:cp.payment_Done}}</span></li>
+                          {% else %}
+                          
+                           <li>Payment Done: <span>0</span></li>
+                           <li>Remaining Payment: <span>{{cp.Total_payment.Bid_amount}}</span></li>
+                           <li>Current Payable Amount: <span>{{cp.Total_payment.Bid_amount| mul:0.5}}</span></li>
+                          {% endif %}
                             </ul>
 
                     </div>

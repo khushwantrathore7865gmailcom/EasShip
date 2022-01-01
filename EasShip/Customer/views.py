@@ -102,7 +102,7 @@ class SignUpVieww(View):
                 user = form.save(commit=False)
                 user.username = user.email
                 user.user_name = user.email
-                user.is_active = True  # change this to False after testing
+                user.is_active = False  # change this to False after testing
                 user.is_customer = True  # Deactivate account till it is confirmed
                 user.save()
 
@@ -145,11 +145,11 @@ class ActivateAccount(View):
             user.save()
             login(request, user)
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('customer:home')
+            return redirect('customer:customer_home')
         else:
             messages.warning(
                 request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('customer:home')
+            return redirect('user:Login')
 
 
 def index(request):
@@ -203,6 +203,12 @@ def customer_home(request):
         except Customer_profile.DoesNotExist:
             ep = None
         if user.first_login:
+            try:
+                j = shipJob.objects.get(cust=e,is_completed=True)
+            except shipJob.DoesNotExist:
+                j=None
+            if j :
+                return redirect('customer:rate',j.pk)
             job = shipJob.objects.filter(cust=e).exclude(bid_selected=True)
             print(job)
             for j in job:
@@ -237,22 +243,34 @@ def customer_home(request):
                     else:
                         count.append(c_b.count())
             expired_job = Expired_ShipJob.objects.filter(cust=e)
-            o = zip(jobs, count)
+            
             sjob = shipJob.objects.filter(cust=e, bid_selected=True)
+            
             print(sjob)
             print(e)
             pay = False
             for s in sjob:
-                p = comp_PresentWork.objects.get(job_id=s)
-                sj.append(p)
+                try:
+                    p = comp_PresentWork.objects.get(job_id=s)
+                    sj.append(p)
 
-                if p.payment_Done is None:
-                    pay = True
+                    if p.payment_Done is None:
+                        pay = True
+                    if p.ask_finalpay:
+                        pay= True
 
-                cbid = Comp_profile.objects.get(comp=p.comp)
-                print(cbid)
-                cb.append(cbid)
+                    cbid = Comp_profile.objects.get(comp=p.comp)
+                    print(cbid)
+                    cb.append(cbid)
+                except comp_PresentWork.DoesNotExist:
+                    jobs.append(s)
+                    c_b = comp_Bids.objects.filter(job_id=s)
 
+                    if c_b is None:
+                        count.append(0)
+                    else:
+                        count.append(c_b.count())
+            o = zip(jobs, count)
             object = zip(sj, cb)
             print('object', pay)
             context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep, 'pay': pay}
@@ -292,13 +310,17 @@ def Add_Shipment(request):
         form = ShipJob()
         if request.method == 'POST':
             form = ShipJob(request.POST)
-            f = form.save(commit=False)
-            f.cust = users
+            if form.is_valid():
+                f = form.save(commit=False)
+                f.cust = users
 
-            f.save()
-            pk = f.pk
-            print(pk)
-            return redirect('customer:Add_prod_desc', pk)
+                f.save()
+                pk = f.pk
+                print(pk)
+                return redirect('customer:Add_prod_desc', pk)
+            else:
+                messages.success(request, 'Entered Valid Entries')
+            
         return render(request, 'customer/addjob.html', {'form': form, 'ep': cp})
     else:
         return redirect('/')
@@ -339,11 +361,13 @@ def Add_prod_desc(request, pk):
     form = Prod_Detail()
     if request.method == 'POST':
         form = Prod_Detail(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             f = form.save(commit=False)
             f.shipment = ship
             f.save()
             return redirect('customer:customer_home')
+        else:
+            messages.success(request, 'Entered Valid Entries')
 
     return render(request, 'customer/add_job_desc.html', {"form2": form, 'ep': cp})
 
@@ -354,22 +378,37 @@ def job_detail(request, pk):
         e = customer.objects.get(user=request.user)
         job = shipJob.objects.get(pk=pk)
         company = Customer_profile.objects.get(cust=e)
+        c_b = comp_Bids.objects.filter(job_id=job)
+        c= c_b.count()
         # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
         # objects = zip(job,candidate_Applied)
-        return render(request, 'customer/job_details.html', {'job': job, 'c': company})
+        return render(request, 'customer/job_details.html', {'job': job,'count':c, 'c': company})
     else:
         return redirect('/')
-
+@login_required(login_url='/')
+def Ejob_detail(request, pk):
+    user = request.user
+    if user is not None and user.is_customer:
+        e = customer.objects.get(user=request.user)
+        job = Expired_ShipJob.objects.get(pk=pk)
+        company = Customer_profile.objects.get(cust=e)
+        # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
+        # objects = zip(job,candidate_Applied)
+        return render(request, 'customer/ejob_details.html', {'job': job, 'c': company})
+    else:
+        return redirect('/')
 @login_required(login_url='/')
 def Bid_detail(request, pk):
     user = request.user
     if user is not None and user.is_customer:
         e = customer.objects.get(user=request.user)
+        ep = Customer_profile.objects.get(cust=e)
         job = comp_Bids.objects.get(pk=pk)
+        pw = comp_PresentWork.objects.get(Total_payment=job)
         company = Comp_profile.objects.get(comp=job.comp)
         # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
         # objects = zip(job,candidate_Applied)
-        return render(request, 'customer/Bid_details.html', {'job': job, 'c': company})
+        return render(request, 'customer/Bid_details.html', {'job': job, 'c': company,'ep':ep,'cp':pw})
     else:
         return redirect('/')
 
@@ -438,31 +477,53 @@ def view_applied_candidate(request, pk):
 def shortlistview_applied_candidate(request, pk):
     user = request.user
     if user is not None and user.is_customer:
-        e = customer.objects.get(user=user)
-        cp = Customer_profile.objects.get(cust=e)
         candidate_user = []
         candidate_profile = []
-        address_profile = []
-        professional_profile = []
-        c_bid = []
+
         candidate_answer = []
 
+        rating = []
+        number = []
+        e = customer.objects.get(user=request.user)
+
+        cp = Customer_profile.objects.get(cust=e)
         job = shipJob.objects.get(pk=pk)
+
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
-            c = can.candidate_id
-            c_bid.append(c)
-            candidate_profile.append(Comp_profile.objects.get(comp=c))
+
+            c = can.comp
+            try:
+                c_p = Comp_profile.objects.get(comp=c)
+            except Comp_profile.DoesNotExist:
+                c_p = None
+
+            try:
+                p_p = comp_PastWork.objects.filter(comp=c)
+            except comp_PastWork.DoesNotExist:
+                p_p = None
+            count = len(p_p)
+            number.append(count)
+            r = 0
+            for p in p_p:
+                r = r + p.Rating
+            if count == 0:
+                rating.append(0)
+            else:
+                rating.append(r / count)
+            candidate_profile.append(c_p)
+            print("working filter")
+            print(candidate_profile)
             candidate_user.append(c.user)
-            address_profile.append(Comp_address.objects.filter(comp=c))
-            professional_profile.append(comp_PastWork.objects.filter(comp=c))
 
             for q in question:
-                candidate_answer.append(shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
+                candidate_answer.append(
+                    shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
 
-        objects = zip(candidate_profile, address_profile, professional_profile,
-                      candidate_user, candidate_Applied, c_bid)
+        quest = zip(question, candidate_answer)
+        # print(candidate_answer)
+        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating)
         # question = zip(question, candidate_answer)
         return render(request, 'customer/shortlisted_view.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
@@ -474,30 +535,53 @@ def shortlistview_applied_candidate(request, pk):
 def disqualifyview_applied_candidate(request, pk):
     user = request.user
     if user is not None and user.is_customer:
-        e = customer.objects.get(user=user)
-        cp = Customer_profile.objects.get(cust=e)
         candidate_user = []
         candidate_profile = []
-        address_profile = []
-        professional_profile = []
 
         candidate_answer = []
 
+        rating = []
+        number = []
+        e = customer.objects.get(user=request.user)
+
+        cp = Customer_profile.objects.get(cust=e)
         job = shipJob.objects.get(pk=pk)
+
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
-            c = can.candidate_id
-            candidate_profile.append(Comp_profile.objects.get(comp=c))
+
+            c = can.comp
+            try:
+                c_p = Comp_profile.objects.get(comp=c)
+            except Comp_profile.DoesNotExist:
+                c_p = None
+
+            try:
+                p_p = comp_PastWork.objects.filter(comp=c)
+            except comp_PastWork.DoesNotExist:
+                p_p = None
+            count = len(p_p)
+            number.append(count)
+            r = 0
+            for p in p_p:
+                r = r + p.Rating
+            if count == 0:
+                rating.append(0)
+            else:
+                rating.append(r / count)
+            candidate_profile.append(c_p)
+            print("working filter")
+            print(candidate_profile)
             candidate_user.append(c.user)
-            address_profile.append(Comp_address.objects.filter(comp=c))
-            professional_profile.append(comp_PastWork.objects.filter(comp=c))
 
             for q in question:
-                candidate_answer.append(shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
+                candidate_answer.append(
+                    shipJob_jobanswer.objects.get(question_id=q, candidate_id=c))
 
-        objects = zip(candidate_profile, address_profile, professional_profile,
-                      candidate_user, candidate_Applied)
+        quest = zip(question, candidate_answer)
+        # print(candidate_answer)
+        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating)
 
         # question = zip(question, candidate_answer)
         return render(request, 'customer/disqualified.html',
@@ -556,18 +640,56 @@ def disqualify(request, pk):
 
 @login_required(login_url='/')
 def delete_job(request, pk):
-    ShipJob.objects.get(pk=pk).delete()
+    shipJob.objects.get(pk=pk).delete()
 
     return redirect('customer:customer_home')
 
 
 @login_required(login_url='/')
 def publish_job(request, pk):
-    e = ShipJob.objects.get(pk=pk)
+    e = shipJob.objects.get(pk=pk)
     e.is_save_later = False
     e.save()
     return redirect('customer:job_detail', pk)
 
+@login_required(login_url='/')
+def EditShipment(request, pk):
+    u = request.user
+
+    users = customer.objects.get(user=u)
+    try:
+        cp = Customer_profile.objects.get(cust=users)
+    except Customer_profile.DoesNotExist:
+        cp = None
+    s = shipJob.objects.get(pk=pk)
+    sdesc = ProdDesc.objects.get(shipment=s)
+    if request.method == "POST":
+        form = ShipJob(request.POST, instance=s)
+        form1 = Prod_Detail(request.POST, instance=sdesc)
+        if form.is_valid():
+            form.save()
+        if form1.is_valid():
+            form1.save()
+            return redirect('customer:customer_home')
+
+    form = ShipJob(instance=s)
+    form1 = Prod_Detail(instance=sdesc)
+    return render(request, 'customer/EditShipment.html', {"form": form,"form1":form1, 'ep': cp})
+
+@login_required(login_url='/')
+def RequestUpdate(request, pk):
+    u = request.user
+
+    users = customer.objects.get(user=u)
+    try:
+        cp = Customer_profile.objects.get(cust=users)
+    except Customer_profile.DoesNotExist:
+        cp = None
+    s = shipJob.objects.get(pk=pk)
+    cpw = comp_PresentWork.objects.get(job_id=s)
+    cpw.request_update = True
+    cpw.save()
+    return redirect('customer:customer_home')
 
 @login_required(login_url='/')
 def ProfileView(request):
@@ -694,7 +816,7 @@ def payPayment(request, pk):
             "mid": payment_id,
             "websiteName": "WEBSTAGING",
             "orderId": order_id,
-            "callbackUrl": 'http://127.0.0.1:8000' + reverse('customer:HandleRequest'),
+            "callbackUrl": 'https://easshipp.in' + reverse('customer:HandleRequest'),
             "txnAmount": {
                 "value": str(pay),
                 "currency": "INR",
@@ -753,6 +875,22 @@ def handlerequest(request):
             print('order successful')
             o = Orders.objects.get(order_id=order_id)
             o.order_done = 'order successful'
+            a = o.amount
+            pw = o.work
+            if pw.payment_Done is None:
+                pw.payment_Done=a
+            else:
+                pw.payment_Done = pw.payment_Done+a
+
+            if pw.ask_finalpay:
+                pw.ask_finalpay=False
+                cw = pw.Total_payment
+                cw.completed_shipment=True
+                sj = cw.job_id
+                sj.is_completed=True
+                sj.save()
+                cw.save()
+            pw.save()
             o.save()
 
         else:
@@ -762,3 +900,22 @@ def handlerequest(request):
             o.order_done = f'Failed due to {f}'
             o.save()
     return render(request, 'customer/paymentstatus.html', {'response': param_dict})
+
+def RatingForm(request,pk):
+    user = request.user
+    if user.is_customer:
+        job = shipJob.objects.get(pk=pk)
+        cmp = comp_Bids.objects.get(job_id=job,is_selected=True)
+        pw = comp_PresentWork.objects.get(Total_payment=cmp)
+        pt_comp = Comp_profile.objects.get(comp = cmp.comp)
+        if request.method =='POST':
+            rate = request.POST.get('rating1')
+            ej = Expired_ShipJob(cust=job.cust,ship_title=job.ship_title,job_description=job.job_description,picking_Address=job.picking_Address,droping_Address=job.droping_Address)
+            ej.save()
+            past = comp_PastWork(comp=pw.comp,job_id=ej,Rating=rate,Bid_amount=cmp.Bid_amount,Bid_byPartner=cmp.Bid_byPartner,driver=pw.driver,co_driver=pw.co_driver,transport=pw.transport)
+            past.save()
+            job.delete()
+            return redirect('customer:customer_home')
+        return render(request,'customer/RatingForm.html',{'job':job,'cbid':cmp,'pr':pt_comp,'pw':pw})
+    else:
+        return redirect('/')   

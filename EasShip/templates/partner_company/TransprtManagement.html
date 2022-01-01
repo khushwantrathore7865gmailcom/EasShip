@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -114,15 +115,15 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="heading">
-					<h3>Transport Management <span>Page</span></h3>
+					<h3>Vehicle <span>Management </span></h3>
 				</div>
 			</div>
             <div class="col-md-10 col-12 mx-auto">
 				<div class="heading-action">
 					<ul class="list-inline">
 						<li>Action <span>Taken</span></li>
-                        <li><a href="{% url 'partner_company:VehicleRecords' %}" style="color:#03A84E;">Transport vehicle Work History</a></li>
-						<li><a href="{% url 'partner_company:add_transport' %}" style="color:#03A84E;">Add New Transport vehicle</a>  </li>
+                        <li><a href="{% url 'partner_company:VehicleRecords' %}" style="color:#03A84E;">Vehicle Work History</a></li>
+						<li><a href="{% url 'partner_company:add_transport' %}" style="color:#03A84E;">Add New Vehicle</a>  </li>
 
 					</ul>
 				</div>
@@ -138,26 +139,30 @@
             <div class="jobs-main">
             <div class="text-jobs">
       <h5>{{o.0.transport_no_plate}}</h5>
-<p>{{o.0.type_of_transport}}</p>
+<p><b>{{o.0.type_of_transport}}</b></p>
             </div>
             </div>
     <p class="job-para">
 
        {% if o.1 %}
-        Shipment :Assigned<br>
+        <b>Shipment Status:Assigned</b><br>
         {% for a in o.1 %}
-       Driver:{{a.driver}}
-        phone:{{a.driver.phone}}
-        pickup: {{a.job_id.picking_Address}}<br>
-        drop:  {{a.job_id.droping_Address}}<br>
+        <div class="row">
+          <div class="col">
+       <b>Driver</b>:{{a.driver}}<br>
+        <b>Driver Phone</b>:{{a.driver.phone}}<br>
+        <b>Pickup</b>: {{a.job_id.picking_Address}}<br>
+      </div>
+      <div class="col">
+        <b>Destination</b>:  {{a.job_id.droping_Address}}<br>
 
 
-        Job description:<br>
-        {{a.job_id.job_description}}{% endfor %}
-        {% else %}Shipment :Not Assigned{% endif %}
+        <b>shipment Description</b>:<br>
+        {{a.job_id.job_description}}</div></div>{% endfor %}
+        {% else %}<b>Shipment Status:Not Assigned</b>{% endif %}
        </p>
   <div class="share">
-     <a type="button" href="{% url 'partner_company:RemoveTruck' o.0.pk %}" class="btn btn-danger">Remove Transport</a>
+     <a type="button" href="{% url 'partner_company:RemoveTruck' o.0.pk %}" class="btn btn-danger">Remove Vehicle</a>
   </div>
 
                     </div>

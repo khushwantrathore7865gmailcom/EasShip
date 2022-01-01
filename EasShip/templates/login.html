@@ -6,6 +6,7 @@
 <!-- Mirrored from grocbees.com/job-portal/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 26 Jun 2021 12:19:02 GMT -->
 
 <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.js"></script>
@@ -16,7 +17,7 @@
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -292,7 +293,7 @@
             <div class="col-md-12 col-12">
                 <div class="top-navbar">
                     <nav class="navbar navbar-expand-lg ">
-                        <a href="http://ec2-54-184-90-146.us-west-2.compute.amazonaws.com/"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+                        <a href="http://www.easshipp.in/"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -323,7 +324,17 @@
     </div>
 
 </header>
-
+{% if messages %}
+    <div class="alert alert-success" role="alert">
+    
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    
+    </div>
+        {% endif %}
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
@@ -332,9 +343,7 @@
 					<span class="login100-form-title">
 						Sign In
 					</span>
-					{% for message in messages %}
-					<p id="messages">{{message}}</p>
-				{% endfor %}
+					
 
 					<div class="wrap-input100 validate-input m-b-16" data-validate="Please enter username">
 						<input class="input100" type="text" name="username" placeholder="Username">

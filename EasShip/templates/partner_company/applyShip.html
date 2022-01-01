@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
       <link rel="stylesheet" href="bootstrap.css" />
@@ -14,6 +15,26 @@
           <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   		<style>
+.input100 {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .inputdesc {
+            width: 100%;
+            height: 30%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
 .dropbtn {
   background-color: #FFFFFF;
   color: white;
@@ -145,24 +166,11 @@ input::-webkit-inner-spin-button {
 <section class="job-portal">
 <div class="col-md-12">
 				<div class="heading">
-					<h3>Post <span>Job</span></h3>
+					<h3>Place a Bid for the <span>{{job.ship_title}}</span></h3>
 
                 </div></div>
 	<div class="container">
-        <div class="divv">
-
-            <h4>Few guidelines</h4>
-
-                    <ul>
-                        <li>Proper formatting of the text/content of the posting with clear spaces and standard bullets (-) to be used.</li>
-                        <li>No short forms/abbreviations to be used in the text.</li>
-                        <li>Correct mail ID to be included at the end of the posting.</li>
-                        <li>Two skills should be separated by comma.</li>
-                        <li>No spelling mistakes in the content.</li>
-                        <li>JD should be concise and crisp - to the point.</li>
-                    </ul>
-
-        </div>
+        
 
 		<div class="row">
 
@@ -171,28 +179,32 @@ input::-webkit-inner-spin-button {
 				<div class="">
 <form class="form-horizontal" method="POST" action="">
 {% csrf_token %}
-  <label style="font-size: 20px;">Place a Bid for the {{job.ship_title}}</label>
+  <label style="font-size: 20px;">Cost on Transportation:</label>
 
 
         <div class="input-group">
-            <input type="number" name="bid">
+            <input type="number" name="bid" id="bid" oninput="calculate()" class="input100">
         </div>
     <label style="font-size: 20px;">Complete the {{job.ship_title}} Shipment in(days): </label>
 
 
         <div class="input-group">
-            <input type="number" name="comp">
+            <input type="number" name="comp"class="input100">
         </div>
-{% for q in question %}
-  <label style="font-size: 20px;">{{q.question}}</label>
+
+
+        <label style="font-size: 20px;">Commission of EasShipp(5% of commission from cost of Transportation): </label>
 
 
         <div class="input-group">
-            <input type="text" name={{q.pk}}>
+            <input type="number" name="commission" id="commission" readonly class="input100">
         </div>
-{% endfor %}
+        <label style="font-size: 20px;">Total Bid for the {{job.ship_title}}: </label>
 
 
+        <div class="input-group">
+            <input type="number" name="tbid"id="tbid" readonly class="input100">
+        </div>
 
 
 <br>
@@ -251,65 +263,15 @@ input::-webkit-inner-spin-button {
 {% block custom_js %}
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script type="text/javascript">
-function updateElementIndex(el, prefix, ndx) {
-    var id_regex = new RegExp('(' + prefix + '-\\d+)');
-    var replacement = prefix + '-' + ndx;
-    if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
-    if (el.id) el.id = el.id.replace(id_regex, replacement);
-    if (el.name) el.name = el.name.replace(id_regex, replacement);
-}
-function cloneMore(selector, prefix) {
-    var newElement = $(selector).clone(true);
-    var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
-    newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
-        var name = $(this).attr('name')
-        if(name) {
-            name = name.replace('-' + (total-1) + '-', '-' + total + '-');
-            var id = 'id_' + name;
-            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-        }
-    });
-    newElement.find('label').each(function() {
-        var forValue = $(this).attr('for');
-        if (forValue) {
-          forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
-          $(this).attr({'for': forValue});
-        }
-    });
-    total++;
-    $('#id_' + prefix + '-TOTAL_FORMS').val(total);
-    $(selector).after(newElement);
-    var conditionRow = $('.form-row:not(:last)');
-    conditionRow.find('.btn.add-form-row')
-    .removeClass('btn-success').addClass('btn-danger')
-    .removeClass('add-form-row').addClass('remove-form-row')
-    .html('-');
-    return false;
-}
-function deleteForm(prefix, btn) {
-    var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-    if (total > 1){
-        btn.closest('.form-row').remove();
-        var forms = $('.form-row');
-        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
-        for (var i=0, formCount=forms.length; i<formCount; i++) {
-            $(forms.get(i)).find(':input').each(function() {
-                updateElementIndex(this, prefix, i);
-            });
-        }
-    }
-    return false;
-}
-$(document).on('click', '.add-form-row', function(e){
-    e.preventDefault();
-    cloneMore('.form-row:last', 'form');
-    return false;
-});
-$(document).on('click', '.remove-form-row', function(e){
-    e.preventDefault();
-    deleteForm('form', $(this));
-    return false;
-});
+    function calculate() {
+    var mybid = document.getElementById('bid').value; 
+    var tbid = document.getElementById('tbid'); 
+    var comm = document.getElementById('commission')
+    var myResult = mybid * 1.05;
+    var myComm = mybid*0.05;
+    comm.value = myComm;
+    tbid.value = myResult;}
+
 
 </script>
 {% endblock %}

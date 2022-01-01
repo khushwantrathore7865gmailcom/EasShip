@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -113,7 +114,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="heading">
-					<h3>Applied Jobs <span>Page</span></h3>
+					<h3>Applied <span>Shipments</span></h3>
 					<h4>Shipments you applied in</h4>
 				</div>
 			</div>
@@ -134,11 +135,11 @@
             </div>
                         </div>
     <p class="job-para">
-        pickup: {{o.0.job_id.picking_Address}}<br>
-        drop:  {{o.0.job_id.droping_Address}}<br>
+        Pickup: {{o.0.job_id.picking_Address}}<br>
+        Destination:  {{o.0.job_id.droping_Address}}<br>
 
 
-        Job description:<br>
+        Shipment description:<br>
         {{o.0.job_id.job_description}}
        </p>
   <div class="share">

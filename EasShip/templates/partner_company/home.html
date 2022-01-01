@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
       <link rel="stylesheet" href="bootstrap.css" />
@@ -142,6 +143,11 @@
  Congratulation you got a new Shipment. <a href="{% url 'partner_company:AppliedJobs' %}" class="alert-link">Click Here</a> to set Transportation for your new Shipment.
 </div>
     {% endif %}
+    {% if update%}
+<div class="alert alert-success" role="alert">
+  <a href="{% url 'partner_company:PresentShip' %}" class="alert-link">Update</a> all your ongoing Shipments
+</div>
+    {% endif %}
 <section class="job-portal">
 	<div class="container">
 		<div class="row">
@@ -202,27 +208,38 @@
             </div>
             </div>
                         </div>
+
       <p class="job-para">
-        pickup: {{o.0.picking_Address}}<br>
-        drop:  {{o.0.droping_Address}}<br>
+        <div class="row">
+          <div class="col">
+        <b>Pickup Address</b>: {{o.0.picking_Address}}<br>
+        <b>Destination Address</b>:  {{o.0.droping_Address}}<br>
 
 
-        Job description:<br>
-        {{o.0.job_description}}
-        About Company:<br>
-        company type:<br>
-        {{o.4.about_company}}<br>
-<!--        Job description:<br>-->
-<!--        {{o.4.company_name}}<br>-->
-<!--        Job description:<br>-->
-<!--        {{o.4.company_name}}<br>-->
+        <b> Description</b>:
+        {{o.0.job_description}}<br>
+          </div>
+          <div class="col">
+        <b>Value of shipment</b>:
+        <i class="fa fa-rupee"></i>{{o.3.value}}/-<br>
+        <b>Lenght of shipment</b>:
+        {{o.3.length}} m<br>
+        <b>Width of Shipment</b>:
+        {{o.3.width}} m<br>
+        {% if o.3.height %}
+        <b>Height of Shipment</b>:
+        {{o.3.height}} m<br>{% endif %}
+        <b>Weight of Shipment</b>:
+        {{o.3.Weight_box}} Kg<br>
+          </div>
+        </div>
     </p>
                         <div class="share">
      <ul class="list-inline">
 </ul>
 
 <a href="{% url 'partner_company:save_job' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" >
-							Save
+							Shortlist
 </a>
 
 <a href="{% url 'partner_company:apply_Shipment' o.0.pk %}" type="button" style="margin-right:16px" class="btn btn-success" >

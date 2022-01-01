@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -145,18 +146,21 @@
             </div>
             </div>
     <p class="job-para">
-        phone :{{o.0.phone}}
+        <b>Phone</b> :{{o.0.phone}}<br>
        {% if o.1 %}
-        Shipment :Assigned<br>
+        <b>Shipment Status:Assigned<br> </b>
         {% for a in o.1 %}
-        truck:{{a.transport}}
-        pickup: {{a.job_id.picking_Address}}<br>
-        drop:  {{a.job_id.droping_Address}}<br>
+        <div class="row">
+          <div class="col">
+        <b>Truck</b>:{{a.transport}}<br>
+        <b>Pickup</b>: {{a.job_id.picking_Address}}<br>
+        <b>Destination</b>:  {{a.job_id.droping_Address}}<br>
+          </div>
+          <div class="col">
 
-
-        Job description:<br>
-        {{a.job_id.job_description}}{% endfor %}
-        {% else %}Shipment :Not Assigned{% endif %}
+        <b>Shipment description</b>:<br>
+        {{a.job_id.job_description}}</div></div>{% endfor %}
+        {% else %}<b>Shipment Status:Not Assigned </b>{% endif %}
        </p>
   <div class="share">
 

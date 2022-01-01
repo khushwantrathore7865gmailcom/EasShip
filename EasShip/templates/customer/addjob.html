@@ -5,11 +5,12 @@
 <!-- Mirrored from grocbees.com/job-portal/job-post.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 27 Jun 2021 09:39:28 GMT -->
 
 <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
+
     <!-- Required meta tags -->
 
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href=" {% static 'css/style_Addjob.css' %}">
@@ -161,6 +162,17 @@ input::-webkit-inner-spin-button {
         </div>
 
     </header>
+    {% if messages %}
+<div class="alert alert-success" role="alert">
+
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+
+</div>
+    {% endif %}
 <section class="job-portal">
 <div class="col-md-12">
 				<div class="heading">

@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -114,7 +115,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="heading">
-					<h3>Ongoing Shipments<span>Page</span></h3>
+					<h3>Ongoing <span>Shipments</span></h3>
 					<h4>Shipments you are handling</h4>
 				</div>
 			</div>
@@ -135,26 +136,34 @@
             </div>
                         </div>
     <p class="job-para">
-        Driver :{{o.0.driver.name}}&emsp;&emsp;&emsp;&emsp;
+      <div class="row">
+        <div class="col">
+        Driver :{{o.0.driver.name}}<br>
+        
+        Transport assign :{{o.0.transport.transport_no_plate }}-{{o.0.transport.type_of_transport }}<br>
+        Pickup: {{o.0.job_id.picking_Address}}<br>
+        Destination:  {{o.0.job_id.droping_Address}}<br>
+      </div>
+      <div class="col">
         CoDriver :{{o.0.co_driver.name}}<br>
-        Transport assign :{{o.0.transport.transport_no_plate }}-{{o.0.transport.type_of_transport }}
-        pickup: {{o.0.job_id.picking_Address}}<br>
-        drop:  {{o.0.job_id.droping_Address}}<br>
-
-
-        Job description:<br>
+        Shipment description:<br>
         {{o.0.job_id.job_description}}
+      </div>
+    </div>
        </p>
   <div class="share">
      <p>
          {% if o.0.payment_Done %}
-         Payment Done:{{o.0.payment_Done}} out of total Payment:{{o.0.Total_payment}}
+         Payment Done:{{o.0.payment_Done}} out of total Payment:{{o.0.Total_payment.Bid_amount}}
          {% else %}
         Payment done :Not done Yet
          {% endif %}
      </p>
       <p>Current Status : {{o.0.current_status}}</p>
+          {% if o.0.ask_finalpay %}
+          {% else %}
             <a type="button" href="{% url 'partner_company:Update_PresentShip' o.0.pk %}" class="btn btn-success">Update current status</a>
+            {% endif %}
   </div>
 
                     </div>

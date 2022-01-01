@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -114,7 +115,7 @@
 			<div class="col-md-12">
 
 				<div class="heading">
-					<h3>Shipment <span>Page</span></h3>
+					<h3>Saved <span>Shipments </span></h3>
 					<h4>Shipments you saved for review</h4>
 				</div>
 			</div>
@@ -141,18 +142,30 @@
             </div>
                         </div>
       <p class="job-para">
-        pickup: {{o.0.job_id.picking_Address}}<br>
-        drop:  {{o.0.job_id.droping_Address}}<br>
+        <div class="row">
+          <div class="col">
+        <b>Pickup Address</b>: {{o.0.job_id.picking_Address}}<br>
+        <b>Destination Address</b>:  {{o.0.job_id.droping_Address}}<br>
 
 
-        Job description:<br>
-        {{o.0.job_id.job_description}}
-
-<!--        Job description:<br>-->
-<!--        {{o.4.company_name}}<br>-->
-<!--        Job description:<br>-->
-<!--        {{o.4.company_name}}<br>-->
-    </p>
+        <b> Description</b>:
+        {{o.0.job_id.job_description}}<br>
+      </div>
+      <div class="col">
+    <b>Value of shipment</b>:
+    <i class="fa fa-rupee"></i>{{o.3.value}}/-<br>
+    <b>Lenght of shipment</b>:
+    {{o.3.length}} m<br>
+    <b>Width of Shipment</b>:
+    {{o.3.width}} m<br>
+    {% if o.3.height %}
+    <b>Height of Shipment</b>:
+    {{o.3.height}} m<br>{% endif %}
+    <b>Weight of Shipment</b>:
+    {{o.3.Weight_box}} Kg<br>
+      </div>
+    </div>
+</p>
                         <div class="share">
      <ul class="list-inline">
 </ul>

@@ -39,7 +39,7 @@ class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, widget=forms.TextInput(
         attrs={'placeholder': 'Enter your first name', 'class': "input100"}))
     last_name = forms.CharField(max_length=30, required=False, widget=forms.TextInput(
-        attrs={'placeholder': 'Enter your first name', 'class': "input100"}))
+        attrs={'placeholder': 'Enter your last name', 'class': "input100"}))
     email = forms.EmailField(max_length=254,
                              widget=forms.TextInput(attrs={'placeholder': 'Enter email address', 'class': "input100"}))
     password1 = forms.CharField(max_length=16, widget=forms.PasswordInput(
@@ -59,18 +59,18 @@ class SignUpForm(UserCreationForm):
 
 
 class ShipJob(forms.ModelForm):
-    ship_title = forms.CharField(label='Title of your New Shipment', max_length=30, required=False,
+    ship_title = forms.CharField(label='Title of New Shipment',required=True, max_length=30,
                                  widget=forms.TextInput(
                                      attrs={'class': "input100"}))
     job_description = forms.CharField(
-        label='Enter the description about the shipment (do mention if shipment is fragile)', max_length=30,
-        required=False, widget=forms.TextInput(
+        label='Description about the shipment (Required if shipment is fragile)',required=True, max_length=30,
+        widget=forms.TextInput(
             attrs={'class': "input100"}))
-    picking_Address = forms.CharField(label='Enter the address from where to pick the shipment', max_length=30,
-                                      required=False, widget=forms.Textarea(
+    picking_Address = forms.CharField(label='Shipment Pickup Address', required=True,max_length=3000,
+                                      widget=forms.Textarea(
             attrs={'class': "input100"}))
-    droping_Address = forms.CharField(label='Enter the address where to drop the shipment', max_length=30,
-                                      required=False, widget=forms.Textarea(
+    droping_Address = forms.CharField(label='Shipment Destination Address', required=True,max_length=3000,
+                                       widget=forms.Textarea(
             attrs={'class': "input100"}))
 
     class Meta:
@@ -84,41 +84,41 @@ class ShipJob(forms.ModelForm):
 
 
 class Prod_Detail(forms.ModelForm):
-    value = forms.CharField(
-        label='Value of Shipment',
+    value = forms.FloatField(
+        label='Value of Shipment(in rupees)',required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
             'placeholder': 'Estimated value of shipment'
-        })
+        }),error_messages={'invalid':"Your Entery should be Numeric Value"}
     )
 
-    Weight_box = forms.CharField(
-        label='Weight of box(in kg)',
+    Weight_box = forms.FloatField(
+        label='Weight of Shipment(in kg)',required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
-            'placeholder': 'weight of Shipment'
-        })
+            'placeholder': 'Weight of Shipment'
+        }),error_messages={'invalid':"Your Entery should be Numeric Value"}
     )
-    length = forms.CharField(
+    length = forms.FloatField(
         label='Length of Shipment(in meter)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
             'placeholder': 'Length of Shipment'
-        })
+        }),error_messages={'invalid':"Your Entery should be Numeric Value"}
     )
-    width = forms.CharField(
+    width = forms.FloatField(
         label='Width of Shipment(in meter)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
             'placeholder': 'Width of Shipment'
-        })
+        }),error_messages={'invalid':"Your Entery should be Numeric Value"}
     )
-    height = forms.CharField(
+    height = forms.FloatField(
         label='Height of Shipment(in meter)',
         widget=forms.TextInput(attrs={
             'class': 'form-control input100',
             'placeholder': 'Height of Shipment'
-        })
+        }),error_messages={'invalid':"Your Entery should be Numeric Value"}
     )
 
     class Meta:

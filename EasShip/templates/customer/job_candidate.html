@@ -2,10 +2,11 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/style12.css'%}">
@@ -87,7 +88,7 @@
 
                                     <li class="nav-item">
                                         <div class="dropdown">
-                                            <button class="dropbtn"><img src={{ep.company_logo.url}}></button>
+                                            <button class="dropbtn"><img src={{cp.company_logo.url}}></button>
                                             <div class="dropdown-content">
                                                 <a href="{% url 'customer:profile' %}">My Profile</a>
                                                 <a href="{% url 'customer:logout' %}">Log Out</a>
@@ -118,8 +119,8 @@
 				<div class="heading-action">
 					<ul class="list-inline">
 						<li>Action <span>Taken</span></li>
-                        <li><a href="{% url 'customer:shortlist_view_applied_candidate' job.pk %}">Shortlisted Shippers</a></li>
-						<li><a href="{% url 'customer:disqualify_view_applied_candidate' job.pk %}"> Disqualified Shippers</a>  </li>
+                        <li><a href="{% url 'customer:shortlist_view_applied_candidate' job.pk %}" style="color: green;">Shortlisted Shippers</a></li>
+						<li><a href="{% url 'customer:disqualify_view_applied_candidate' job.pk %}" style="color: green;"> Disqualified Shippers</a>  </li>
 
 					</ul>
 				</div>
@@ -186,7 +187,7 @@ Already Selected
 
 <div class="download">
                                 <a class="btn btn-success" href="{% url 'customer:select' c.2.pk %}" role="button">Select</a>
-                                <a class="btn btn-outline-success  " href="{% url 'customer:disqualify' c.2.pk %}" role="button">Shortlist</a>
+                                <a class="btn btn-outline-success  " href="{% url 'customer:shortlist' c.2.pk %}" role="button">Shortlist</a>
                                 <a class="btn btn-outline-danger" href="{% url 'customer:disqualify' c.2.pk %}" role="button">Reject</a>
 
 

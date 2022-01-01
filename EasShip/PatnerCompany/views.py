@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import re
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from django.http import HttpResponse
@@ -16,7 +16,7 @@ from django.utils.encoding import force_text, force_bytes
 from .tokens import account_activation_token
 from .models import patnerComp, Comp_profile, Comp_address, comp_Bids, comp_drivers, comp_PastWork, comp_PresentWork, \
     comp_Transport, shipJob_Saved, shipJob_jobanswer
-from Customer.models import shipJob, Expired_ShipJob, Shipment_Related_Question, Customer_profile
+from Customer.models import shipJob, Expired_ShipJob, Shipment_Related_Question, Customer_profile,ProdDesc
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -93,7 +93,7 @@ class SignUpVieww(View):
                 user = form.save(commit=False)
                 user.username = user.email
                 user.user_name = user.email
-                user.is_active = True  # change this to False after testing
+                user.is_active = False  # change this to False after testing
                 user.is_company = True  # Deactivate account till it is confirmed
                 user.save()
 
@@ -136,11 +136,11 @@ class ActivateAccount(View):
             user.save()
             login(request, user)
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('partner_company:home')
+            return redirect('partner_company:partner_company_home')
         else:
             messages.warning(
                 request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('partner_company:home')
+            return redirect('user:Login')
 
 
 def index(request):
@@ -177,6 +177,7 @@ def partner_company_Home(request):
     companyprofile = []
     job_skills = []
     u = request.user
+    jobdes =[]
     if u is not None and u.is_company:
         c = patnerComp.objects.get(user=u)
         try:
@@ -225,13 +226,6 @@ def partner_company_Home(request):
 
             for job in jobs:
 
-                e = job.cust
-                try:
-                    c_p = Customer_profile.objects.get(cust=e)
-                except Customer_profile.DoesNotExist:
-                    c_p = None
-                companyprofile.append(c_p)
-
                 try:
                     userS = shipJob_Saved.objects.get(job_id=job.pk, comp_id=c)
                     # print(userS.job_id)
@@ -249,13 +243,35 @@ def partner_company_Home(request):
                 if userS:
                     # print(userS)
                     continue
-                relevant_jobs.append(job)
+                relevant_jobs.append(job)             
+
+                e = job.cust
+                try:
+                    c_p = Customer_profile.objects.get(cust=e)
+                except Customer_profile.DoesNotExist:
+                    c_p = None
+                companyprofile.append(c_p)
                 job_ques.append(Shipment_Related_Question.objects.filter(job_id=job))
-            object2 = zip(relevant_jobs, job_ques, companyprofile)
-            select = comp_Bids.objects.filter(comp_id=c,is_selected=True,completed_shipment=False)
-            print(select)
+                jobdes.append(ProdDesc.objects.get(shipment=job))
+            object2 = zip(relevant_jobs, job_ques, companyprofile,jobdes)
+            select =[]
+            update=[]
+            sel= comp_Bids.objects.filter(comp_id=c,is_selected=True,completed_shipment=False)
+            for s in sel:
+                try:
+                    cpw = comp_PresentWork.objects.get(Total_payment=s)
+                    if cpw.request_update:
+                        update.append(cpw)
+                except comp_PresentWork.DoesNotExist:
+                    select.append(s)
+                
+            print(update)
+            if len(update) >0:
+                up=True
+            else:
+                up=False
             return render(request, 'partner_company/home.html',
-                          {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd,'select':select})
+                          {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep,'n':ncep,'cadd':cadd,'select':select,'update':up})
 
         else:
             u.first_login = True
@@ -273,20 +289,22 @@ def apply_Shipment(request, pk):
         c = patnerComp.objects.get(user=request.user)
         job = shipJob.objects.get(pk=pk)
         questions = Shipment_Related_Question.objects.filter(job_id=job)
-
-        if request.method == 'POST':
-            print(request.POST)
-            pk = pk
-            print(pk)
-            bid = request.POST.get('bid')
-            comp = request.POST.get('comp')
-            for q in questions:
-                get_text = request.POST.get(q.question)
-                print(get_text)
-                shipJob_jobanswer.objects.create(candidate_id=c, question_id=q, answer=get_text).save()
-            comp_Bids.objects.create(comp=c,Bid_amount=bid, complete_in=comp,job_id=job).save()
-            return redirect('partner_company:partner_company_home')
-        return render(request, 'partner_company/applyShip.html',{'question':questions,'job':job})
+        try:
+            cp = Comp_profile.objects.get(comp=c)
+            if request.method == 'POST':
+                print(request.POST)
+                pk = pk
+                print(pk)
+                bid = request.POST.get('bid')
+                comp = request.POST.get('comp')
+                tbid = request.POST.get('tbid')
+                comm = request.POST.get('commission')
+                
+                comp_Bids.objects.create(comp=c,Bid_amount=tbid,Bid_byPartner=bid, complete_in=comp,job_id=job).save()
+                return redirect('partner_company:partner_company_home')
+            return render(request, 'partner_company/applyShip.html',{'question':questions,'job':job,'cp':cp})
+        except Comp_profile.DoesNotExist:
+            return redirect('partner_company:create_profile')  
     else:
         return redirect('/')
 @login_required(login_url='/')
@@ -383,7 +401,7 @@ def SavedJobs(request):
     relevant_jobs = []
     common = []
     companyprofile = []
-    job_skills = []
+    jdesc = []
     u = request.user
     if u is not None and u.is_company:
         if request.method == 'POST':
@@ -436,7 +454,7 @@ def SavedJobs(request):
                     print(jobs)
             for job in jobs:
                 e = job.job_id.cust
-                companyprofile.append(Customer_profile.objects.get(cust=e))
+                
                 print(companyprofile)
                 try:
                     userA = comp_Bids.objects.get(job_id=job.pk, comp=c)
@@ -451,8 +469,10 @@ def SavedJobs(request):
                     print(job)
                     relevant_jobs.append(job)
                     print(relevant_jobs)
+                    companyprofile.append(Customer_profile.objects.get(cust=e))
                     job_ques.append(Shipment_Related_Question.objects.filter(job_id=job.job_id))
-            object2 = zip(relevant_jobs, job_ques, companyprofile)
+                    jdesc.append(ProdDesc.objects.get(shipment=job.job_id))
+            object2 = zip(relevant_jobs, job_ques, companyprofile,jdesc)
             return render(request, 'partner_company/savedjobs.html',
                           {'jobs': object2, 'c': c, 'cp': cp, 'cep': cep})
         else:
@@ -473,7 +493,13 @@ def AppliedJobs(request):
             cp = Comp_profile.objects.get(comp=c)
         except Comp_profile.DoesNotExist:
             cp = None
-        applied = comp_Bids.objects.filter(comp=c)
+        applied =[]
+        app = comp_Bids.objects.filter(comp=c)
+        for a in app:
+            try:
+                cpw = comp_PresentWork.objects.get(Total_payment=a)
+            except comp_PresentWork.DoesNotExist:
+                applied.append(a)
         for a in applied:
             e = a.job_id.cust
             companyprofile.append(Customer_profile.objects.get(cust=e))
@@ -538,8 +564,16 @@ def addTransport(request):
                 if form.is_valid():
                     f = form.save(commit=False)
                     f.comp = pr
-                    f.save()
-                    messages.success(request, 'Transport is added.')
+                    val = f.transport_no_plate
+                    if re.match(r'^[A-Z]{2}[ -][0-9]{1,2}(?: [A-Z])?(?: [A-Z]*)? [0-9]{4}$', val):
+                        f.save()
+                        messages.success(request, 'Transport is added.')
+                    else:
+                        messages.success(request, 'Enter the Vehicle plate number in correct manner (example: XY 99 ZZ 1111)')
+                else:
+                    messages.success(request, 'Entered Vehicle Number Already Exists')
+                    
+                    
             form = addTransportForm()
             return render(request, 'partner_company/addTransport.html',
                           {'form': form,'cp':cp})
@@ -560,6 +594,7 @@ def addDriver(request):
                 if form.is_valid():
                     f = form.save(commit=False)
                     f.comp = pr
+                    
                     f.save()
                     messages.success(request, 'Driver is added.')
             form = adddriverForm()
@@ -593,8 +628,8 @@ def SetUp_PresentShip(request, pk):
 
             return redirect('partner_company:partner_company_home')
         form = PresentWorkSetForm()
-        return render(request, 'partner_company/setup_presentShip.html',
-                      {'form': form,'cp':cp})
+        return render(request, 'partner_company/setup_presentship.html',
+                      {'form': form,'cp':cp,'job':job})
     else:
         return redirect('/')
 @login_required(login_url='/')
@@ -620,13 +655,26 @@ def Update_PresentShip(request, pk):
             form = PresentWorkUpdateForm(request.POST, instance=job)
             if form.is_valid():
                 f = form.save(commit=False)
-                f.comp = pr
-                f.job_id = job
+                
+                f.request_update=False
                 f.save()
             return redirect('partner_company:partner_company_home')
         form = PresentWorkUpdateForm(instance=job)
         return render(request, 'partner_company/setup_presentship.html',
-                      {'form': form,'cp':cp})
+                      {'form': form,'cp':cp,'pk':pk,'job':job})
+    else:
+        return redirect('/')
+def Complete_PresentShip(request, pk):
+    user = request.user
+    # print(user)
+    if user.is_company:
+        pr = patnerComp.objects.get(user=user)
+        cp = Comp_profile.objects.get(comp=pr)
+        job = comp_PresentWork.objects.get(pk=pk)
+        job.ask_finalpay=True
+        job.current_status="Shipment Done"
+        job.save()
+        return redirect('partner_company:AppliedJobs')
     else:
         return redirect('/')
 @login_required(login_url='/')
@@ -661,7 +709,7 @@ def ManageDriver(request):
             try:
                 cp.append(comp_PresentWork.objects.filter(driver=d))
             except comp_PresentWork.DoesNotExist:
-                c.append(None)
+                cp.append(None)
         info = zip(drivers,cp)
         return render(request, 'partner_company/DriverManagement.html', {'info': info,'cp':cpr})
     else:

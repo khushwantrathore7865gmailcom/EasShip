@@ -2,10 +2,11 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/style12.css' %}">
@@ -83,7 +84,7 @@
 
                                     <li class="nav-item">
                                         <div class="dropdown">
-                                            <button class="dropbtn"><img src={{ep.company_logo.url}}></button>
+                                            <button class="dropbtn"><img src={{c.company_logo.url}}></button>
                                             <div class="dropdown-content">
                                                 <a href="{% url 'customer:profile' %}">My Profile</a>
                                                 <a href="{% url 'customer:logout' %}">Log Out</a>
@@ -106,7 +107,7 @@
 		<div class="row">
 			<div class="col-md-10 mx-auto col-12">
 				<div class="heading">
-					<h2>Job Title: <span>{{job.ship_title}}</span></h2>
+					<h2>Shipment Title: <span>{{job.ship_title}}</span></h2>
 
 				</div>
 			</div>
@@ -125,19 +126,19 @@
 							<p class="min"><span>Posted on:</span>{{job.created_on}}</p>
 						</div>
                     </div>
-						<h3>JOB DESCRIPTION</h3>
+						<h3>SHIPMENT DESCRIPTION</h3>
                         <p class="job-para">
-                            Job Description:{{job.job_description}}</p>
+                            Job Description:  {{job.job_description}}</p>
                             <p class="job-para">
-                        Picking Address :{{job.picking_Address}}</p>
+                        Pickup Address :   {{job.picking_Address}}</p>
                         <p class="job-para">
-                        Dropping Address:{{job.dropping_Address}}</p>
+                        Destination Address:  {{job.droping_Address}}</p>
                         {% if job.bid_selected %}
 
                         {% else %}
                     <h3>PEOPLE APPLIED</h3>
                       <ul class="list-inline">
-							<li>Total Number of Application: <span>{{job.get_applied_no}}</span></li>
+							<li>Total Number of Application: <span>{{count}}</span></li>
                             </ul>
 
 {% if job.is_save_later %}

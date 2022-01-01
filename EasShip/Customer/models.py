@@ -25,8 +25,10 @@ class Customer_profile(models.Model):
     # email = models.EmailField(max_length=25, blank=True, )
     company_type = models.CharField(max_length=250, blank=True, )
     company_name = models.CharField(max_length=250, blank=True, )
-    company_logo = models.ImageField(blank=True, )
+    company_logo = models.ImageField(blank=True,upload_to="customer_logo/",default="profile.png" )
     address = models.TextField(null=True)
+    def __str__(self):
+        return f"{self.cust.user.username}-{self.company_name}"
 
 
 # class Customer_address(models.Model):
@@ -68,12 +70,14 @@ class Customer_profile(models.Model):
 class shipJob(models.Model):
     cust = models.ForeignKey(customer, on_delete=models.CASCADE)
     ship_title = models.CharField(max_length=1024, null=True)
-    job_description = models.CharField(blank=True, max_length=1024)
+    job_description = models.CharField(max_length=1024)
     picking_Address = models.TextField(null=True)
     droping_Address = models.TextField(null=True)
     created_on = models.DateTimeField(auto_now_add=True, null=True)
     bid_selected = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.cust.user.username}-{self.ship_title}"
 
 
 class ProdDesc(models.Model):
@@ -82,7 +86,9 @@ class ProdDesc(models.Model):
     Weight_box = models.FloatField()
     length = models.FloatField()
     width = models.FloatField()
-    height = models.FloatField()
+    height = models.FloatField(blank = True)
+    def __str__(self):
+        return f"{self.shipment}"
 
 
 class Expired_ShipJob(models.Model):
@@ -92,6 +98,8 @@ class Expired_ShipJob(models.Model):
     picking_Address = models.TextField(null=True)
     droping_Address = models.TextField(null=True)
     created_on = models.DateTimeField(auto_now_add=True, null=True)
+    def __str__(self):
+        return f"{self.cust.user.username}-{self.ship_title}"
 
 
 class Shipment_Related_Question(models.Model):

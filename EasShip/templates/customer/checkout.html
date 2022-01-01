@@ -3,10 +3,11 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/style12.css' %}">
@@ -130,23 +131,24 @@
                         <p class="job-para">
                             Pickup Address:{{cp.job_id.picking_Address}}</p>
                             <p class="job-para">
-                        Drop Address:{{cp.job_id.droping_Address}}</p>
+                        Destination Address:{{cp.job_id.droping_Address}}</p>
                         <p class="job-para">
-                        Pickup Address:{{cp.job_id.job_description}}</p>
+                        Shipment Description:{{cp.job_id.job_description}}</p>
 
 
-                    <h3>Bid Description</h3>
+                    <h3>Cost Description</h3>
 
                       <ul class="list-inline">
 
                           {% if cp.payment_Done %}
-							<li>Total Bid: <span>{{cp.Total_payment.Bid_amount}}</span></li>
+							<li>Total Amount: <span>{{cp.Total_payment.Bid_amount}}</span></li>
                            <li>Payment Done: <span>{{cp.payment_Done}}</span></li>
-                           <li>Rest payment: <span>{{cp.Total_payment.Bid_amount|sub:cp.payment_Done}}</span></li>
+                           <li>Remaining Payment: <span>{{cp.Total_payment.Bid_amount|sub:cp.payment_Done}}</span></li>
                           {% else %}
-                          <li>Total Bid: <span>{{cp.Total_payment.Bid_amount}}</span></li>
+                          <li>Total Amount: <span>{{cp.Total_payment.Bid_amount}}</span></li>
                            <li>Payment Done: <span>0</span></li>
-                           <li>Rest payment: <span>{{cp.Total_payment.Bid_amount}}</span></li>
+                           <li>Remaining Payment: <span>{{cp.Total_payment.Bid_amount}}</span></li>
+                           <li>Current Payable Amount: <span>{{cp.Total_payment.Bid_amount| mul:0.5}}</span></li>
                           {% endif %}
 
                             </ul>

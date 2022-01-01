@@ -24,9 +24,9 @@ with open(os.path.join(BASE_DIR,"secert_key.txt")) as f:
     SECRET_KEY=f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['easshipp.in', 'ec2-13-59-9-216.us-east-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['easshipp.in', 'ec2-13-59-9-216.us-east-2.compute.amazonaws.com','www.easshipp.in']
 
 # Application definition
 
@@ -125,8 +125,8 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "static_root")
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "media_root")
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -139,7 +139,7 @@ EMAIL_PORT=465
 EMAIL_USE_SSL=False
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER="easshipp@easshipp.in"
-DEFAULT_FROM_EMAIL="eashipp@easshipp.in"
+DEFAULT_FROM_EMAIL="easshipp@easshipp.in"
 #EMAIL_HOST_PASSWORD="SL@Top1Day"
 EMAIL_HOST_PASSWORD="Keepitup123@"
 

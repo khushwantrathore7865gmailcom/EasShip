@@ -36,7 +36,7 @@ Martial_Status = [
 
 
 class SignUpForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=False, widget=forms.TextInput(
+    first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(
         attrs={'placeholder': 'Enter your first name', 'class': "input100"}))
     last_name = forms.CharField(max_length=30, required=False, widget=forms.TextInput(
         attrs={'placeholder': 'Enter your first name', 'class': "input100"}))
@@ -59,9 +59,9 @@ class SignUpForm(UserCreationForm):
 
 
 class adddriverForm(forms.ModelForm):
-    name = forms.CharField(label='Name of the new Driver', max_length=30, required=False, widget=forms.TextInput(
+    name = forms.CharField(label='Name of the new Driver', max_length=30, required=True, widget=forms.TextInput(
         attrs={'class': "input100"}))
-    phone = forms.CharField(label='Phone of the new Driver', max_length=30, required=False, widget=forms.NumberInput(
+    phone = forms.CharField(label='Phone of the new Driver', max_length=30, required=True, widget=forms.NumberInput(
         attrs={'class': "input100"}))
 
     class Meta:
@@ -73,10 +73,11 @@ class adddriverForm(forms.ModelForm):
 
 
 class addTransportForm(forms.ModelForm):
-    type_of_transport = forms.CharField(label='Type of the Transportation', max_length=30, required=False,
+    type_of_transport = forms.CharField(label='Type of the Vehicle', max_length=30, required=True,
                                         widget=forms.TextInput(
                                             attrs={'class': "input100"}))
-    transport_no_plate = forms.CharField(label='Number of the Transportation', max_length=30, required=False,
+    
+    transport_no_plate = forms.CharField(label='Vehicle Plate Number', max_length=30, required=True,
                                          widget=forms.TextInput(
                                              attrs={'class': "input100"}))
 
@@ -100,8 +101,7 @@ class PresentWorkSetForm(forms.ModelForm):
 
 
 class PresentWorkUpdateForm(forms.ModelForm):
-    completed_shipment = forms.BooleanField(label='Completed Shipment',
-                                            help_text='Reached to the location of Dropping Address')
+    
 
 
     class Meta:
@@ -111,18 +111,18 @@ class PresentWorkUpdateForm(forms.ModelForm):
             'co_driver',
             'transport',
             'current_status',
-            'completed_shipment'
+            
         ]
 
 
 class Profile(forms.ModelForm):
-    company_name = forms.CharField(label='Enter name of company', max_length=30, required=False,
+    company_name = forms.CharField(label='Enter name of company', max_length=30, required=True,
                                         widget=forms.TextInput(
                                             attrs={'class': "input100"}))
-    company_type = forms.CharField(label='Enter Type  of company', max_length=30, required=False,
+    company_type = forms.CharField(label='Enter Type  of company', max_length=30, required=True,
                                    widget=forms.TextInput(
                                        attrs={'class': "input100"}))
-    phone = forms.CharField(label='Phone of the Company', max_length=30, required=False, widget=forms.NumberInput(
+    phone = forms.CharField(label='Phone of the Company', max_length=30, required=True, widget=forms.NumberInput(
         attrs={'class': "input100"}))
 
     class Meta:

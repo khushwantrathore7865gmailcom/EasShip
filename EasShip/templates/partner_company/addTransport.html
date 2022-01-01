@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -137,6 +138,9 @@
 		</div>
 
 	</header>
+  {% if message %}
+  {{message}}
+  {% endif %}
     {% if messages %}
 <div class="alert alert-success" role="alert">
 
@@ -152,7 +156,7 @@
 
 <div class="col-md-12">
 				<div class="heading">
-					<h3>Add mean of <span>Transportation</span></h3>
+					<h3>Add New <span>Vehicle</span></h3>
 
                 </div></div>
 	<div class="container">

@@ -1,7 +1,7 @@
 from django.db import models
 from User.models import User_custom
 from django.core.validators import RegexValidator
-from Customer.models import shipJob, Shipment_Related_Question
+from Customer.models import shipJob, Shipment_Related_Question,Expired_ShipJob
 
 
 # Create your models here.
@@ -24,7 +24,10 @@ class Comp_profile(models.Model):
 
     company_type = models.CharField(max_length=250, blank=True, )
     company_name = models.CharField(max_length=250, blank=True, )
-    company_logo = models.ImageField(blank=True, )
+    company_logo = models.ImageField(blank=True,upload_to="company_logo/",default="profile.png" )
+
+    def __str__(self):
+        return f"{self.comp.user.username}-{self.company_name}"
 
 
 class Comp_address(models.Model):
@@ -62,13 +65,16 @@ class Comp_address(models.Model):
         verbose_name = "Shipping Company Address"
         verbose_name_plural = "Shipping Company Addresses"
 
-
+    def __str__(self):
+        return f"{self.comp.user.username}-{self.city}"
 #
 class comp_Transport(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     type_of_transport = models.CharField(max_length=1024)
-    transport_no_plate = models.CharField(max_length=10)
-
+    
+    transport_no_plate = models.CharField(max_length=13,unique=True)
+    def __str__(self):
+        return f"{self.transport_no_plate}-{self.type_of_transport}"
 
 class comp_drivers(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
@@ -76,6 +82,8 @@ class comp_drivers(models.Model):
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Please enter valid phone number. Correct format is 91XXXXXXXX")
     phone = models.CharField(validators=[phone_regex], max_length=20, blank=True)
+    def __str__(self):
+        return f"{self.name}-{self.phone}"
 
 
 class shipJob_jobanswer(models.Model):
@@ -83,6 +91,7 @@ class shipJob_jobanswer(models.Model):
     # employer_id = models.ForeignKey(Employer, on_delete=models.CASCADE)
     question_id = models.ForeignKey(Shipment_Related_Question, on_delete=models.CASCADE)
     answer = models.CharField(max_length=1250)
+
 
 
 class comp_Bids(models.Model):
@@ -100,18 +109,21 @@ class comp_Bids(models.Model):
     is_disqualified = models.BooleanField(default=False)
     is_selected = models.BooleanField(default=False)
     completed_shipment = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.comp.user.username}-{self.job_id}is {self.is_selected}"
 
 
 class shipJob_Saved(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
-
+    def __str__(self):
+        return f"{self.comp.user.username}-{self.job_id}"
 
 class comp_PresentWork(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
     job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
     driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='drivers')
-    co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codrivers')
+    co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codrivers',blank=True,null=True)
     transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transports')
     current_status = models.CharField(max_length=1024)
     Total_payment = models.ForeignKey(comp_Bids, on_delete=models.CASCADE)
@@ -120,16 +132,27 @@ class comp_PresentWork(models.Model):
         decimal_places=2, null=True)
     Payment_complete = models.BooleanField(default=False)
     ask_finalpay = models.BooleanField(default=False)
+    request_update = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.comp.user.username}-{self.job_id}-{self.driver}"
 
 
 class comp_PastWork(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
-    job_id = models.ForeignKey(shipJob, on_delete=models.CASCADE)
-    Rating = models.CharField(max_length=1024)
+    job_id = models.ForeignKey(Expired_ShipJob, on_delete=models.CASCADE)
+    Rating = models.IntegerField(max_length=1024)
+    Bid_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,null=True)
+    Bid_byPartner = models.DecimalField(
+        max_digits=12,
+        decimal_places=2, null=True)
     driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='driver')
-    co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codriver')
+    co_driver = models.ForeignKey(comp_drivers, on_delete=models.CASCADE, related_name='codriver',blank=True,null=True)
     transport = models.ForeignKey(comp_Transport, on_delete=models.CASCADE, related_name='transport')
     delivered_on = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.comp.user.username}-{self.job_id}-{self.Rating}"
 
 
 class Orders(models.Model):
@@ -139,3 +162,5 @@ class Orders(models.Model):
     amount = models.DecimalField(
         max_digits=12,
         decimal_places=2, null=True)
+    def __str__(self):
+        return f"{self.work.comp.user.username}-{self.order_id}is {self.order_done}"

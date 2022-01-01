@@ -2,9 +2,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
 
     <!-- Bootstrap CSS -->
       <link rel="stylesheet" href="bootstrap.css" />
@@ -141,24 +142,11 @@
 <section class="job-portal">
 <div class="col-md-12">
 				<div class="heading">
-					<h3>Post <span>Job</span></h3>
+					<h3>Shipment: <span>{{job.ship_title}}{{job.job_id.ship_title}}</span></h3>
 
                 </div></div>
 	<div class="container">
-        <div class="divv">
-
-            <h4>Few guidelines</h4>
-
-                    <ul>
-                        <li>Proper formatting of the text/content of the posting with clear spaces and standard bullets (-) to be used.</li>
-                        <li>No short forms/abbreviations to be used in the text.</li>
-                        <li>Correct mail ID to be included at the end of the posting.</li>
-                        <li>Two skills should be separated by comma.</li>
-                        <li>No spelling mistakes in the content.</li>
-                        <li>JD should be concise and crisp - to the point.</li>
-                    </ul>
-
-        </div>
+        
 
 		<div class="row">
 
@@ -170,8 +158,13 @@
   {{form.as_p}}
     <div class="row spacer">
     <div class="col-4 offset-2">
-    <button type="submit" class="btn btn-block btn-success">Update</button>
+    <button type="submit" class="btn btn-block btn-success">Update</button><br>
     </div>
+    {% if pk %}
+    <div class="col-4 offset-2">
+    <a type="button" class="btn btn-success" href="{% url 'partner_company:Complete_PresentShip' pk %}">Complete Shipment</a>
+    </div>
+    {% endif %}
     </div>
 <!--    <a type="button" class="btn btn-success">update</a>-->
 </form>
