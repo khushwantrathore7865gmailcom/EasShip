@@ -597,7 +597,7 @@ def addTransport(request):
                         messages.success(request, 'Transport is added.')
                     else:
                         messages.success(request,
-                                         'Enter the Vehicle plate number in correct manner (example: XY 99 ZZ 1111)')
+                                         'Enter the Vehicle plate number in correct manner (example: XY 99 ZZ 1111 or XY-99-ZZ-1111)')
                 else:
                     messages.success(request, 'Entered Vehicle Number Already Exists')
 
