@@ -308,7 +308,7 @@ def apply_Shipment(request, pk):
                                          job_id=job).save()
                 try:
                     name = job.ship_title
-                    storeName = Room.objects.create(name=name)
+                    storeName = Room.objects.create(name=name,userp=c,userc=job.cust)
                 except Exception as e:
                     import os, random, string
                     length = 13
@@ -599,7 +599,7 @@ def addTransport(request):
                         messages.success(request,
                                          'Enter the Vehicle plate number in correct manner (example: XY 99 ZZ 1111 or XY-99-ZZ-1111)')
                 else:
-                    messages.success(request, 'Entered Vehicle Number Already Exists')
+                    messages.success(request, 'Entered Vehicle Number Already Exists ')
 
             form = addTransportForm()
             return render(request, 'partner_company/addTransport.html',
