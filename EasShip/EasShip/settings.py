@@ -20,13 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = ''
-with open(os.path.join(BASE_DIR,"secert_key.txt")) as f:
-    SECRET_KEY=f.read().strip()
+with open(os.path.join(BASE_DIR, "secert_key.txt")) as f:
+    SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['easshipp.in', 'ec2-13-59-9-216.us-east-2.compute.amazonaws.com','www.easshipp.in']
+ALLOWED_HOSTS = ['easshipp.in', 'ec2-13-59-9-216.us-east-2.compute.amazonaws.com', 'www.easshipp.in', '127.0.0.1']
 
 # Application definition
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'Customer',
     'crispy_forms',
     'mathfilters',
+    'chat'
 
 ]
 
@@ -133,16 +134,15 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 AUTH_USER_MODEL = 'User.User_custom'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND='django_smtp_ssl.SSLEmailBackend'
-EMAIL_HOST="smtppro.zoho.in"
-EMAIL_PORT=465
-EMAIL_USE_SSL=False
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER="easshipp@easshipp.in"
-DEFAULT_FROM_EMAIL="easshipp@easshipp.in"
-#EMAIL_HOST_PASSWORD="SL@Top1Day"
-EMAIL_HOST_PASSWORD="Keepitup123@"
-
+EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+EMAIL_HOST = "smtppro.zoho.in"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = False
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "easshipp@easshipp.in"
+DEFAULT_FROM_EMAIL = "easshipp@easshipp.in"
+# EMAIL_HOST_PASSWORD="SL@Top1Day"
+EMAIL_HOST_PASSWORD = "Keepitup123@"
 
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
