@@ -770,7 +770,7 @@ def ManageTruck(request):
             try:
                 cp.append(comp_PresentWork.objects.filter(transport=d))
             except comp_PresentWork.DoesNotExist:
-                c.append(None)
+                cp.append(None)
         info = zip(Trucks, cp)
         return render(request, 'partner_company/TransprtManagement.html', {'info': info, 'cp': cpr})
     else:
@@ -794,7 +794,7 @@ def DriverRecords(request):
                 cp.append(comp_PastWork.objects.filter(driver=d))
                 n.append(len(comp_PastWork.objects.filter(driver=d)))
             except comp_PastWork.DoesNotExist:
-                c.append(None)
+                cp.append(None)
         info = zip(drivers, cp, n)
         return render(request, 'partner_company/DriverPastwork.html', {'info': info, 'cp': cpr})
     else:
@@ -818,7 +818,7 @@ def TruckRecords(request):
                 cp.append(comp_PastWork.objects.filter(transport=t))
                 n.append(len(comp_PastWork.objects.filter(transport=t)))
             except comp_PastWork.DoesNotExist:
-                c.append(None)
+                cp.append(None)
         info = zip(Truck, cp, n)
         return render(request, 'partner_company/TruckPastwork.html', {'info': info, 'cp': cpr})
     else:
