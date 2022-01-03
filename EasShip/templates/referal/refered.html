@@ -1,0 +1,417 @@
+{% load crispy_forms_tags %} {% load static %}
+<!doctype html>
+<html lang="en">
+
+<!-- Mirrored from grocbees.com/job-portal/job-post.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 27 Jun 2021 09:39:28 GMT -->
+
+<head>
+    <title>EasShipp.in</title><link rel = "icon" href ="{% static 'images/green.png' %} "type = "image/x-icon">
+
+    <!-- Required meta tags -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.35">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/style12.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+    <script src="https://kit.fontawesome.com/5a2b925216.js" crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> {% block mycss %}
+    <style>
+
+.input100 {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .inputdesc {
+            width: 100%;
+            height: 30%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .dropbtn {
+            background-color: #FFFFFF;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #03A84E;
+        }
+
+        .button1 {
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0px auto;
+            cursor: pointer;
+            float: right;
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        <!--.button1 {
+            background-color: #4CAF50;
+        }
+        /* Green */
+        .errorlist
+    {
+        color: red;
+    }
+        -->
+                input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+    </style>
+    {% endblock mycss %}
+</head>
+
+<body>
+{% if p %}
+<header>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-12">
+					<div class="top-navbar">
+						<nav class="navbar navbar-expand-lg ">
+  <a class="" href="{% url 'partner_company:partner_company_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+
+
+	<ul class="navbar-nav ml-auto">
+
+
+
+	  <li class="nav-item">
+          <a class="nav-link" href="{% url 'partner_company:ManageDriver' %}"><b>Manage Driver</b></a>
+      </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'partner_company:ManageTruck' %}"><b>Manage Transportation</b></a>
+      </li>
+        <li class="nav-item">
+            <div class="dropdown"><button class="dropbtn nav-link" style="color:black;"><b>Shipments</b></button>
+            <div class="dropdown-content">
+                <a class="nav-link" href="{% url 'partner_company:SavedJobs' %}">Saved</a>
+                <a class="nav-link" href="{% url 'partner_company:AppliedJobs' %}">Applied</a>
+                <a class="nav-link" href="{% url 'partner_company:PresentShip' %}">On Going Shipment</a>
+                <a class="nav-link" href="{% url 'partner_company:PastShipment' %}">Past Shipment</a>
+            </div>
+            </div></li>
+         <li class="nav-item">
+<div class="dropdown">
+  <button class="dropbtn">{% if c.company_logo %}<img src="{{c.company_logo.url}}">{% else %}<img src="{% static 'images/profile/avatar.png' %}">{% endif %}</button>
+  <div class="dropdown-content">
+    <a href="{% url 'partner_company:profile' %}">My Profile</a>
+
+    <a href="{% url 'partner_company:logout' %}">Log Out</a>
+  </div>
+</div>
+         </li>
+
+
+	 </ul>
+
+  </div>
+</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</header>
+{% else %}
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-12">
+                    <div class="top-navbar">
+                        <nav class="navbar navbar-expand-lg ">
+                            <a class="" href="{% url 'customer:customer_home' %}"> <img src="{% static 'images/green.png' %} " width="60" height="60"></a>
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+
+                                <ul class="navbar-nav ml-auto">
+
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="{% url 'customer:job_post' %}"><b>Add New Shipment</b></a>
+
+                                    </li>
+                                    <!--	  <li class="nav-item">-->
+                                    <!--        <a class="nav-link" href="#">Resume</a>-->
+                                    <!--      </li>-->
+
+
+                                    <li class="nav-item">
+                                        <div class="dropdown">
+                                            <button class="dropbtn"><img src={{c.company_logo.url}}></button>
+                                            <div class="dropdown-content">
+                                                <a href="{% url 'customer:profile' %}">My Profile</a>
+                                                <a href="{% url 'customer:logout' %}">Log Out</a>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </header>
+{% endif %}
+    {% if messages %}
+    <div class="alert alert-success" role="alert">
+
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+
+    </div>
+        {% endif %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body table-responsive">
+                            <div class="form-group">
+                                <label for="referral_link"><i class="fas fa-link mr-1"></i>My Referral Link</label>
+                                <div class="input-group">
+                                    <textarea name="referral_link" id="referral_link" class="form-control form-control-lg copy-input" rows="1" readonly="">https://easshipp.in/signup/ref={{user.id }}</textarea>
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <button class="btn btn-copy p-0" data-toggle="tooltip" data-placement="top" title="" data-target="referral_link" data-original-title="Click to Copy">
+                                            <img class="lazzy-effect lazy" data-src="{% static 'images/copy.svg' %}" height="30px" src="{% static 'images/loading.png' %}">
+                                        </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-auto mx-2">
+                                    <a target="_blank" class="btn btn-social-share" href="https://api.whatsapp.com/send/?phone&text=Let's signup on EasShipp! It's a fast, simple, and secure platform to apply & manage Transportation and Loads.
+https://easshipp.in/signup/ref={{user.id }}">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                                <div class="col-auto mx-2">
+                                    <button class="btn btn-social-share" data-sharer="facebook" data-hashtag="EasShipp" data-url="https://easshipp.in/signup/ref={{user.id }}" data-title="Let's signup on EasShipp! It's a fast, simple, and secure platform to apply & manage Transportation and Loads.
+">
+                                        <i class="fab fa-facebook"></i>
+                                    </button>
+                                </div>
+                                <div class="col-auto mx-2">
+                                    <button class="btn btn-social-share" data-sharer="twitter" data-hashtag="EasShipp" data-url="https://easshipp.in/signup/ref={{user.id }}" data-title="Let's signup on EasShipp! It's a fast, simple, and secure platform to apply & manage Transportation and Loads.
+">
+                                        <i class="fab fa-twitter"></i>
+                                    </button>
+                                </div>
+                                <div class="col-auto mx-2">
+                                    <button class="btn btn-social-share" data-sharer="linkedin" data-hashtag="EasShipp" data-url="https://easshipp.in/signup/ref={{user.id }}" data-title="Let's signup on EasShipp! It's a fast, simple, and secure platform to apply & manage Transportation and Loads.
+">
+                                        <i class="fab fa-linkedin"></i>
+                                    </button>
+                                </div>
+                                <div class="col-auto mx-2">
+                                    <button class="btn btn-social-share" data-sharer="email" data-title="Let's signup on EasShipp! It's a fast, simple, and secure platform to apply & manage Transportation and Loads.
+" data-subject="Hey! join EasShipp using this link" data-to="" data-url="https://easshipp.in/signup/ref={{user.id }}">
+                                        <i class="fa fa-at"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- /.card-body -->
+                    </div>
+
+                </div>
+                <div class="col-md-12">
+				<div class="heading">
+					<h3>Refered <span>Users</span></h3>
+
+                </div></div>
+                <div class="job-right all-job-rights">
+					<div class="job-right-jobs">
+
+					<!-- <input type="checkbox" placehlder="check"> -->
+
+<div class="col-md-10 col-12 mx-auto">
+						<div class="job-right-jobs-image">
+
+						<img src={{c.0.company_logo.url}}>
+						<div class="jobs-main">
+
+							<div class="text-jobs">
+                                <h5>{{c.0.company_name}}</h5>
+                              <h3>{{c.1.first_name}} {{c.1.last_name}}</h3>
+
+
+
+
+							</div>
+
+
+
+                            </div>
+					</div>
+
+               <div class="info">
+							<div class="info-left">
+								<ul class="list-inline">
+                           	<li>Email ID: <span>{{c.1.username}}</span></li>
+									<li> Phone no. : <span>{{c.0.phone}}</span></li>
+									<li>Bid Placed: <span>{{c.2.Bid_amount}}</span></li>
+									<li>Shipment will be done in :  <span>{{c.2.complete_in}}(days)</span></li>
+                                    <li>Total shipment done:  <span>{{c.3}} </span></li>
+                                    <li>Rating:  <span>{{c.4}} </span></li>
+
+								</ul>
+
+							</div>
+
+						</div>
+            </div>
+
+                    </div>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+            </div>
+
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% block javascript %}
+
+<script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
+<script>
+    $(function() {
+        $('#nav-home').addClass('active');
+    });
+</script>
+{% endblock javascript %}
+    <footer class="bg-dark " style="margin-top: 10px;">
+                <div class="container" style="    max-inline-size: inherit;padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0"><img src="/static/images/" style=" " alt="" width="50" class="mb-3">
+                            <p class="font-italic" style="color: white;">Get Shipper for your Shipments !!<br> Tell us what Shipment you want to complete</p>
+                            <ul class="list-inline mt-4">
+                                <li class="list-inline-item"><a href="#" target="_blank" title="twitter"><i style="font-size: xx-large;    color: #00ddf3;" class="fa fa-twitter"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="facebook"><i style="font-size: xx-large;color: #007eff;" class="fa fa-facebook"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="instagram"><i style="font-size: xx-large;color: #f704d9;" class="fa fa-instagram"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="pinterest"><i style="font-size: xx-large;color: #f70404;" class="fa fa-pinterest"></i></a></li>
+                                <li class="list-inline-item"><a href="#" target="_blank" title="vimeo"><i style="font-size: xx-large;color: #1e04f7;" class="fa fa-vimeo"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                            <h6 class="text-uppercase font-weight-bold mb-4" style="color:white">Account</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{% url 'user:Login' %}" class="text" style="color: white;">Login</a></li>
+                                <li class="mb-2"><a href="{% url 'partner_company:partner_company/register' %}" class="text" style="color: white;">Shipper Register</a></li>
+                                <li class="mb-2"><a href="{% url 'customer:customer/register' %}" class="text" style="color: white;">Customer Register</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                            <h6 class="text-uppercase font-weight-bold mb-4" style="color:white">Company</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="#" class="text" style="color: white;">About Us</a></li>
+                                <li class="mb-2"><a href="#" class="text" style="color: white;">Contact Us</a></li>
+                                <!-- <li class="mb-2"><a href="#" class="text-muted">Wishlist</a></li>
+            <li class="mb-2"><a href="#" class="text-muted">Our Products</a></li> -->
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-lg-0">
+
+                            <img src="{% static 'images/green.png' %} " width="75" height="75">
+                        </div>
+                    </div>
+                    <!-- Copyrights -->
+
+                </div>
+
+
+            </footer>
+
+</body>
+</html>

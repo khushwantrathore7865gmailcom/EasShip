@@ -61,6 +61,7 @@ class Referral(models.Model):
     status = models.CharField(max_length=15, null=True, blank=True)
     commissions = models.CharField(max_length=20)
     commission_status = models.CharField(max_length=20)
+    no_of_jobdone = models.IntegerField(null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
 

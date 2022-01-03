@@ -24,6 +24,7 @@ urlpatterns = [
     path('customer/', include('Customer.urls')),
     path('partner_company/', include('PatnerCompany.urls')),
     path('chat/', include('chat.urls')),
+    path('refer/', include('Refer.urls')),
     path('', index, name='home'),
     path('login/', include('User.urls')),
 ]
