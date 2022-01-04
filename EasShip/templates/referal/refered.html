@@ -233,10 +233,11 @@ input::-webkit-inner-spin-button {
     </div>
         {% endif %}
     <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-6">
+
+  <section class="job-portal all-jobs">
+	<div class="container main-wid">
+		<div class="row">
+            <div class="col-lg-6">
                     <div class="card">
                         <!-- /.card-header -->
                         <div class="card-body table-responsive">
@@ -291,12 +292,28 @@ https://easshipp.in/signup/ref={{user.id }}">
                     </div>
 
                 </div>
-                <div class="col-md-12">
+            <br>
+            <br>
+			<div class="col-md-10 col-12 mx-auto">
 				<div class="heading">
-					<h3>Refered <span>Users</span></h3>
+                    <h3>Referred<span> User</span></h3>
+				</div>
+			</div>
 
-                </div></div>
-                <div class="job-right all-job-rights">
+			<div class="col-md-10 col-12 mx-auto">
+
+			</div>
+
+
+
+
+
+    {% for r in referedto %}
+
+
+   <div class="col-md-10 col-12 mx-auto">
+
+				<div class="job-right all-job-rights">
 					<div class="job-right-jobs">
 
 					<!-- <input type="checkbox" placehlder="check"> -->
@@ -304,12 +321,12 @@ https://easshipp.in/signup/ref={{user.id }}">
 <div class="col-md-10 col-12 mx-auto">
 						<div class="job-right-jobs-image">
 
-						<img src={{c.0.company_logo.url}}>
+						<img src={{r.1.company_logo.url}}>
 						<div class="jobs-main">
 
 							<div class="text-jobs">
-                                <h5>{{c.0.company_name}}</h5>
-                              <h3>{{c.1.first_name}} {{c.1.last_name}}</h3>
+                                <h5>{{r.1.company_name}}</h5>
+
 
 
 
@@ -324,13 +341,8 @@ https://easshipp.in/signup/ref={{user.id }}">
                <div class="info">
 							<div class="info-left">
 								<ul class="list-inline">
-                           	<li>Email ID: <span>{{c.1.username}}</span></li>
-									<li> Phone no. : <span>{{c.0.phone}}</span></li>
-									<li>Bid Placed: <span>{{c.2.Bid_amount}}</span></li>
-									<li>Shipment will be done in :  <span>{{c.2.complete_in}}(days)</span></li>
-                                    <li>Total shipment done:  <span>{{c.3}} </span></li>
-                                    <li>Rating:  <span>{{c.4}} </span></li>
-
+                           	<li>Job Done: <span>{{r.0.no_of_jobdone}}/5</span></li>
+							<li>Your Total Commission: <span>{{r.0.commissions}}</span></li>
 								</ul>
 
 							</div>
@@ -338,26 +350,41 @@ https://easshipp.in/signup/ref={{user.id }}">
 						</div>
             </div>
 
+
+
+
+
+<div class="download">
+                                <a class="btn btn-success" href="{% url 'Referview:request_payment' r.0.pk %}" role="button">Request Payment</a>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
                     </div>
 
 
+       </div>
+
+                    {% endfor %}
 
 
 
 
 
+			</div>
+	</div>
+</section>
 
-</div>
-
-
-
-
-</div>
-
-            </div>
-
-        </div>
-    </section>
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->

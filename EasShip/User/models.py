@@ -66,7 +66,7 @@ class Referral(models.Model):
 
 
 class Commission_request(models.Model):
-    user = models.ForeignKey(User_custom, on_delete=models.CASCADE, related_name='+')
+    Refer = models.ForeignKey(Referral, on_delete=models.CASCADE, default= None)
+
     created_on = models.DateTimeField(auto_now_add=True)
-    Error = models.CharField(max_length=1025)
     requested_completed = models.BooleanField(default=False)
