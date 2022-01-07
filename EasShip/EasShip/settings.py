@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'Customer',
     'crispy_forms',
     'mathfilters',
-    'chat'
+    'chat',
+    'rest_framework',
+    'driver',
 
 ]
 

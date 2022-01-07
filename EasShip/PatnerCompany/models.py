@@ -78,6 +78,7 @@ class comp_Transport(models.Model):
 
 class comp_drivers(models.Model):
     comp = models.ForeignKey(patnerComp, on_delete=models.CASCADE)
+    user = models.ForeignKey(User_custom,null=True,on_delete=models.CASCADE,blank=True)
     name = models.CharField(max_length=1024)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Please enter valid phone number. Correct format is 91XXXXXXXX")

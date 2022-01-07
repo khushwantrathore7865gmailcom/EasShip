@@ -1,7 +1,6 @@
 from datetime import datetime
 import re
-from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Q
+
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
@@ -308,7 +307,7 @@ def apply_Shipment(request, pk):
                                          job_id=job).save()
                 try:
                     name = job.ship_title
-                    storeName = Room.objects.create(name=name,userp=c,userc=job.cust)
+                    storeName = Room.objects.create(name=name, userp=c, userc=job.cust)
                 except Exception as e:
                     import os, random, string
                     length = 13
@@ -610,6 +609,9 @@ def addTransport(request):
         return redirect('/')
 
 
+
+
+
 @login_required(login_url='/')
 def addDriver(request):
     user = request.user
@@ -623,6 +625,13 @@ def addDriver(request):
                     f = form.save(commit=False)
                     f.comp = pr
 
+                    passw = f.name + f.phone
+
+                    p = passw.replace(" ", "")
+                    e = f.phone + '@noemail'
+                    u = User_custom(username=f.phone, user_name=f.phone, is_active=True, is_driver=True, password=p,
+                                    first_name=f.name, email=e)
+                    u.save()
                     f.save()
                     messages.success(request, 'Driver is added.')
             form = adddriverForm()

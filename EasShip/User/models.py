@@ -43,6 +43,7 @@ class User_custom(AbstractUser, PermissionsMixin):
     confirmpass = models.CharField(max_length=32, blank=True)
     is_company = models.BooleanField(default=False)
     is_customer = models.BooleanField(default=False)
+    is_driver = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     first_login = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
