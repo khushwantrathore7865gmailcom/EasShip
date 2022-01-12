@@ -12,12 +12,7 @@ class locationSerializer(serializers.ModelSerializer):
         model = driverLocation
 class shipJobSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = (
-            'ship_title',
-            'job_description',
-            'picking_Address',
-            'droping_Address',
-        )
+        fields = '__all__'
         model = shipJob
 
 class ProdDescSerializer(serializers.ModelSerializer):

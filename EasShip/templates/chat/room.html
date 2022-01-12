@@ -56,10 +56,10 @@ body {
 </head>
 <body>
 
-<h2>{{room}} - DjChat</h2>
+<h2>{{room}}</h2>
 
 <div id="display">
-
+{{messenger}}
 <!-- <div class="container darker">
   <b>Tom</b><p>Hello Everyone, How Are You Guys Doing?</p>
   <span class="time-left">20th, April 2021</span>
@@ -74,13 +74,16 @@ setInterval(function(){
     $.ajax({
         type: 'GET',
         url : "/chat/getMessages/{{room}}/",
+
         success: function(response){
             console.log(response);
             $("#display").empty();
             for (var key in response.messages)
             {
-                var temp="<div class='container darker'><b>"+response.messages[key].username+"</b><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
-                $("#display").append(temp);
+
+                    var temp="<div class='container darker'><b>"+response.messages[key].username+"</b><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
+                    $("#display").append(temp);
+
             }
         },
         error: function(response){

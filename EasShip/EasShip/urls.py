@@ -27,6 +27,7 @@ urlpatterns = [
     path('refer/', include('Refer.urls')),
     path('', index, name='home'),
     path('login/', include('User.urls')),
+    path('api/v1/', include('driver.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

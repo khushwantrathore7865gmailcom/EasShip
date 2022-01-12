@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import View
-from User.models import User_custom, Referral
+from User.models import User_custom, Referral,CustomAccountManager
 from .forms import SignUpForm, adddriverForm, addTransportForm, PresentWorkSetForm, PresentWorkUpdateForm, Profile
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
@@ -629,9 +629,10 @@ def addDriver(request):
 
                     p = passw.replace(" ", "")
                     e = f.phone + '@noemail'
-                    u = User_custom(username=f.phone, user_name=f.phone, is_active=True, is_driver=True, password=p,
+                    u = User_custom.objects.create_user(user_name=f.phone, is_active=True, is_driver=True, password=p,
                                     first_name=f.name, email=e)
                     u.save()
+                    print(u)
                     f.save()
                     messages.success(request, 'Driver is added.')
             form = adddriverForm()

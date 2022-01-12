@@ -8,9 +8,8 @@ from .serializers import locationSerializer,shipJobSerializer,ProdDescSerializer
 
 
 class ListTodo(generics.ListCreateAPIView):
-    queryset = driverLocation.objects.all()
-    serializer_class = locationSerializer
-
+    queryset = shipJob.objects.all()
+    serializer_class = shipJobSerializer
 
 class DetailTodo(generics.RetrieveUpdateDestroyAPIView):
     queryset = driverLocation.objects.all()
