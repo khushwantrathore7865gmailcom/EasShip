@@ -7,15 +7,19 @@ from Customer.models import customer, Customer_profile
 from django.conf import settings
 from django.core.mail import send_mail
 
+
 # Create your views here.
 @login_required(login_url='/')
 def Referal_view(request):
     user = request.user
     Refered = Referral.objects.filter(referred_by=user)
-    ref=[]
+    ref = []
+    total_commission = 0
     for r in Refered:
-        if r.no_of_jobdone<6:
+
+        if r.no_of_jobdone < 6:
             ref.append(r)
+            total_commission = total_commission + r.commissions
     user_profile = []
     for r in ref:
         u = r.user
@@ -34,10 +38,10 @@ def Referal_view(request):
         p = False
         cust = customer.objects.get(user=user)
         c = Customer_profile.objects.get(cust=cust)
-    return render(request, 'referal/refered.html', {'referedto': object, 'p': p, 'c': c})
+    return render(request, 'referal/refered.html', {'referedto': object, 'p': p, 'c': c, 't': total_commission})
 
 
-def request_payment(request,pk):
+def request_payment(request, pk):
     user = request.user
     r = Referral.objects.get(pk=pk)
     c = Commission_request(Refer=r, requested_completed=False).save()

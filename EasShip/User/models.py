@@ -27,7 +27,7 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError('You must provide an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, user_name=user_name,username=user_name,
+        user = self.model(email=email, user_name=user_name, username=user_name,
                           **other_fields)
         user.set_password(password)
 
@@ -60,14 +60,16 @@ class Referral(models.Model):
     referred_by = models.ForeignKey(User_custom, on_delete=models.CASCADE, related_name='+')
     user = models.ForeignKey(User_custom, on_delete=models.CASCADE, related_name='+')
     status = models.CharField(max_length=15, null=True, blank=True)
-    commissions = models.CharField(max_length=20)
+    commissions = models.DecimalField(
+        max_digits=12,
+        decimal_places=2)
     commission_status = models.CharField(max_length=20)
     no_of_jobdone = models.IntegerField(null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
 
 class Commission_request(models.Model):
-    Refer = models.ForeignKey(Referral, on_delete=models.CASCADE, default= None)
+    Refer = models.ForeignKey(Referral, on_delete=models.CASCADE, default=None)
 
     created_on = models.DateTimeField(auto_now_add=True)
     requested_completed = models.BooleanField(default=False)
