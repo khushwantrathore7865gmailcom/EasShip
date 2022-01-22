@@ -21,6 +21,11 @@ body {
   border-color: #ccc;
   background-color: #ddd;
 }
+.green {
+  border-color: #ccc;
+  background-color: #008000;
+}
+
 
 .container::after {
   content: "";
@@ -80,10 +85,14 @@ setInterval(function(){
             $("#display").empty();
             for (var key in response.messages)
             {
-
+                    if(response.muser[key]==response.Ruser){
+                    var temp="<div class='container green'><b>"+response.messages[key].username+"</b><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
+                    $("#display").append(temp);
+}
+                    else{
                     var temp="<div class='container darker'><b>"+response.messages[key].username+"</b><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
                     $("#display").append(temp);
-
+                    }
             }
         },
         error: function(response){

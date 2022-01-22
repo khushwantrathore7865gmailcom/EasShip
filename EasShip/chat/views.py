@@ -31,7 +31,11 @@ def send(request):
 
 @login_required(login_url='/')
 def getMessages(request, room):
+    muser=[]
     room_details = Room.objects.get(name=room)
-
+    useronline = request.user
     messages = Message.objects.filter(room=room_details.id)
-    return JsonResponse({"messages": list(messages.values())})
+    for m in messages:
+        muser.append(m.user.user_name)
+    return JsonResponse(
+        {"messages": list(messages.values()), "muser": muser, "Ruser": useronline.user_name})
