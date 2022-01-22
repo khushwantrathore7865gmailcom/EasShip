@@ -86,11 +86,11 @@ setInterval(function(){
             for (var key in response.messages)
             {
                     if(response.muser[key]==response.Ruser){
-                    var temp="<div class='container green'><b>"+response.messages[key].username+"</b><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
+                    var temp="<div class='container green'><img src="+response.image[key]+" alt='Avatar' class='right'><p>"+response.messages[key].value+"</p><span class='time-right'>"+response.messages[key].date+"</span></div>";
                     $("#display").append(temp);
 }
                     else{
-                    var temp="<div class='container darker'><b>"+response.messages[key].username+"</b><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
+                    var temp="<div class='container'><img src="+response.image[key]+" alt='Avatar'><p>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
                     $("#display").append(temp);
                     }
             }
