@@ -9,9 +9,11 @@ from PatnerCompany.models import patnerComp, Comp_profile
 # Create your views here.
 @login_required(login_url='/')
 def room(request, room):
+    user = request.user
     username = request.GET.get('username')
     room_details = Room.objects.get(name=room)
     return render(request, 'chat/room.html', {
+        'user': user,
         'username': username,
         'room': room,
         'room_details': room_details
