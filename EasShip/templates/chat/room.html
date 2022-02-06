@@ -10,7 +10,7 @@
     <!-- Bootstrap CSS -->
       <link rel="stylesheet" href="bootstrap.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="{% static 'css/stylemod.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style12.css' %}">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
           <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
@@ -76,7 +76,7 @@
     box-shadow: 0 39px 50px 0px rgb(0 0 1 / 14%);
 }
 
-body {
+.xyz {
   margin: 0 auto;
   max-width: 800px;
   padding: 0 20px;
@@ -97,6 +97,7 @@ body {
 .green {
   border-color: #ccc;
   background-color: #008000;
+  color:white;
 }
 
 
@@ -135,9 +136,7 @@ body {
 <body>
 {% if user.is_company %}
 <header>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 col-12">
+
 					<div class="top-navbar">
 						<nav class="navbar navbar-expand-lg ">
   <a class="" href="{% url 'partner_company:partner_company_home' %}"><img src="{% static 'images/green.png' %} " width="60" height="60"></a>
@@ -186,16 +185,12 @@ body {
   </div>
 </nav>
 					</div>
-				</div>
-			</div>
-		</div>
+
 
 	</header>
 {% else %}
 <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 col-12">
+
                     <div class="top-navbar">
                         <nav class="navbar navbar-expand-lg ">
                             <a class="" href="{% url 'customer:customer_home' %}"> <img src="{% static 'images/green.png' %} " width="60" height="60"></a>
@@ -233,14 +228,17 @@ body {
                             </div>
                         </nav>
                     </div>
-                </div>
-            </div>
-        </div>
+
 
     </header>
 {% endif %}
 
-<h2>{{room}}</h2>
+
+<div class="xyz">
+    <div class="heading">
+					<h2>Shipment Title: <span>{{room}}</span></h2>
+
+				</div>
 
 <div id="display">
 {{messenger}}
@@ -326,7 +324,7 @@ setInterval(function(){
     </form>
 </div>
 
-
+</div>
 </body>
 
 <script type="text/javascript">
