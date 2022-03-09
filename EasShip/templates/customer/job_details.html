@@ -135,6 +135,24 @@
                         Pickup Address :   {{job.picking_Address}}</p>
                         <p class="job-para">
                         Destination Address:  {{job.droping_Address}}</p>
+                        {% if des %}
+                        <p class="job-para">
+                        Height of Shipment:  {{des.height}}</p>
+                        <p class="job-para">
+                         Width of Shipment:  {{des.width}}    
+                        </p>
+                        <p class="job-para">
+                            Length of Shipment:  {{des.length}}
+                        </p>
+                        <p class="job-para">
+                            Weight of Shipment: {{des.Weight_box}}
+                        </p>
+                        <p class="job-para">
+                            Value of Shipment:  {{des.value}}
+                        </p>
+
+                        {% endif %}
+
                         {% if job.bid_selected %}
 
                         {% else %}

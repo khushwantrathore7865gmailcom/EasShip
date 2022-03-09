@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, "secert_key.txt")) as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['easshipp.in', 'ec2-13-59-9-216.us-east-2.compute.amazonaws.com', 'www.easshipp.in', '127.0.0.1']
+ALLOWED_HOSTS = ['easshipp.in', 'ec2-13-59-9-216.us-east-2.compute.amazonaws.com', 'www.easshipp.in', '127.0.0.1','13.59.9.216']
 
 # Application definition
 

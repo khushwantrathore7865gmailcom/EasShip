@@ -24,6 +24,7 @@ from .models import customer, Customer_profile, ProdDesc, shipJob, Expired_ShipJ
 from PatnerCompany.models import shipJob_jobanswer, comp_Bids, Comp_address, Comp_profile, comp_Transport, \
     comp_PresentWork, comp_PastWork, comp_drivers, Orders
 from django.contrib.auth.decorators import login_required
+from chat.models import Room
 payment_id = "XiCkyY61890791146830"
 payment_key = "PzkUpfSbO1sD5Be3"
 
@@ -185,7 +186,7 @@ def customer_home(request):
     sj = []
     cb = []
     c__p = []
-
+    
     user = request.user
     context = {}
 
@@ -237,7 +238,7 @@ def customer_home(request):
                 else:
                     jobs.append(j)
                     c_b = comp_Bids.objects.filter(job_id=j)
-
+                    
                     if c_b is None:
                         count.append(0)
                     else:
@@ -245,7 +246,7 @@ def customer_home(request):
             expired_job = Expired_ShipJob.objects.filter(cust=e)
             
             sjob = shipJob.objects.filter(cust=e, bid_selected=True)
-            
+            chat=[]
             print(sjob)
             print(e)
             pay = False
@@ -253,7 +254,8 @@ def customer_home(request):
                 try:
                     p = comp_PresentWork.objects.get(job_id=s)
                     sj.append(p)
-
+                    bid=p.Total_payment
+                    chat.append(Room.objects.get(bid=bid))
                     if p.payment_Done is None:
                         pay = True
                     if p.ask_finalpay:
@@ -271,7 +273,7 @@ def customer_home(request):
                     else:
                         count.append(c_b.count())
             o = zip(jobs, count)
-            object = zip(sj, cb)
+            object = zip(sj, cb,chat)
             print('object', pay)
             context = {'jobs': o, 'expired': expired_job, 'og': object, 'ep': ep, 'pay': pay}
 
@@ -377,12 +379,17 @@ def job_detail(request, pk):
     if user is not None and user.is_customer:
         e = customer.objects.get(user=request.user)
         job = shipJob.objects.get(pk=pk)
+        print(job)
         company = Customer_profile.objects.get(cust=e)
+        try:
+            p_job = ProdDesc.objects.get(shipment=job)
+        except ProdDesc.DoesNotExist:
+            p_job=None
         c_b = comp_Bids.objects.filter(job_id=job)
         c= c_b.count()
         # candidate_Applied = Employer_job_Applied.objects.filter(job_id=job)
         # objects = zip(job,candidate_Applied)
-        return render(request, 'customer/job_details.html', {'job': job,'count':c, 'c': company})
+        return render(request, 'customer/job_details.html', {'job': job,'count':c, 'c': company,'des':p_job})
     else:
         return redirect('/')
 @login_required(login_url='/')
@@ -421,7 +428,7 @@ def view_applied_candidate(request, pk):
         candidate_profile = []
 
         candidate_answer = []
-
+        chat=[]
         rating = []
         number = []
         e = customer.objects.get(user=request.user)
@@ -432,7 +439,7 @@ def view_applied_candidate(request, pk):
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
-
+            chat.append(Room.objects.get(bid=can))
             c = can.comp
             try:
                 c_p = Comp_profile.objects.get(comp=c)
@@ -463,7 +470,7 @@ def view_applied_candidate(request, pk):
 
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
-        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating)
+        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating,chat)
 
         return render(request, 'customer/job_candidate.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
@@ -481,7 +488,7 @@ def shortlistview_applied_candidate(request, pk):
         candidate_profile = []
 
         candidate_answer = []
-
+        chat=[]
         rating = []
         number = []
         e = customer.objects.get(user=request.user)
@@ -492,7 +499,7 @@ def shortlistview_applied_candidate(request, pk):
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
-
+            chat.append(Room.objects.get(bid=can))
             c = can.comp
             try:
                 c_p = Comp_profile.objects.get(comp=c)
@@ -523,7 +530,7 @@ def shortlistview_applied_candidate(request, pk):
 
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
-        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating)
+        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating,chat)
         # question = zip(question, candidate_answer)
         return render(request, 'customer/shortlisted_view.html',
                       {'candidate': objects, 'job': job, 'question': question, 'answer': candidate_answer, 'cp': cp})
@@ -537,7 +544,7 @@ def disqualifyview_applied_candidate(request, pk):
     if user is not None and user.is_customer:
         candidate_user = []
         candidate_profile = []
-
+        chat=[]
         candidate_answer = []
 
         rating = []
@@ -550,7 +557,7 @@ def disqualifyview_applied_candidate(request, pk):
         question = Shipment_Related_Question.objects.filter(job_id=job)
         candidate_Applied = comp_Bids.objects.filter(job_id=job)
         for can in candidate_Applied:
-
+            chat.append(Room.objects.get(bid=can))
             c = can.comp
             try:
                 c_p = Comp_profile.objects.get(comp=c)
@@ -581,7 +588,7 @@ def disqualifyview_applied_candidate(request, pk):
 
         quest = zip(question, candidate_answer)
         # print(candidate_answer)
-        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating)
+        objects = zip(candidate_profile, candidate_user, candidate_Applied, number, rating,chat)
 
         # question = zip(question, candidate_answer)
         return render(request, 'customer/disqualified.html',
@@ -662,14 +669,19 @@ def EditShipment(request, pk):
     except Customer_profile.DoesNotExist:
         cp = None
     s = shipJob.objects.get(pk=pk)
-    sdesc = ProdDesc.objects.get(shipment=s)
+    try:
+        sdesc = ProdDesc.objects.get(shipment=s)
+    except ProdDesc.DoesNotExist:
+        sdesc=None
     if request.method == "POST":
         form = ShipJob(request.POST, instance=s)
         form1 = Prod_Detail(request.POST, instance=sdesc)
         if form.is_valid():
             form.save()
         if form1.is_valid():
-            form1.save()
+            f1=form1.save(commit=False)
+            f1.shipment=s
+            f1.save()
             return redirect('customer:customer_home')
 
     form = ShipJob(instance=s)

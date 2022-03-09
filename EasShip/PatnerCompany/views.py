@@ -303,11 +303,11 @@ def apply_Shipment(request, pk):
                 tbid = request.POST.get('tbid')
                 comm = request.POST.get('commission')
 
-                comp_Bids.objects.create(comp=c, Bid_amount=tbid, Bid_byPartner=bid, complete_in=comp,
+                b=comp_Bids.objects.create(comp=c, Bid_amount=tbid, Bid_byPartner=bid, complete_in=comp,
                                          job_id=job).save()
                 try:
                     name = job.ship_title
-                    storeName = Room.objects.create(name=name, userp=c, userc=job.cust)
+                    storeName = Room.objects.create(name=name, userp=c, userc=job.cust,bid=b)
                 except Exception as e:
                     import os, random, string
                     length = 13
@@ -317,7 +317,7 @@ def apply_Shipment(request, pk):
 
                     filename = '%s%s' % (job.ship_title, str(a))
 
-                    storeName = Room.objects.create(fileName=filename)
+                    storeName = Room.objects.create(name=filename, userp=c, userc=job.cust,bid=b)
 
                 return redirect('partner_company:partner_company_home')
             return render(request, 'partner_company/applyShip.html', {'question': questions, 'job': job, 'cp': cp})
@@ -514,6 +514,7 @@ def AppliedJobs(request):
         except Comp_profile.DoesNotExist:
             cp = None
         applied = []
+        chat=[]
         app = comp_Bids.objects.filter(comp=c)
         for a in app:
             try:
@@ -521,10 +522,11 @@ def AppliedJobs(request):
             except comp_PresentWork.DoesNotExist:
                 applied.append(a)
         for a in applied:
+            chat.append(Room.objects.get(bid=a))
             e = a.job_id.cust
             companyprofile.append(Customer_profile.objects.get(cust=e))
 
-        objects = zip(applied, companyprofile)
+        objects = zip(applied, companyprofile,chat)
 
         return render(request, 'partner_company/applied.html',
                       {'jobs': objects, 'c': c, 'cp': cp})
@@ -727,6 +729,7 @@ def Complete_PresentShip(request, pk):
 @login_required(login_url='/')
 def PresentShip(request):
     profile = []
+    chat=[]
     user = request.user
     if user.is_company:
         pr = patnerComp.objects.get(user=user)
@@ -736,6 +739,8 @@ def PresentShip(request):
             cpr = None
         c = comp_PresentWork.objects.filter(comp=pr)
         for cp in c:
+            bid= c.Total_payment
+            chat.append(Room.objects.get(bid=bid))
             profile.append(Customer_profile.objects.get(cust=cp.job_id.cust))
         o = zip(c, profile)
         return render(request, 'partner_company/ShipmentOngoing.html', {'c_p': o, 'cp': cpr})

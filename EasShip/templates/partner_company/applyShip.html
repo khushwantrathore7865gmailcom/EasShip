@@ -196,24 +196,22 @@ input::-webkit-inner-spin-button {
         </div>
 
 
-        <label style="font-size: 20px;">Commission of EasShipp(5% of commission from cost of Transportation): </label>
-
-
+        
         <div class="input-group">
-            <input type="number" name="commission" id="commission" readonly class="input100">
+            <input type="hidden" name="commission" id="commission" readonly class="input100">
         </div>
-        <label style="font-size: 20px;">Total Bid for the {{job.ship_title}}: </label>
+        
 
 
         <div class="input-group">
-            <input type="number" name="tbid"id="tbid" readonly class="input100">
+            <input type="hidden" name="tbid"id="tbid" readonly class="input100">
         </div>
 
 
 <br>
 <div class="row spacer">
     <div class="col-4 offset-2">
-        <button type="submit" class="btn btn-block btn-success">Create</button>
+        <button type="submit" class="btn btn-block btn-success">Submit Your Bid</button>
     </div>
 </div>
 </form>
